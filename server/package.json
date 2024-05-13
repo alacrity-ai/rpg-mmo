@@ -1,17 +1,30 @@
 {
   "name": "mud-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "A multi-user dungeon (MUD) server",
   "main": "index.js",
   "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "MUD",
+    "multi-user dungeon",
+    "game server",
+    "text-based game"
+  ],
+  "author": "Your Name",
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
     "socket.io": "^4.7.5",
     "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "engines": {
+    "node": ">=20.9.0"
   }
 }
