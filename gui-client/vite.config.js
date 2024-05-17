@@ -6,7 +6,8 @@ export default defineConfig({
     outDir: '../dist',
   },
   server: {
-    open: true,
+    open: process.env.NODE_ENV !== 'production',
     port: 8000,
+    host: '0.0.0.0'
   },
 });
