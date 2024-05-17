@@ -17,8 +17,8 @@ const config = {
     width: 1050,
     height: 600,
     scene: [
-        TownScene,
         TestScene,
+        TownScene,
         ExpeditionScene,
         CombatScene,
         ArcaniumScene,

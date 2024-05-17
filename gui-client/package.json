@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start": "vite",
-    "build": "vite build"
+    "build": "vite build",
+    "localtest": "vite build && vite"
   },
   "keywords": [],
   "author": "",

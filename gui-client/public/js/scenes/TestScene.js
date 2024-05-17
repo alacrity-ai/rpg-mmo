@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import CharacterRenderer from '../graphics/CharacterRenderer.js';
+import TutorialMenu from '../interface/menu/TutorialMenu.js';
 
 export default class TestScene extends Phaser.Scene {
     constructor() {
@@ -7,28 +7,19 @@ export default class TestScene extends Phaser.Scene {
     }
 
     preload() {
-        // Initialize CharacterRenderer
-        this.characterRenderer = new CharacterRenderer(this, 1, 'priest', 1, true);
+        // Preload necessary assets here if any
+        this.load.image('background', 'assets/images/zones/town-1/town.png');
     }
 
     create() {
-        // Play the initial character animation (idle) at coordinates (525, 300)
-        this.characterRenderer.playAnimation('idle', 525, 300);
+        // Add the background image and ensure it fits the canvas
+        const background = this.add.image(0, 0, 'background').setOrigin(0, 0);
+        background.setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
 
-        // Example of running the 'attack' animation once after a delay
-        this.time.delayedCall(2000, () => {
-            this.characterRenderer.runOnce('attack');
-        }, [], this);
-
-        // Example of running the 'cast' animation once after another delay
-        this.time.delayedCall(4000, () => {
-            this.characterRenderer.runOnce('cast');
-        }, [], this);
-
-        // Example of running the 'talk' animation once after another delay
-        this.time.delayedCall(6000, () => {
-            this.characterRenderer.runOnce('talk');
-        }, [], this);
+        // Create and show the tutorial menu
+        const tutorialText = "Welcome to the tutorial! Follow the instructions to learn how to play the game.";
+        this.tutorialMenu = new TutorialMenu(this, tutorialText);
+        this.tutorialMenu.show();
     }
 
     update(time, delta) {
