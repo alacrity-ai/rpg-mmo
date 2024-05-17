@@ -1,4 +1,6 @@
-export function createHotbar(scene, iconHelper, soundFXManager) {
+import SoundFXManager from '../audio/SoundFXManager.js';
+
+export function createHotbar(scene, iconHelper) {
     // Define a list of icon names to be used in the hotbar with corresponding sound paths
     const icons = [
         { name: 'muscle-icon', sound: 'assets/sounds/menu/menu_highlight.wav' },
@@ -19,13 +21,13 @@ export function createHotbar(scene, iconHelper, soundFXManager) {
         iconContainer.setInteractive();
         iconContainer.on('pointerdown', () => {
             console.log(`Icon ${icon.name} clicked`);
-            soundFXManager.playSound(icon.sound); // Play the associated sound effect
+            SoundFXManager.playSound(icon.sound); // Play the associated sound effect
             // Implement submenu logic here
         });
 
         iconContainer.on('pointerover', () => {
             console.log(`Icon ${icon.name} hovered`);
-            soundFXManager.playSound(hoverSound); // Play the hover sound effect
+            SoundFXManager.playSound(hoverSound); // Play the hover sound effect
             scene.tweens.add({
                 targets: iconContainer,
                 scale: 1.2,

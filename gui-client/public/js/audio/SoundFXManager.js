@@ -1,7 +1,28 @@
-export default class SoundFXManager {
-    constructor(scene) {
+class SoundFXManager {
+    constructor() {
+        if (!SoundFXManager.instance) {
+            this.soundCache = new Map();
+            SoundFXManager.instance = this;
+        }
+        return SoundFXManager.instance;
+    }
+
+    initialize(scene) {
         this.scene = scene;
-        this.soundCache = new Map();
+    }
+
+    preloadSounds(soundPaths) {
+        soundPaths.forEach(path => {
+            this.scene.load.audio(path, path);
+        });
+    }
+
+    onPreloadComplete() {
+        this.scene.load.once('complete', () => {
+            this.scene.sound.sounds.forEach(sound => {
+                this.soundCache.set(sound.key, sound);
+            });
+        });
     }
 
     playSound(path) {
@@ -21,3 +42,6 @@ export default class SoundFXManager {
         }
     }
 }
+
+const instance = new SoundFXManager();
+export default instance;

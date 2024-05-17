@@ -1,4 +1,3 @@
-// js/interface/InteractiveZoneManager.js
 export default class InteractiveZoneManager {
     constructor(scene) {
         this.scene = scene;
@@ -6,7 +5,7 @@ export default class InteractiveZoneManager {
         this.hoverText = this.scene.add.text(this.scene.sys.game.config.width / 2, 30, '', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5, 0.5).setVisible(false);
     }
 
-    createInteractiveArea(x, y, width, height, text) {
+    createInteractiveArea(x, y, width, height, text, callback) {
         // Create an invisible interactive zone
         const zone = this.scene.add.zone(x, y, width, height).setOrigin(0, 0).setInteractive();
 
@@ -28,9 +27,12 @@ export default class InteractiveZoneManager {
             this.hoverTextBackground.clear();
         });
 
-        // Log to console when the area is clicked
+        // Execute the callback function when the area is clicked
         zone.on('pointerdown', () => {
             console.log(`${text} clicked`);
+            if (callback) {
+                callback();
+            }
         });
     }
 }
