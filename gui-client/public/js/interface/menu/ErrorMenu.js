@@ -7,7 +7,7 @@ export default class ErrorMenu extends BaseMenu {
         const width = 400;
         const height = 200;
         const backgroundColor = 0x000000;
-        const backgroundAlpha = 0.8;
+        const backgroundAlpha = 0.9;
         const borderRadius = 10;
 
         super(scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
