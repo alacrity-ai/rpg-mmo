@@ -14,7 +14,7 @@ def create_texture_atlas_in_folder(folder_path):
             images.append((file, Image.open(file_path)))
     
     if not images:
-        print(f"No .png files found in {folder_path}, excluding 'portrait' folders.")
+        print(f"No .png files found in {folder_path}")
         return
     
     # Determine the size of the atlas
@@ -102,13 +102,14 @@ def process_all_subfolders(input_folder):
             create_texture_atlas_in_folder(root)
 
 if __name__ == "__main__":
-    input_folders = ['../gui-client/public/assets/images/characters/mage/portrait', 
-                     '../gui-client/public/assets/images/characters/knight/portrait',
-                     '../gui-client/public/assets/images/characters/priest/portrait',
-                     '../gui-client/public/assets/images/characters/rogue/portrait',]
+    input_folders = ['../gui-client/public/assets/images/characters/mage', 
+                     '../gui-client/public/assets/images/characters/knight',
+                     '../gui-client/public/assets/images/characters/priest',
+                     '../gui-client/public/assets/images/characters/rogue',]
+    print("Creating texture atlases...")
     for folder in input_folders:
         process_all_subfolders(folder)
-
+    print('All texture atlases created.')
     # input_folder = input("Enter the path to the input folder: ")
     
     # if os.path.isdir(input_folder):

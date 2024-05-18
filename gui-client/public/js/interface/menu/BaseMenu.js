@@ -1,7 +1,7 @@
 import IconHelper from '../IconHelper.js'; // Adjust the path as necessary
 
 class BaseMenu {
-    constructor(scene, x, y, width, height, backgroundColor = 0x000000, backgroundAlpha = 0.8, borderRadius = 10, spriteSheetKey = null) {
+    constructor(scene, x, y, width, height, backgroundColor = 0x000000, backgroundAlpha = 0.8, borderRadius = 10, spriteSheetKey = null, onClose = null, hasCloseButton = false) {
         this.scene = scene;
         this.x = x;
         this.y = y;
@@ -14,6 +14,9 @@ class BaseMenu {
         this.currentTab = 0;
         this.spriteSheetKey = spriteSheetKey;
         this.iconHelper = spriteSheetKey ? new IconHelper(scene, spriteSheetKey) : null; // Initialize the IconHelper if spriteSheetKey is provided
+        this.onClose = onClose;
+        this.hasCloseButton = hasCloseButton;
+        this.textInputs = {}; // Store references to text inputs
 
         this.addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
         this.addCloseButton();
@@ -52,21 +55,23 @@ class BaseMenu {
         this.tabs[tab].push(element);
     }
 
-    addTextArea(x, y, width, height, text, style, tab = 0) {
-        const wrappedText = this.getWrappedText(text, width, style);
-        const textArea = this.scene.add.text(x, y, wrappedText, style).setWordWrapWidth(width);
+    addTextArea(x, y, width, height, text, style, tab = 0, textColor = '#ffffff') {
+        const wrappedText = this.getWrappedText(text, width, style, textColor);
+        const textArea = this.scene.add.text(x, y, wrappedText, { ...style, fill: textColor }).setWordWrapWidth(width);
         this.addElementToTab(tab, textArea);
     }
-
-    getWrappedText(text, maxWidth, style) {
+    
+    getWrappedText(text, maxWidth, style, textColor) {
+        const tempText = this.scene.add.text(0, 0, '', { ...style, fill: textColor });
         const words = text.split(' ');
-        const spaceWidth = this.scene.add.text(0, 0, ' ', style).width;
+        const spaceWidth = tempText.width; // Measure space width
         let line = '';
         let lineWidth = 0;
         let wrappedText = '';
-
+    
         words.forEach(word => {
-            const wordWidth = this.scene.add.text(0, 0, word, style).width;
+            tempText.setText(word);
+            const wordWidth = tempText.width; // Measure word width
             if (lineWidth + wordWidth + spaceWidth > maxWidth) {
                 wrappedText += line + '\n';
                 line = word + ' ';
@@ -76,14 +81,114 @@ class BaseMenu {
                 lineWidth += wordWidth + spaceWidth;
             }
         });
-
+    
         wrappedText += line;
+        tempText.destroy(); // Destroy temporary text object
         return wrappedText;
-    }
+    }    
 
-    addTextInput(x, y, width, height, placeholder, tab = 0) {
-        // Implementation for adding a text input
+    addTextInput(x, y, width, height, placeholder, tab = 0, maxLength = 50, isSecret = false) {
+        const container = this.scene.add.container(x, y);
+    
+        // Create the text input background with a rounded white border
+        const background = this.scene.add.graphics();
+        background.fillStyle(0x000000, 1);
+        background.fillRoundedRect(-width / 2, -height / 2, width, height, 10);
+        background.lineStyle(2, 0xffffff, 1);
+        background.strokeRoundedRect(-width / 2, -height / 2, width, height, 10);
+    
+        // Create the placeholder text
+        const text = this.scene.add.text(0, 0, placeholder, { fontSize: '16px', fill: '#888888' }).setOrigin(0.5);
+    
+        // Add background and text to the container
+        container.add(background);
+        container.add(text);
+    
+        // Store the current input text
+        let currentText = '';
+    
+        // Store the text input reference for future access
+        this.textInputs[tab] = this.textInputs[tab] || [];
+        const inputIndex = this.textInputs[tab].length;
+        this.textInputs[tab].push({ container, text, currentText, background, width, height });
+    
+        // Handle focus and blur
+        container.setSize(width, height); // Set the container size for interaction
+        container.setInteractive(); // Make the container interactive
+        container.on('pointerdown', () => {
+            if (this.scene.input.keyboard.enabled) {
+                this.focusedInput = { tab, inputIndex };
+                console.log('Focused Input:', this.focusedInput);
+                this.updateInputBorders();
+            }
+        });
+    
+        // Handle text input
+        this.ignoreNextKeydown = false;
+        this.scene.input.keyboard.on('keydown', (event) => {
+            if (this.ignoreNextKeydown) {
+                this.ignoreNextKeydown = false;
+                return;
+            }
+            if (this.focusedInput && this.focusedInput.tab === tab && this.focusedInput.inputIndex === inputIndex) {
+                if (event.key === "Backspace") {
+                    currentText = currentText.slice(0, -1); // Remove last character
+                } else if (event.key.length === 1 && currentText.length < maxLength) {
+                    currentText += event.key; // Add character
+                } else if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.TAB) {
+                    event.preventDefault(); // Prevent default tab behavior
+                    this.scene.input.keyboard.enabled = false; // Temporarily disable keyboard input
+                    this.focusNextInput();
+                    this.scene.input.keyboard.enabled = true; // Re-enable keyboard input
+                    this.ignoreNextKeydown = true;
+                }
+                const displayText = isSecret ? '*'.repeat(currentText.length) : currentText;
+                text.setText(displayText || placeholder); // Update text display, show placeholder if empty
+                this.textInputs[tab][inputIndex].currentText = currentText; // Update stored text
+            }
+        });
+    
+        // Add the container to the specified tab
+        this.addElementToTab(tab, container);
+    
+        return container;
     }
+    
+    focusNextInput() {
+        if (this.focusedInput) {
+            const { tab, inputIndex } = this.focusedInput;
+            const inputs = this.textInputs[tab];
+            if (inputs) {
+                const nextIndex = (inputIndex + 1) % inputs.length;
+                this.focusedInput = { tab, inputIndex: nextIndex };
+                this.updateInputBorders();
+                console.log('Focused Input:', this.focusedInput);
+            }
+        }
+    }
+    
+    updateInputBorders() {
+        Object.keys(this.textInputs).forEach(tab => {
+            this.textInputs[tab].forEach((input, index) => {
+                input.background.clear();
+                input.background.fillStyle(0x000000, 1);
+                input.background.fillRoundedRect(-input.width / 2, -input.height / 2, input.width, input.height, 10);
+                if (this.focusedInput && this.focusedInput.tab == tab && this.focusedInput.inputIndex == index) {
+                    input.background.lineStyle(2, 0xffff00, 1); // Yellow border for focused input
+                } else {
+                    input.background.lineStyle(2, 0xffffff, 1); // White border for unfocused input
+                }
+                input.background.strokeRoundedRect(-input.width / 2, -input.height / 2, input.width, input.height, 10);
+            });
+        });
+    }
+    
+    getTextInputValue(tab = 0, index = 0) {
+        if (this.textInputs[tab] && this.textInputs[tab][index]) {
+            return this.textInputs[tab][index].currentText;
+        }
+        return null;
+    }    
 
     addGraphic(x, y, key, tooltip = null, tab = 0, isAnimation = false) {
         let graphic;
@@ -184,6 +289,9 @@ class BaseMenu {
     }
 
     addCloseButton() {
+        // If doesn't have a close button
+        if (!this.hasCloseButton) return;
+        // If has close button
         const closeButton = this.scene.add.text(this.x + this.width / 2 - 20, this.y - this.height / 2 + 20, 'X', { fontSize: '16px', fill: '#fff' })
             .setInteractive()
             .on('pointerdown', () => this.hide());
@@ -213,6 +321,9 @@ class BaseMenu {
 
     hide() {
         Object.values(this.tabs).flat().forEach(element => element.setVisible(false));
+        if (this.onClose) {
+            this.onClose();
+        }
     }
 
     destroy() {
