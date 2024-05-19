@@ -1,5 +1,5 @@
 import BaseScene from './BaseScene.js';
-import PointLightSource from '../../graphics/PointLightSource.js';
+import PointLight from '../../graphics/PointLight.js';
 
 export default class GuildhallScene extends BaseScene {
     constructor() {
@@ -15,11 +15,11 @@ export default class GuildhallScene extends BaseScene {
     create() {
         super.create();
         // Add pulsating point lights
-        this.pointLight1 = new PointLightSource(this, 33, 160, 0xffaa00, 45, 0.02, true, 0.02, 0.18, 0.004);
-        this.pointLight2 = new PointLightSource(this, 178, 312, 0xffaa00, 55, 0.02, true, 0.02, 0.18, 0.003);
-        this.pointLight3 = new PointLightSource(this, 297, 420, 0xffaa00, 25, 0.02, true, 0.02, 0.12, 0.005);
-        this.pointLight4 = new PointLightSource(this, 847, 388, 0xffaa00, 65, 0.02, true, 0.02, 0.18, 0.003);
-        this.pointLight5 = new PointLightSource(this, 1013, 156, 0xffaa00, 45, 0.02, true, 0.04, 0.20, 0.002);
+        this.pointLight1 = new PointLight(this, 33, 160, 0xffaa00, 45, 0.02, true, 0.02, 0.18, 0.004);
+        this.pointLight2 = new PointLight(this, 178, 312, 0xffaa00, 55, 0.02, true, 0.02, 0.18, 0.003);
+        this.pointLight3 = new PointLight(this, 297, 420, 0xffaa00, 25, 0.02, true, 0.02, 0.12, 0.005);
+        this.pointLight4 = new PointLight(this, 847, 388, 0xffaa00, 65, 0.02, true, 0.02, 0.18, 0.003);
+        this.pointLight5 = new PointLight(this, 1013, 156, 0xffaa00, 45, 0.02, true, 0.04, 0.20, 0.002);
     }
 
     update(time, delta) {

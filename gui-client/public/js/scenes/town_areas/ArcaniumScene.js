@@ -1,5 +1,5 @@
 import BaseScene from './BaseScene.js';
-import PointLightSource from '../../graphics/PointLightSource.js';
+import PointLight from '../../graphics/PointLight.js';
 
 export default class ArcaniumScene extends BaseScene {
     constructor() {
@@ -18,9 +18,9 @@ export default class ArcaniumScene extends BaseScene {
         // yellow = 0xffaa00
         // violet = 0x8a2be2
         // cyan = 0x00ffff
-        this.pointLight1 = new PointLightSource(this, 342, 317, 0x8a2be2, 35, 0.02, true, 0.08, 0.25, 0.003);
-        this.pointLight2 = new PointLightSource(this, 305, 482, 0x00ffff, 20, 0.02, true, 0.02, 0.15, 0.002);
-        this.pointLight3 = new PointLightSource(this, 890, 469, 0x00ffff, 45, 0.02, true, 0.10, 0.25, 0.004);
+        this.pointLight1 = new PointLight(this, 342, 317, 0x8a2be2, 35, 0.02, true, 0.08, 0.25, 0.003);
+        this.pointLight2 = new PointLight(this, 305, 482, 0x00ffff, 20, 0.02, true, 0.02, 0.15, 0.002);
+        this.pointLight3 = new PointLight(this, 890, 469, 0x00ffff, 45, 0.02, true, 0.10, 0.25, 0.004);
     }
 
     update(time, delta) {

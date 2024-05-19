@@ -1,4 +1,4 @@
-export default class PointLightSource {
+export default class PointLight {
     constructor(scene, x, y, color = 0xffffff, radius = 128, intensity = 1, pulsate = false, minIntensity = 0.02, maxIntensity = 0.15, pulseSpeed = 0.005) {
         this.scene = scene;
         this.x = x;

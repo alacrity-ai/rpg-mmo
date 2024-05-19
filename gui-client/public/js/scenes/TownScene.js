@@ -6,7 +6,7 @@ import MusicManager from '../audio/MusicManager.js';
 import Debug from '../interface/Debug.js';
 import InteractiveZoneManager from '../interface/InteractiveZoneManager.js';
 import CustomCursor from '../interface/CustomCursor.js';
-import PointLightSource from '../graphics/PointLightSource.js';
+import PointLight from '../graphics/PointLight.js';
 import PartyDisplayManager from '../interface/PartyDisplayManager.js';
 
 export default class TownScene extends Phaser.Scene {
@@ -106,9 +106,9 @@ export default class TownScene extends Phaser.Scene {
         this.debug = new Debug(this);
 
         // Add pulsating point lights
-        this.pointLight1 = new PointLightSource(this, 539, 380, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.004);
-        this.pointLight2 = new PointLightSource(this, 643, 380, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.006);
-        this.pointLight3 = new PointLightSource(this, 347.5, 466, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.003);
+        this.pointLight1 = new PointLight(this, 539, 380, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.004);
+        this.pointLight2 = new PointLight(this, 643, 380, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.006);
+        this.pointLight3 = new PointLight(this, 347.5, 466, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.003);
 
         
     }
