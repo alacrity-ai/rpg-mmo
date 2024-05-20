@@ -5,7 +5,7 @@ PORT = 8000
 
 # Build the Docker image
 build:
-	docker build --network=host -t $(IMAGE_NAME) .
+	docker build -t $(IMAGE_NAME) .
 
 # Run the Docker container
 run: stop
