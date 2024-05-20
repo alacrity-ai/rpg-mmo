@@ -26,8 +26,6 @@ export default class PreloaderScene extends Phaser.Scene {
             'assets/sounds/menu/chat_menu.wav',
             'assets/sounds/menu/tent_open.wav',
         ]);
-
-        
     }
 
     create() {

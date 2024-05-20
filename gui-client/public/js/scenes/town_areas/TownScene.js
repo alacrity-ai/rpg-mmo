@@ -1,13 +1,13 @@
 import Phaser from 'phaser';
-import { createHotbar } from '../interface/MenuHotbar.js';
-import IconHelper from '../interface/IconHelper.js';
-import SoundFXManager from '../audio/SoundFXManager.js';
-import MusicManager from '../audio/MusicManager.js';
-import Debug from '../interface/Debug.js';
-import InteractiveZoneManager from '../interface/InteractiveZoneManager.js';
-import CustomCursor from '../interface/CustomCursor.js';
-import PointLightManager from '../graphics/PointLight.js';
-import PartyDisplayManager from '../interface/PartyDisplayManager.js';
+import { createHotbar } from '../../interface/MenuHotbar.js';
+import IconHelper from '../../interface/IconHelper.js';
+import SoundFXManager from '../../audio/SoundFXManager.js';
+import MusicManager from '../../audio/MusicManager.js';
+import Debug from '../../interface/Debug.js';
+import InteractiveZoneManager from '../../interface/InteractiveZoneManager.js';
+import CustomCursor from '../../interface/CustomCursor.js';
+import PointLightManager from '../../graphics/PointLight.js';
+import PartyDisplayManager from '../../interface/PartyDisplayManager.js';
 
 export default class TownScene extends Phaser.Scene {
     constructor() {

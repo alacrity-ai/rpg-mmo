@@ -5,7 +5,7 @@ import LoginMenu from '../../interface/menu/LoginMenu.js';
 import ShopMenu from '../../interface/menu/ShopMenu.js';
 import ErrorMenu from '../../interface/menu/ErrorMenu.js';
 
-export default class TestScene extends Phaser.Scene {
+export default class MenuTestScene extends Phaser.Scene {
     constructor() {
         super({ key: 'TestScene' });
     }

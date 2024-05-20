@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
-import TownScene from './scenes/TownScene.js';
-import TestScene from './scenes/dev_scenes/MenuTestScene.js';
+import TownScene from './scenes/town_areas/TownScene.js';
+import MenuTestScene from './scenes/dev_scenes/MenuTestScene.js';
 import ArcaniumScene from './scenes/town_areas/ArcaniumScene.js';
 import BlacksmithScene from './scenes/town_areas/BlacksmithScene.js';
 import GuildhallScene from './scenes/town_areas/GuildhallScene.js';
@@ -20,7 +20,7 @@ const config = {
     scene: [
         PreloaderScene,
         TownScene,
-        TestScene,
+        MenuTestScene,
         ExpeditionScene,
         CombatScene,
         ArcaniumScene,
