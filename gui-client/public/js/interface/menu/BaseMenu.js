@@ -13,18 +13,25 @@ class BaseMenu {
         this.tabs = { 0: [] }; // Initialize with a default tab
         this.currentTab = 0;
         this.spriteSheetKey = spriteSheetKey;
-        this.iconHelper = spriteSheetKey ? new IconHelper(scene, spriteSheetKey) : null; // Initialize the IconHelper if spriteSheetKey is provided
+        this.iconHelper = new IconHelper(scene, 'icons'); // Initialize the IconHelper with the preloaded key
         this.onClose = onClose;
         this.hasCloseButton = hasCloseButton;
         this.textInputs = {}; // Store references to text inputs
 
         this.addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
-        this.addCloseButton();
+        if (hasCloseButton) this.addCloseButton();
+
+        // Initialize table properties
+        this.currentPage = 0;
+        this.maxVisibleRows = 7;
+        this.selectedRow = null;
+        this.rowData = [];
     }
 
-    addTable(x, y, width, height, rowData, columnWidths, tab = 0) {
+    addTable(x, y, width, height, rowData, columnWidths, tab = 0, onRowSelected = null) {
+        this.rowData = rowData;
         const container = this.scene.add.container(x, y);
-    
+
         // Draw table background
         const tableArea = this.scene.add.graphics();
         tableArea.fillStyle(0x000000, 1);
@@ -32,23 +39,23 @@ class BaseMenu {
         tableArea.lineStyle(2, 0xffffff, 1);
         tableArea.strokeRoundedRect(-width / 2, -height / 2, width, height, 10);
         container.add(tableArea);
-    
+
         // Define padding and row height
         const padding = 10;
-        const rowHeight = 30;
-        const maxVisibleRows = 7; // Number of rows to display, including the header row
-        let currentPage = 0;
-    
-        // Store references to text objects for easy hiding/showing
+        const rowHeight = 40;
+
+        // Store references to text objects and backgrounds for easy hiding/showing
         const textObjects = [];
-    
+        const rowBackgrounds = [];
+
         // Function to render the table rows based on the current page
         const renderTable = () => {
-            // Hide all existing text objects
+            // Hide all existing text objects and backgrounds
             textObjects.forEach(text => text.setVisible(false));
-    
+            rowBackgrounds.forEach(bg => bg.setVisible(false));
+
             let offsetY = -height / 2 + padding;
-    
+
             // Render the header row
             let offsetX = -width / 2 + padding;
             rowData[0].forEach((cell, cellIndex) => {
@@ -60,20 +67,44 @@ class BaseMenu {
                 textObjects.push(cellText);
                 offsetX += columnWidths[cellIndex] + padding; // Use column width and add padding between columns
             });
-    
+
             offsetY += rowHeight; // Move to the next row position
-    
+
             // Render the rest of the rows
-            const startRow = currentPage * (maxVisibleRows - 1) + 1; // Skip the header row for pagination
-            const endRow = startRow + (maxVisibleRows - 1);
+            const startRow = this.currentPage * (this.maxVisibleRows - 1) + 1; // Skip the header row for pagination
+            const endRow = startRow + (this.maxVisibleRows - 1);
             const rowsToDisplay = rowData.slice(startRow, endRow);
-    
+
             rowsToDisplay.forEach((row, rowIndex) => {
                 let offsetX = -width / 2 + padding;
+                const rowIndexGlobal = startRow + rowIndex; // Global index of the row
+
+                // Determine row background color
+                const isSelected = this.selectedRow === rowIndexGlobal;
+                const rowBackgroundColor = isSelected ? 0x00008B : 0x333333; // Dark blue if selected, grey otherwise
+                const textColor = isSelected ? '#ffcc00' : '#ffffff'; // Yellow if selected, white otherwise
+
+                // Draw row background
+                const rowBackground = this.scene.add.graphics();
+                rowBackground.fillStyle(rowBackgroundColor, 1);
+                rowBackground.fillRoundedRect(-width / 2 + padding, offsetY - rowHeight / 2 + 5, width - padding * 2, rowHeight - 10, 5);
+                container.add(rowBackground);
+                rowBackgrounds.push(rowBackground);
+
+                // Add interaction to row background
+                rowBackground.setInteractive(new Phaser.Geom.Rectangle(-width / 2 + padding, offsetY - rowHeight / 2 + 5, width - padding * 2, rowHeight - 10), Phaser.Geom.Rectangle.Contains)
+                    .on('pointerdown', () => {
+                        this.selectedRow = rowIndexGlobal;
+                        renderTable();
+                        if (onRowSelected) {
+                            onRowSelected(this.selectedRow);
+                        }
+                    });
+
                 row.forEach((cell, cellIndex) => {
                     const cellText = this.scene.add.text(offsetX, offsetY, cell.text, {
                         fontSize: '16px',
-                        fill: '#ffffff' // White for other rows
+                        fill: textColor // Set text color based on selection state
                     }).setOrigin(0, 0.5); // Center text vertically
                     container.add(cellText);
                     textObjects.push(cellText);
@@ -82,13 +113,13 @@ class BaseMenu {
                 offsetY += rowHeight; // Move to the next row position
             });
         };
-    
+
         // Initial render of the table
         renderTable();
-    
+
         // Add the container to the specified tab
         this.addElementToTab(tab, container);
-    
+
         // Function to create pagination buttons
         const createPaginationButtons = () => {
             // Add up arrow
@@ -96,32 +127,38 @@ class BaseMenu {
                 .setOrigin(0.5)
                 .setInteractive()
                 .on('pointerdown', () => {
-                    if (currentPage > 0) {
-                        currentPage--;
+                    if (this.currentPage > 0) {
+                        this.currentPage--;
                         renderTable();
                     }
                 });
             container.add(upArrow);
-    
+
             // Add down arrow
             const downArrow = this.scene.add.text(0, height / 2 + 14, '▼', { fontSize: '20px', fill: '#ffffff' })
                 .setOrigin(0.5)
                 .setInteractive()
                 .on('pointerdown', () => {
-                    if ((currentPage + 1) * (maxVisibleRows - 1) < rowData.length - 1) {
-                        currentPage++;
+                    if ((this.currentPage + 1) * (this.maxVisibleRows - 1) < rowData.length - 1) {
+                        this.currentPage++;
                         renderTable();
                     }
                 });
             container.add(downArrow);
         };
-    
+
         // Create pagination buttons
         createPaginationButtons();
     }
-    
-    
-    
+
+    getSelectedRow() {
+        const startRow = this.currentPage * (this.maxVisibleRows - 1) + 1;
+        const selectedIndex = this.selectedRow - startRow;
+        if (selectedIndex >= 0 && selectedIndex < this.rowData.length - 1) {
+            return this.rowData[this.selectedRow];
+        }
+        return null;
+    }
 
     addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius) {
         const window = this.scene.add.graphics();
@@ -219,7 +256,6 @@ class BaseMenu {
         container.on('pointerdown', () => {
             if (this.scene.input.keyboard.enabled) {
                 this.focusedInput = { tab, inputIndex };
-                console.log('Focused Input:', this.focusedInput);
                 this.updateInputBorders();
             }
         });
@@ -263,7 +299,6 @@ class BaseMenu {
                 const nextIndex = (inputIndex + 1) % inputs.length;
                 this.focusedInput = { tab, inputIndex: nextIndex };
                 this.updateInputBorders();
-                console.log('Focused Input:', this.focusedInput);
             }
         }
     }
@@ -395,9 +430,12 @@ class BaseMenu {
         // If has close button
         const closeButton = this.scene.add.text(this.x + this.width / 2 - 20, this.y - this.height / 2 + 20, 'X', { fontSize: '16px', fill: '#fff' })
             .setInteractive()
-            .on('pointerdown', () => this.hide());
+            .on('pointerdown', () => {
+                this.hide();
+            });
         this.tabs[0].push(closeButton); // Close button is added to the default tab
     }
+    
 
     addIconButton(x, y, iconName, callback, tooltip = null, tab = 0) {
         const iconButton = this.iconHelper.getIcon(iconName);
@@ -405,6 +443,13 @@ class BaseMenu {
         iconButton.on('pointerdown', callback);
         this.addElementToTab(tab, iconButton);
         if (tooltip) this.addTooltip(iconButton, tooltip);
+    }
+
+    addIcon(x, y, iconName, tooltip = null, tab = 0) {
+        const icon = this.iconHelper.getIcon(iconName, false);
+        icon.setPosition(x, y);
+        this.addElementToTab(tab, icon);
+        if (tooltip) this.addTooltip(icon, tooltip);
     }
 
     disableInteractions() {
@@ -422,7 +467,9 @@ class BaseMenu {
 
     hide() {
         Object.values(this.tabs).flat().forEach(element => element.setVisible(false));
+        console.log('Hide called')
         if (this.onClose) {
+            console.log(`Calling callback: ${this.onClose} from hide`)
             this.onClose();
         }
     }

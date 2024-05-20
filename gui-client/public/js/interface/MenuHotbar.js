@@ -20,13 +20,11 @@ export function createHotbar(scene, iconHelper) {
         // Set up interactivity on the container
         iconContainer.setInteractive();
         iconContainer.on('pointerdown', () => {
-            console.log(`Icon ${icon.name} clicked`);
             SoundFXManager.playSound(icon.sound); // Play the associated sound effect
             // Implement submenu logic here
         });
 
         iconContainer.on('pointerover', () => {
-            console.log(`Icon ${icon.name} hovered`);
             SoundFXManager.playSound(hoverSound); // Play the hover sound effect
             scene.tweens.add({
                 targets: iconContainer,
@@ -37,7 +35,6 @@ export function createHotbar(scene, iconHelper) {
         });
 
         iconContainer.on('pointerout', () => {
-            console.log(`Icon ${icon.name} unhovered`);
             scene.tweens.add({
                 targets: iconContainer,
                 scale: 1,
@@ -46,7 +43,6 @@ export function createHotbar(scene, iconHelper) {
             });
         });
 
-        console.log(`Adding icon: ${icon.name}`); // Debugging info
         scene.add.existing(iconContainer); // Add the icon container to the scene
     });
 }

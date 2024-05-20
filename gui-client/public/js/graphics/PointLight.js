@@ -1,4 +1,4 @@
-export default class PointLight {
+class PointLight {
     constructor(scene, x, y, color = 0xffffff, radius = 128, intensity = 1, pulsate = false, minIntensity = 0.02, maxIntensity = 0.15, pulseSpeed = 0.005) {
         this.scene = scene;
         this.x = x;
@@ -46,5 +46,34 @@ export default class PointLight {
         this.minIntensity = minIntensity;
         this.maxIntensity = maxIntensity;
         this.pulseSpeed = pulseSpeed; // Update the pulse speed
+    }
+}
+
+export default class PointLightManager {
+    constructor(scene) {
+        this.scene = scene;
+        this.pointLights = [];
+    }
+
+    addPointLight(x, y, color = 0xffffff, radius = 128, intensity = 1, pulsate = false, minIntensity = 0.02, maxIntensity = 0.15, pulseSpeed = 0.005) {
+        const pointLight = new PointLight(this.scene, x, y, color, radius, intensity, pulsate, minIntensity, maxIntensity, pulseSpeed);
+        this.pointLights.push(pointLight);
+        return pointLight;
+    }
+
+    update(delta) {
+        this.pointLights.forEach(pointLight => pointLight.update(delta));
+    }
+
+    updatePointLightPosition(index, x, y) {
+        if (this.pointLights[index]) {
+            this.pointLights[index].updatePosition(x, y);
+        }
+    }
+
+    updatePointLightProperties(index, color, radius, intensity, minIntensity, maxIntensity, pulseSpeed) {
+        if (this.pointLights[index]) {
+            this.pointLights[index].updateProperties(color, radius, intensity, minIntensity, maxIntensity, pulseSpeed);
+        }
     }
 }

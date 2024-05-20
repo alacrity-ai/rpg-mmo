@@ -29,7 +29,6 @@ export default class InteractiveZoneManager {
 
         // Execute the callback function when the area is clicked
         zone.on('pointerdown', () => {
-            console.log(`${text} clicked`);
             if (callback) {
                 callback();
             }

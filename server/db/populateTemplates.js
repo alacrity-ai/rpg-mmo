@@ -12,7 +12,6 @@ function populateTemplates() {
                 console.error("Error clearing object templates", err);
                 return;
             }
-            console.log("Cleared object templates.");
             objectTemplates.forEach(obj => {
                 db.run('INSERT INTO object_templates (name, description, is_collectible, item_template_id) VALUES (?, ?, ?, ?)', 
                     [obj.name, obj.description, obj.is_collectible, obj.item_template_id || null]);  // Use null for non-collectible objects
@@ -24,7 +23,6 @@ function populateTemplates() {
                 console.error("Error clearing NPC templates", err);
                 return;
             }
-            console.log("Cleared NPC templates.");
             npcTemplates.forEach(npc => {
                 db.run('INSERT INTO npc_templates (name, description, behavior_type, base_stats) VALUES (?, ?, ?, ?)', 
                 [npc.name, npc.description, npc.behavior_type, npc.base_stats],

@@ -16,10 +16,6 @@ export default class BaseScene extends Phaser.Scene {
 
     preload() {
         this.load.image(this.backgroundKey, `assets/images/zones/town-1/${this.backgroundKey}.png`);
-        this.load.spritesheet('icons', 'assets/images/ui/iconsheet1.png', {
-            frameWidth: 32,
-            frameHeight: 32
-        });
 
         // Initialize the CustomCursor (preload assets)
         this.customCursor = new CustomCursor(this);

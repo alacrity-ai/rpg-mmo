@@ -102,7 +102,7 @@ const IconConfig = {
     'purple-cloak': { x: 14, y: 7 },
     'leather-belt': { x: 15, y: 7 },
     // Row 9
-    'leather-glvoes': { x: 0, y: 8 },
+    'leather-gloves': { x: 0, y: 8 },
     'plate-gloves': { x: 1, y: 8 },
     'leather-boots': { x: 2, y: 8 },
     'plate-boots': { x: 3, y: 8 },

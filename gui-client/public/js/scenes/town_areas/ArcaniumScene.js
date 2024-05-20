@@ -1,5 +1,5 @@
 import BaseScene from './BaseScene.js';
-import PointLight from '../../graphics/PointLight.js';
+import PointLightManager from '../../graphics/PointLight.js';
 
 export default class ArcaniumScene extends BaseScene {
     constructor() {
@@ -15,20 +15,15 @@ export default class ArcaniumScene extends BaseScene {
     create() {
         super.create();
         // Add pulsating point lights
-        // yellow = 0xffaa00
-        // violet = 0x8a2be2
-        // cyan = 0x00ffff
-        this.pointLight1 = new PointLight(this, 342, 317, 0x8a2be2, 35, 0.02, true, 0.08, 0.25, 0.003);
-        this.pointLight2 = new PointLight(this, 305, 482, 0x00ffff, 20, 0.02, true, 0.02, 0.15, 0.002);
-        this.pointLight3 = new PointLight(this, 890, 469, 0x00ffff, 45, 0.02, true, 0.10, 0.25, 0.004);
+        this.pointLightManager = new PointLightManager(this);
+        this.pointLightManager.addPointLight(342, 317, 0x8a2be2, 45, 0.02, true, 0.08, 0.25, 0.003);
+        this.pointLightManager.addPointLight(305, 482, 0x00ffff, 20, 0.02, true, 0.02, 0.15, 0.002);
+        this.pointLightManager.addPointLight(890, 469, 0x00ffff, 45, 0.02, true, 0.10, 0.25, 0.004);
     }
 
     update(time, delta) {
         super.update(time, delta);
         // Update point lights with delta time
-        this.pointLight1.update(delta);
-        this.pointLight2.update(delta);
-        this.pointLight3.update(delta);
-
+        this.pointLightManager.update(delta);
     }
 }

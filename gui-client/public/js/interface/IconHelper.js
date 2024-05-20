@@ -7,7 +7,7 @@ export default class IconHelper {
         this.columns = 16; // Update this number to match the actual number of columns in your spritesheet
     }
 
-    getIcon(name) {
+    getIcon(name, hasBorder = true) {
         const { x, y } = IconConfig[name];
         const frameNumber = y * this.columns + x;
 
@@ -20,33 +20,35 @@ export default class IconHelper {
             radius: 8    // Adjust the radius as needed
         });
 
-        // Create the border graphics
-        const border = this.scene.add.graphics();
-        border.lineStyle(2, 0xffffff, 1); // White border
-        border.strokeRoundedRect(-icon.width / 2, -icon.height / 2, icon.width, icon.height, 8);
+        if (hasBorder) {
+            // Create the border graphics
+            const border = this.scene.add.graphics();
+            border.lineStyle(2, 0xffffff, 1); // White border
+            border.strokeRoundedRect(-icon.width / 2, -icon.height / 2, icon.width, icon.height, 8);
 
-        // Add the border and icon to the container
-        container.add(border);
+            // Add the border to the container
+            container.add(border);
+
+            // Set up hover events for highlighting the border
+            container.on('pointerover', () => {
+                border.clear();
+                border.lineStyle(2, 0xffff00, 1); // Yellow border
+                border.strokeRoundedRect(-icon.width / 2, -icon.height / 2, icon.width, icon.height, 8);
+            });
+
+            container.on('pointerout', () => {
+                border.clear();
+                border.lineStyle(2, 0xffffff, 1); // White border
+                border.strokeRoundedRect(-icon.width / 2, -icon.height / 2, icon.width, icon.height, 8);
+            });
+        }
+
+        // Add the icon to the container
         container.add(icon);
 
         // Set the container to be interactive
         container.setSize(icon.width, icon.height);
         container.setInteractive(new Phaser.Geom.Rectangle(0, 0, icon.width, icon.height), Phaser.Geom.Rectangle.Contains);
-
-        // Set up hover events for highlighting the border
-        container.on('pointerover', () => {
-            border.clear();
-            border.lineStyle(2, 0xffff00, 1); // Yellow border
-            border.strokeRoundedRect(-icon.width / 2, -icon.height / 2, icon.width, icon.height, 8);
-        });
-
-        container.on('pointerout', () => {
-            border.clear();
-            border.lineStyle(2, 0xffffff, 1); // White border
-            border.strokeRoundedRect(-icon.width / 2, -icon.height / 2, icon.width, icon.height, 8);
-        });
-
-        console.log(`Created icon: ${name} at frame ${frameNumber}`); // Debugging info
 
         return container;
     }

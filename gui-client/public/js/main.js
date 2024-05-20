@@ -9,6 +9,7 @@ import MarketScene from './scenes/town_areas/MarketScene.js';
 import ExpeditionScene from './scenes/ExpeditionScene.js';
 import CombatScene from './scenes/CombatScene.js';
 import CircleMaskImagePlugin from 'phaser3-rex-plugins/plugins/circlemaskimage-plugin.js';
+import PreloaderScene from './scenes/PreloaderScene.js';
 
 
 // Configuration for the Phaser game
@@ -17,6 +18,7 @@ const config = {
     width: 1050,
     height: 600,
     scene: [
+        PreloaderScene,
         TownScene,
         TestScene,
         ExpeditionScene,

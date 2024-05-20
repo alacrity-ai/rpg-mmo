@@ -32,7 +32,6 @@ export default class LoginMenu extends BaseMenu {
     handleLogin() {
         const username = this.getTextInputValue(0, 0);
         const password = this.getTextInputValue(0, 1);
-        console.log(`Username: ${username}, Password: ${password}`);
         this.hide();
     }
 }
