@@ -7,7 +7,7 @@ async function getNpcStatusById(npcInstanceId) {
   const rows = await query(sql, params);
   if (rows.length > 0) {
     const npcStatus = rows[0];
-    npcStatus.statuses = JSON.parse(npcStatus.statuses);
+    npcStatus.statuses = npcStatus.statuses;
     return new NpcStatus(npcStatus);
   }
   return null;

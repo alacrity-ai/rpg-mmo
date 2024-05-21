@@ -1,26 +1,38 @@
 const { query } = require('../database');
 const Character = require('../../models/Character');
-console.log(Character);
 const { getClassTemplateByName } = require('./classTemplatesQueries');
 
 async function createCharacter(userId, characterName, characterClass) {
+  // Convert characterName and characterClass to lowercase
+  const lowerCaseCharacterName = characterName.toLowerCase();
+  const lowerCaseCharacterClass = characterClass.toLowerCase();
+
+  // Check if a character with the same name already exists for the user
+  const existingCharacter = await getCharacter(userId, lowerCaseCharacterName);
+  if (existingCharacter) {
+    throw new Error(`Character with name ${lowerCaseCharacterName} already exists for user ID: ${userId}`);
+  }
+
   // Get base stats from the class template
-  const classTemplate = await getClassTemplateByName(characterClass);
+  const classTemplate = await getClassTemplateByName(lowerCaseCharacterClass);
   if (!classTemplate) {
-    throw new Error(`Class template not found for class: ${characterClass}`);
+    throw new Error(`Class template not found for class: ${lowerCaseCharacterClass}`);
   }
   
   const baseStats = JSON.stringify(classTemplate.baseStats);
 
   const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats) VALUES (?, ?, ?, ?, ?)';
-  const params = [userId, characterName, characterClass, baseStats, baseStats];
+  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats];
   const result = await query(sql, params);
   return result.insertId;
 }
 
 async function getCharacter(userId, characterName) {
+  // Convert characterName to lowercase
+  const lowerCaseCharacterName = characterName.toLowerCase();
+
   const sql = 'SELECT * FROM characters WHERE user_id = ? AND name = ?';
-  const params = [userId, characterName];
+  const params = [userId, lowerCaseCharacterName];
   const rows = await query(sql, params);
   if (rows.length > 0) {
     return new Character({
@@ -28,8 +40,8 @@ async function getCharacter(userId, characterName) {
       user_id: rows[0].user_id,
       name: rows[0].name,
       characterClass: rows[0].class,
-      baseStats: JSON.parse(rows[0].base_stats),
-      currentStats: JSON.parse(rows[0].current_stats),
+      baseStats: rows[0].base_stats,
+      currentStats: rows[0].current_stats,
       current_area_id: rows[0].current_area_id,
       socket_id: rows[0].socket_id,
     });
@@ -42,8 +54,8 @@ async function getCharactersByUser(userId) {
   const params = [userId];
   const rows = await query(sql, params);
   return rows.map(row => {
-    console.log('Row retrieved:', row);
     try {
+      console.log(typeof(row.base_stats), typeof(row.current_stats))
       return new Character({
         id: row.id,
         user_id: row.user_id,
@@ -67,8 +79,8 @@ async function getCharacterStats(characterId) {
   const rows = await query(sql, params);
   if (rows.length > 0) {
     return {
-      baseStats: JSON.parse(rows[0].base_stats),
-      currentStats: JSON.parse(rows[0].current_stats),
+      baseStats: rows[0].base_stats,
+      currentStats: rows[0].current_stats,
     };
   }
   return null;

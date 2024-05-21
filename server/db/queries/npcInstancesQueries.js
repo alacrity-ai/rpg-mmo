@@ -7,8 +7,8 @@ async function getNpcInstanceById(npcInstanceId) {
   const rows = await query(sql, params);
   if (rows.length > 0) {
     const npcInstance = rows[0];
-    npcInstance.base_stats = JSON.parse(npcInstance.base_stats);
-    npcInstance.current_stats = JSON.parse(npcInstance.current_stats);
+    npcInstance.base_stats = npcInstance.base_stats;
+    npcInstance.current_stats = npcInstance.current_stats;
     return new NpcInstance(npcInstance);
   }
   return null;
@@ -19,8 +19,8 @@ async function getNpcInstancesByAreaId(areaId) {
   const params = [areaId];
   const rows = await query(sql, params);
   return rows.map(row => {
-    row.base_stats = JSON.parse(row.base_stats);
-    row.current_stats = JSON.parse(row.current_stats);
+    row.base_stats = row.base_stats;
+    row.current_stats = row.current_stats;
     return new NpcInstance(row);
   });
 }
@@ -34,7 +34,7 @@ async function getLootTableByNpcInstanceId(npcInstanceId) {
   `;
   const params = [npcInstanceId];
   const rows = await query(sql, params);
-  return rows.length > 0 ? JSON.parse(rows[0].loot_table) : null;
+  return rows.length > 0 ? rows[0].loot_table : null;
 }
 
 module.exports = { getNpcInstanceById, getNpcInstancesByAreaId, getLootTableByNpcInstanceId };

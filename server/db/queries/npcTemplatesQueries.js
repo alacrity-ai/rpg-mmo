@@ -8,8 +8,8 @@ async function getNPCTemplateByName(name) {
   if (rows.length > 0) {
     const npcTemplate = new NpcTemplate({
       ...rows[0],
-      base_stats: JSON.parse(rows[0].base_stats),
-      loot_table: JSON.parse(rows[0].loot_table)
+      base_stats: rows[0].base_stats,
+      loot_table: rows[0].loot_table
     });
     return npcTemplate;
   }
@@ -23,8 +23,8 @@ async function getNPCTemplateById(id) {
   if (rows.length > 0) {
     const npcTemplate = new NpcTemplate({
       ...rows[0],
-      base_stats: JSON.parse(rows[0].base_stats),
-      loot_table: JSON.parse(rows[0].loot_table)
+      base_stats: rows[0].base_stats,
+      loot_table: rows[0].loot_table
     });
     return npcTemplate;
   }
@@ -36,8 +36,8 @@ async function getAllNPCTemplates() {
   const rows = await query(sql);
   return rows.map(row => new NpcTemplate({
     ...row,
-    base_stats: JSON.parse(row.base_stats),
-    loot_table: JSON.parse(row.loot_table)
+    base_stats: row.base_stats,
+    loot_table: row.loot_table
   }));
 }
 

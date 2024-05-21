@@ -46,15 +46,13 @@ async function createCharacter(socket, [characterName, characterClass]) {
     }
     const userId = socket.user.id;
 
-    const characterId = await characterQueries.createCharacter(userId, characterName, characterClass);
-    socket.emit('message', `Character ${characterName} created successfully.`);
-    // try {
-    //     const characterId = await characterQueries.createCharacter(userId, characterName, characterClass);
-    //     socket.emit('message', `Character ${characterName} created successfully.`);
-    // } catch (err) {
-    //     socket.emit('message', 'Error creating character.');
-    //     console.error(err.message);
-    // }
+    try {
+        const characterId = await characterQueries.createCharacter(userId, characterName, characterClass);
+        socket.emit('message', `Character ${characterName} created successfully.`);
+    } catch (err) {
+        socket.emit('message', 'Error creating character.');
+        console.error(err.message);
+    }
 }
 
 async function characterLogin(socket, [characterName], defaultZone, io) {
@@ -81,6 +79,38 @@ async function characterLogin(socket, [characterName], defaultZone, io) {
     }
 }
 
+async function characterInfo(socket, characterName) {
+    if (!socket.user) {
+        socket.emit('message', 'You need to be logged in to view character info.');
+        console.log('Character info request failed: user not logged in');
+        return;
+    }
+    const userId = socket.user.id;
+    console.log(`Fetching info for character: ${characterName} of user ID: ${userId}`);
+    try {
+        const character = await characterQueries.getCharacter(userId, characterName);
+        if (character) {
+            const characterInfo = {
+                id: character.id,
+                name: character.name,
+                class: character.characterClass,
+                baseStats: character.baseStats,
+                currentStats: character.currentStats,
+                currentAreaId: character.currentAreaId,
+                socketId: character.socketId
+            };
+            console.log(`Character info requested by User ID: ${userId}`);
+            socket.emit('message', `Character info: ${JSON.stringify(characterInfo)}`);
+        } else {
+            socket.emit('message', 'Character not found.');
+            console.log(`Character not found: ${characterName} for user ID: ${userId}`);
+        }
+    } catch (err) {
+        socket.emit('message', 'Error fetching character info.');
+        console.error('Error fetching character info:', err.message, err);
+    }
+}
+
 async function listCharacters(socket) {
     if (!socket.user) {
         socket.emit('message', 'You need to be logged in to list characters.');
@@ -91,9 +121,7 @@ async function listCharacters(socket) {
     console.log(`Listing characters for user ID: ${userId}`);
     try {
         const characters = await characterQueries.getCharactersByUser(userId);
-        console.log('Characters retrieved:', characters);
         const characterNames = characters.map(character => {
-            console.log('Processing character:', character);
             return character.name;
         });
         console.log('Character names:', characterNames);
@@ -103,7 +131,6 @@ async function listCharacters(socket) {
         console.error('Error listing characters:', err.message, err);
     }
 }
-
 
 function logout(socket, defaultZone, io) {
     if (socket.character) {
@@ -120,4 +147,4 @@ function logout(socket, defaultZone, io) {
     }
 }
 
-module.exports = { createAccount, login, createCharacter, listCharacters, characterLogin, logout };
+module.exports = { characterInfo, createAccount, login, createCharacter, listCharacters, characterLogin, logout };

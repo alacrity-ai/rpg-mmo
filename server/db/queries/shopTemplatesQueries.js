@@ -8,7 +8,7 @@ async function getShopTemplateById(id) {
   if (rows.length > 0) {
     const shopTemplate = new ShopTemplate({
       ...rows[0],
-      inventory: JSON.parse(rows[0].inventory)
+      inventory: rows[0].inventory
     });
     return shopTemplate;
   }
@@ -22,7 +22,7 @@ async function getShopTemplateByName(name) {
   if (rows.length > 0) {
     const shopTemplate = new ShopTemplate({
       ...rows[0],
-      inventory: JSON.parse(rows[0].inventory)
+      inventory: rows[0].inventory
     });
     return shopTemplate;
   }
@@ -34,7 +34,7 @@ async function getAllShopTemplates() {
   const rows = await query(sql);
   return rows.map(row => new ShopTemplate({
     ...row,
-    inventory: JSON.parse(row.inventory)
+    inventory: row.inventory
   }));
 }
 

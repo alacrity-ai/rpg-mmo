@@ -7,7 +7,7 @@ async function getCharacterStatusById(characterId) {
   const rows = await query(sql, params);
   if (rows.length > 0) {
     const characterStatus = rows[0];
-    characterStatus.statuses = JSON.parse(characterStatus.statuses);
+    characterStatus.statuses = characterStatus.statuses;
     return new CharacterStatus(characterStatus);
   }
   return null;

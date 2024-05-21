@@ -8,7 +8,7 @@ async function getStatusEffectById(id) {
   if (rows.length > 0) {
     const statusEffect = new StatusTemplate({
       ...rows[0],
-      effect_details: JSON.parse(rows[0].effect_details)
+      effect_details: rows[0].effect_details
     });
     return statusEffect;
   }
@@ -20,7 +20,7 @@ async function getAllStatusEffects() {
   const rows = await query(sql);
   return rows.map(row => new StatusTemplate({
     ...row,
-    effect_details: JSON.parse(row.effect_details)
+    effect_details: row.effect_details
   }));
 }
 
@@ -30,7 +30,7 @@ async function getStatusEffectsByType(effectType) {
   const rows = await query(sql, params);
   return rows.map(row => new StatusTemplate({
     ...row,
-    effect_details: JSON.parse(row.effect_details)
+    effect_details: row.effect_details
   }));
 }
 

@@ -8,8 +8,8 @@ async function getZoneTemplateById(id) {
   if (rows.length > 0) {
     const zoneTemplate = new ZoneTemplate({
       ...rows[0],
-      hostile_npcs: JSON.parse(rows[0].hostile_npcs),
-      friendly_npcs: JSON.parse(rows[0].friendly_npcs)
+      hostile_npcs: rows[0].hostile_npcs,
+      friendly_npcs: rows[0].friendly_npcs
     });
     return zoneTemplate;
   }
@@ -23,8 +23,8 @@ async function getZoneTemplateByName(name) {
   if (rows.length > 0) {
     const zoneTemplate = new ZoneTemplate({
       ...rows[0],
-      hostile_npcs: JSON.parse(rows[0].hostile_npcs),
-      friendly_npcs: JSON.parse(rows[0].friendly_npcs)
+      hostile_npcs: rows[0].hostile_npcs,
+      friendly_npcs: rows[0].friendly_npcs
     });
     return zoneTemplate;
   }
@@ -36,8 +36,8 @@ async function getAllZoneTemplates() {
   const rows = await query(sql);
   return rows.map(row => new ZoneTemplate({
     ...row,
-    hostile_npcs: JSON.parse(row.hostile_npcs),
-    friendly_npcs: JSON.parse(row.friendly_npcs)
+    hostile_npcs: row.hostile_npcs,
+    friendly_npcs: row.friendly_npcs
   }));
 }
 
@@ -45,14 +45,14 @@ async function getHostileNPCsByZoneTemplateId(id) {
   const sql = 'SELECT hostile_npcs FROM zone_templates WHERE id = ?';
   const params = [id];
   const rows = await query(sql, params);
-  return rows.length > 0 ? JSON.parse(rows[0].hostile_npcs) : null;
+  return rows.length > 0 ? rows[0].hostile_npcs : null;
 }
 
 async function getFriendlyNPCsByZoneTemplateId(id) {
   const sql = 'SELECT friendly_npcs FROM zone_templates WHERE id = ?';
   const params = [id];
   const rows = await query(sql, params);
-  return rows.length > 0 ? JSON.parse(rows[0].friendly_npcs) : null;
+  return rows.length > 0 ? rows[0].friendly_npcs : null;
 }
 
 module.exports = { getZoneTemplateById, getZoneTemplateByName, getAllZoneTemplates, getHostileNPCsByZoneTemplateId, getFriendlyNPCsByZoneTemplateId };

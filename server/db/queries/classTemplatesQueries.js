@@ -6,8 +6,8 @@ async function getAllClasses() {
   const classes = await query(sql);
   return classes.map(classTemplate => new ClassTemplate({
     ...classTemplate,
-    base_stats: JSON.parse(classTemplate.base_stats),
-    stat_level_scaling: JSON.parse(classTemplate.stat_level_scaling)
+    base_stats: classTemplate.base_stats,
+    stat_level_scaling: classTemplate.stat_level_scaling
   }));
 }
 
@@ -17,9 +17,8 @@ async function getClassTemplateByName(name) {
   const rows = await query(sql, params);
   if (rows.length > 0) {
     try {
-      console.log('Row retrieved:', rows[0]);
-      const baseStats = typeof rows[0].base_stats === 'string' ? JSON.parse(rows[0].base_stats) : rows[0].base_stats;
-      const statLevelScaling = typeof rows[0].stat_level_scaling === 'string' ? JSON.parse(rows[0].stat_level_scaling) : rows[0].stat_level_scaling;
+      const baseStats = rows[0].base_stats;
+      const statLevelScaling = rows[0].stat_level_scaling;
       return new ClassTemplate({
         ...rows[0],
         base_stats: baseStats,
@@ -38,7 +37,7 @@ async function getClassStatScaling(className) {
   const params = [className];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    return JSON.parse(rows[0].stat_level_scaling);
+    return rows[0].stat_level_scaling;
   }
   return null;
 }

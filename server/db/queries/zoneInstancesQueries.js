@@ -8,7 +8,7 @@ async function getZoneInstanceById(id) {
   if (rows.length > 0) {
     const zoneInstance = new ZoneInstance({
       ...rows[0],
-      areas: JSON.parse(rows[0].areas)
+      areas: rows[0].areas
     });
     return zoneInstance;
   }
@@ -20,7 +20,7 @@ async function getAllZoneInstances() {
   const rows = await query(sql);
   return rows.map(row => new ZoneInstance({
     ...row,
-    areas: JSON.parse(row.areas)
+    areas: row.areas
   }));
 }
 
