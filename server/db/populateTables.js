@@ -5,6 +5,42 @@ const npcTemplates = require('./data/npcTemplates');
 const classTemplates = require('./data/classTemplates');
 const shopTemplates = require('./data/shopTemplates');
 const statusTemplates = require('./data/statusTemplates')
+const zoneTemplates = require('./data/zoneTemplates');
+
+
+async function populateZoneTemplates() {
+  const connection = await pool.getConnection();
+  try {
+    for (const zone of zoneTemplates) {
+      const [rows] = await connection.query(
+        `SELECT * FROM zone_templates WHERE name = ?`,
+        [zone.name]
+      );
+
+      if (rows.length === 0) {
+        await connection.query(
+          `INSERT INTO zone_templates (name, description, hostile_npcs, friendly_npcs, image_folder_path, min_areas, max_areas, music_key)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            zone.name,
+            zone.description,
+            zone.hostile_npcs,
+            zone.friendly_npcs,
+            zone.image_folder_path,
+            zone.min_areas,
+            zone.max_areas,
+            zone.music_key
+          ]
+        );
+      }
+    }
+    console.log('Zone templates populated.');
+  } catch (err) {
+    console.error('Error populating zone templates', err);
+  } finally {
+    connection.release();
+  }
+}
 
 async function populateItemTemplates() {
   const connection = await pool.getConnection();
@@ -52,14 +88,15 @@ async function populateNpcTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO npc_templates (name, sprite_key, description, script_path, base_stats)
-          VALUES (?, ?, ?, ?, ?)`,
+          `INSERT INTO npc_templates (name, sprite_key, description, script_path, base_stats, loot_table)
+          VALUES (?, ?, ?, ?, ?, ?)`,
           [
             npc.name,
             npc.sprite_key,
             npc.description,
             npc.script_path,
-            npc.base_stats
+            npc.base_stats,
+            npc.loot_table
           ]
         );
       }
@@ -71,6 +108,7 @@ async function populateNpcTemplates() {
     connection.release();
   }
 }
+
 
 async function populateClassTemplates() {
   const connection = await pool.getConnection();
@@ -163,6 +201,7 @@ async function populateStatusTemplates() {
 async function populateTables() {
   await populateItemTemplates();
   await populateNpcTemplates();
+  await populateZoneTemplates();
   await populateClassTemplates();
   await populateShopTemplates();
   await populateStatusTemplates();

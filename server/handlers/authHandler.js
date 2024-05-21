@@ -1,5 +1,5 @@
 const crypto = require('crypto');
-const { createUser, getUserByUsername } = require('../db/queries/userQueries');
+const { createUser, getUserByUsername } = require('../db/queries/usersQueries');
 const { User } = require('../models/user');
 const { Character } = require('../models/character');
 const characterQueries = require('../db/queries/characterQueries');
