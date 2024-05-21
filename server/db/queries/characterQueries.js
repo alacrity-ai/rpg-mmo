@@ -1,5 +1,6 @@
 const { query } = require('../database');
 const Character = require('../../models/Character');
+console.log(Character);
 const { getClassTemplateByName } = require('./classTemplatesQueries');
 
 async function createCharacter(userId, characterName, characterClass) {
@@ -48,8 +49,8 @@ async function getCharactersByUser(userId) {
         user_id: row.user_id,
         name: row.name,
         characterClass: row.class,
-        baseStats: row.baseStats,
-        currentStats: row.currentStats,
+        baseStats: row.base_stats,
+        currentStats: row.current_stats,
         current_area_id: row.current_area_id,
         socket_id: row.socket_id,
       });
