@@ -22,6 +22,107 @@ class BaseMenu {
         this.addCloseButton();
     }
 
+    addTable(x, y, width, height, rowData, columnWidths, tab = 0) {
+        const container = this.scene.add.container(x, y);
+    
+        // Draw table background
+        const tableArea = this.scene.add.graphics();
+        tableArea.fillStyle(0x000000, 1);
+        tableArea.fillRoundedRect(-width / 2, -height / 2, width, height, 10);
+        tableArea.lineStyle(2, 0xffffff, 1);
+        tableArea.strokeRoundedRect(-width / 2, -height / 2, width, height, 10);
+        container.add(tableArea);
+    
+        // Define padding and row height
+        const padding = 10;
+        const rowHeight = 30;
+        const maxVisibleRows = 7; // Number of rows to display, including the header row
+        let currentPage = 0;
+    
+        // Store references to text objects for easy hiding/showing
+        const textObjects = [];
+    
+        // Function to render the table rows based on the current page
+        const renderTable = () => {
+            // Hide all existing text objects
+            textObjects.forEach(text => text.setVisible(false));
+    
+            let offsetY = -height / 2 + padding;
+    
+            // Render the header row
+            let offsetX = -width / 2 + padding;
+            rowData[0].forEach((cell, cellIndex) => {
+                const cellText = this.scene.add.text(offsetX, offsetY, cell.text, {
+                    fontSize: '16px',
+                    fill: '#ffcc00' // Yellow for header
+                }).setOrigin(0, 0.5); // Center text vertically
+                container.add(cellText);
+                textObjects.push(cellText);
+                offsetX += columnWidths[cellIndex] + padding; // Use column width and add padding between columns
+            });
+    
+            offsetY += rowHeight; // Move to the next row position
+    
+            // Render the rest of the rows
+            const startRow = currentPage * (maxVisibleRows - 1) + 1; // Skip the header row for pagination
+            const endRow = startRow + (maxVisibleRows - 1);
+            const rowsToDisplay = rowData.slice(startRow, endRow);
+    
+            rowsToDisplay.forEach((row, rowIndex) => {
+                let offsetX = -width / 2 + padding;
+                row.forEach((cell, cellIndex) => {
+                    const cellText = this.scene.add.text(offsetX, offsetY, cell.text, {
+                        fontSize: '16px',
+                        fill: '#ffffff' // White for other rows
+                    }).setOrigin(0, 0.5); // Center text vertically
+                    container.add(cellText);
+                    textObjects.push(cellText);
+                    offsetX += columnWidths[cellIndex] + padding; // Use column width and add padding between columns
+                });
+                offsetY += rowHeight; // Move to the next row position
+            });
+        };
+    
+        // Initial render of the table
+        renderTable();
+    
+        // Add the container to the specified tab
+        this.addElementToTab(tab, container);
+    
+        // Function to create pagination buttons
+        const createPaginationButtons = () => {
+            // Add up arrow
+            const upArrow = this.scene.add.text(0, -height / 2 - 14, '▲', { fontSize: '20px', fill: '#ffffff' })
+                .setOrigin(0.5)
+                .setInteractive()
+                .on('pointerdown', () => {
+                    if (currentPage > 0) {
+                        currentPage--;
+                        renderTable();
+                    }
+                });
+            container.add(upArrow);
+    
+            // Add down arrow
+            const downArrow = this.scene.add.text(0, height / 2 + 14, '▼', { fontSize: '20px', fill: '#ffffff' })
+                .setOrigin(0.5)
+                .setInteractive()
+                .on('pointerdown', () => {
+                    if ((currentPage + 1) * (maxVisibleRows - 1) < rowData.length - 1) {
+                        currentPage++;
+                        renderTable();
+                    }
+                });
+            container.add(downArrow);
+        };
+    
+        // Create pagination buttons
+        createPaginationButtons();
+    }
+    
+    
+    
+
     addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius) {
         const window = this.scene.add.graphics();
         window.fillStyle(backgroundColor, backgroundAlpha);
