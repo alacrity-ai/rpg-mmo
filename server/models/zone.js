@@ -1,3 +1,4 @@
+// Deprecated
 // models/zone.js
 class Zone {
     constructor(name) {
