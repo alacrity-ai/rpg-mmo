@@ -1,13 +1,16 @@
 const { query } = require('../database');
+const ZoneTemplate = require('../models/ZoneTemplate');
 
 async function getZoneTemplateById(id) {
   const sql = 'SELECT * FROM zone_templates WHERE id = ?';
   const params = [id];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    const zoneTemplate = rows[0];
-    zoneTemplate.hostile_npcs = JSON.parse(zoneTemplate.hostile_npcs);
-    zoneTemplate.friendly_npcs = JSON.parse(zoneTemplate.friendly_npcs);
+    const zoneTemplate = new ZoneTemplate({
+      ...rows[0],
+      hostile_npcs: JSON.parse(rows[0].hostile_npcs),
+      friendly_npcs: JSON.parse(rows[0].friendly_npcs)
+    });
     return zoneTemplate;
   }
   return null;
@@ -18,9 +21,11 @@ async function getZoneTemplateByName(name) {
   const params = [name];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    const zoneTemplate = rows[0];
-    zoneTemplate.hostile_npcs = JSON.parse(zoneTemplate.hostile_npcs);
-    zoneTemplate.friendly_npcs = JSON.parse(zoneTemplate.friendly_npcs);
+    const zoneTemplate = new ZoneTemplate({
+      ...rows[0],
+      hostile_npcs: JSON.parse(rows[0].hostile_npcs),
+      friendly_npcs: JSON.parse(rows[0].friendly_npcs)
+    });
     return zoneTemplate;
   }
   return null;
@@ -29,7 +34,7 @@ async function getZoneTemplateByName(name) {
 async function getAllZoneTemplates() {
   const sql = 'SELECT * FROM zone_templates';
   const rows = await query(sql);
-  return rows.map(row => ({
+  return rows.map(row => new ZoneTemplate({
     ...row,
     hostile_npcs: JSON.parse(row.hostile_npcs),
     friendly_npcs: JSON.parse(row.friendly_npcs)

@@ -1,12 +1,15 @@
 const { query } = require('../database');
+const StatusTemplate = require('../models/StatusTemplate');
 
 async function getStatusEffectById(id) {
   const sql = 'SELECT * FROM status_templates WHERE id = ?';
   const params = [id];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    const statusEffect = rows[0];
-    statusEffect.effect_details = JSON.parse(statusEffect.effect_details);
+    const statusEffect = new StatusTemplate({
+      ...rows[0],
+      effect_details: JSON.parse(rows[0].effect_details)
+    });
     return statusEffect;
   }
   return null;
@@ -15,7 +18,7 @@ async function getStatusEffectById(id) {
 async function getAllStatusEffects() {
   const sql = 'SELECT * FROM status_templates';
   const rows = await query(sql);
-  return rows.map(row => ({
+  return rows.map(row => new StatusTemplate({
     ...row,
     effect_details: JSON.parse(row.effect_details)
   }));
@@ -25,7 +28,7 @@ async function getStatusEffectsByType(effectType) {
   const sql = 'SELECT * FROM status_templates WHERE effect_type = ?';
   const params = [effectType];
   const rows = await query(sql, params);
-  return rows.map(row => ({
+  return rows.map(row => new StatusTemplate({
     ...row,
     effect_details: JSON.parse(row.effect_details)
   }));

@@ -1,4 +1,5 @@
 const { query } = require('../database');
+const CharacterStatus = require('../../models/CharacterStatus');
 
 async function getCharacterStatusById(characterId) {
   const sql = 'SELECT * FROM character_status WHERE character_id = ?';
@@ -7,7 +8,7 @@ async function getCharacterStatusById(characterId) {
   if (rows.length > 0) {
     const characterStatus = rows[0];
     characterStatus.statuses = JSON.parse(characterStatus.statuses);
-    return characterStatus;
+    return new CharacterStatus(characterStatus);
   }
   return null;
 }

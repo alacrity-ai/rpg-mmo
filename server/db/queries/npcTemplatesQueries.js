@@ -1,13 +1,16 @@
 const { query } = require('../database');
+const NpcTemplate = require('../models/NpcTemplate');
 
 async function getNPCTemplateByName(name) {
   const sql = 'SELECT * FROM npc_templates WHERE name = ?';
   const params = [name];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    const npcTemplate = rows[0];
-    npcTemplate.base_stats = JSON.parse(npcTemplate.base_stats);
-    npcTemplate.loot_table = JSON.parse(npcTemplate.loot_table);
+    const npcTemplate = new NpcTemplate({
+      ...rows[0],
+      base_stats: JSON.parse(rows[0].base_stats),
+      loot_table: JSON.parse(rows[0].loot_table)
+    });
     return npcTemplate;
   }
   return null;
@@ -18,9 +21,11 @@ async function getNPCTemplateById(id) {
   const params = [id];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    const npcTemplate = rows[0];
-    npcTemplate.base_stats = JSON.parse(npcTemplate.base_stats);
-    npcTemplate.loot_table = JSON.parse(npcTemplate.loot_table);
+    const npcTemplate = new NpcTemplate({
+      ...rows[0],
+      base_stats: JSON.parse(rows[0].base_stats),
+      loot_table: JSON.parse(rows[0].loot_table)
+    });
     return npcTemplate;
   }
   return null;
@@ -29,7 +34,7 @@ async function getNPCTemplateById(id) {
 async function getAllNPCTemplates() {
   const sql = 'SELECT * FROM npc_templates';
   const rows = await query(sql);
-  return rows.map(row => ({
+  return rows.map(row => new NpcTemplate({
     ...row,
     base_stats: JSON.parse(row.base_stats),
     loot_table: JSON.parse(row.loot_table)

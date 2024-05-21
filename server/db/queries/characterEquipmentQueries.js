@@ -1,11 +1,15 @@
 const { query } = require('../database');
 const { getCharacterInventoryById, updateCharacterInventory } = require('./characterInventoryQueries');
+const CharacterEquipment = require('../../models/CharacterEquipment');
 
 async function getCharacterEquipmentById(characterId) {
   const sql = 'SELECT * FROM character_equipment WHERE character_id = ?';
   const params = [characterId];
   const rows = await query(sql, params);
-  return rows.length > 0 ? rows[0] : null;
+  if (rows.length > 0) {
+    return new CharacterEquipment(rows[0]);
+  }
+  return null;
 }
 
 async function equipItem(characterId, itemTemplateId) {

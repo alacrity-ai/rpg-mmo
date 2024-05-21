@@ -1,4 +1,5 @@
 const { query } = require('../database');
+const NpcInstance = require('../../models/NpcInstance');
 
 async function getNpcInstanceById(npcInstanceId) {
   const sql = 'SELECT * FROM npc_instances WHERE id = ?';
@@ -8,7 +9,7 @@ async function getNpcInstanceById(npcInstanceId) {
     const npcInstance = rows[0];
     npcInstance.base_stats = JSON.parse(npcInstance.base_stats);
     npcInstance.current_stats = JSON.parse(npcInstance.current_stats);
-    return npcInstance;
+    return new NpcInstance(npcInstance);
   }
   return null;
 }
@@ -17,11 +18,11 @@ async function getNpcInstancesByAreaId(areaId) {
   const sql = 'SELECT * FROM npc_instances WHERE current_area_id = ?';
   const params = [areaId];
   const rows = await query(sql, params);
-  return rows.map(row => ({
-    ...row,
-    base_stats: JSON.parse(row.base_stats),
-    current_stats: JSON.parse(row.current_stats)
-  }));
+  return rows.map(row => {
+    row.base_stats = JSON.parse(row.base_stats);
+    row.current_stats = JSON.parse(row.current_stats);
+    return new NpcInstance(row);
+  });
 }
 
 async function getLootTableByNpcInstanceId(npcInstanceId) {

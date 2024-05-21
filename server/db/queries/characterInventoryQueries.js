@@ -1,4 +1,5 @@
 const { query } = require('../database');
+const CharacterInventory = require('../../models/CharacterInventory');
 
 async function getCharacterInventoryById(characterId) {
   const sql = 'SELECT * FROM character_inventory WHERE character_id = ?';
@@ -7,7 +8,7 @@ async function getCharacterInventoryById(characterId) {
   if (rows.length > 0) {
     const inventory = rows[0];
     inventory.inventory_slots = inventory.inventory_slots.split(',').map(Number);
-    return inventory;
+    return new CharacterInventory(inventory);
   }
   return null;
 }
@@ -24,13 +25,13 @@ async function addItemToInventory(characterId, itemTemplateId) {
     throw new Error('Character inventory not found');
   }
 
-  const emptySlotIndex = inventory.inventory_slots.indexOf(0);
+  const emptySlotIndex = inventory.inventorySlots.indexOf(0);
   if (emptySlotIndex === -1) {
     throw new Error('No empty slot available in inventory');
   }
 
-  inventory.inventory_slots[emptySlotIndex] = itemTemplateId;
-  await updateCharacterInventory(characterId, inventory.inventory_slots, inventory.gold);
+  inventory.inventorySlots[emptySlotIndex] = itemTemplateId;
+  await updateCharacterInventory(characterId, inventory.inventorySlots, inventory.gold);
 }
 
 async function removeItemFromInventory(characterId, slotIndex) {
@@ -39,12 +40,12 @@ async function removeItemFromInventory(characterId, slotIndex) {
     throw new Error('Character inventory not found');
   }
 
-  if (slotIndex < 0 || slotIndex >= inventory.inventory_slots.length) {
+  if (slotIndex < 0 || slotIndex >= inventory.inventorySlots.length) {
     throw new Error('Invalid slot index');
   }
 
-  inventory.inventory_slots[slotIndex] = 0;
-  await updateCharacterInventory(characterId, inventory.inventory_slots, inventory.gold);
+  inventory.inventorySlots[slotIndex] = 0;
+  await updateCharacterInventory(characterId, inventory.inventorySlots, inventory.gold);
 }
 
 async function moveItemInInventory(characterId, fromSlotIndex, toSlotIndex) {
@@ -53,16 +54,16 @@ async function moveItemInInventory(characterId, fromSlotIndex, toSlotIndex) {
     throw new Error('Character inventory not found');
   }
 
-  if (fromSlotIndex < 0 || fromSlotIndex >= inventory.inventory_slots.length || toSlotIndex < 0 || toSlotIndex >= inventory.inventory_slots.length) {
+  if (fromSlotIndex < 0 || fromSlotIndex >= inventory.inventorySlots.length || toSlotIndex < 0 || toSlotIndex >= inventory.inventorySlots.length) {
     throw new Error('Invalid slot index');
   }
 
   // Swap the items
-  const temp = inventory.inventory_slots[toSlotIndex];
-  inventory.inventory_slots[toSlotIndex] = inventory.inventory_slots[fromSlotIndex];
-  inventory.inventory_slots[fromSlotIndex] = temp;
+  const temp = inventory.inventorySlots[toSlotIndex];
+  inventory.inventorySlots[toSlotIndex] = inventory.inventorySlots[fromSlotIndex];
+  inventory.inventorySlots[fromSlotIndex] = temp;
 
-  await updateCharacterInventory(characterId, inventory.inventory_slots, inventory.gold);
+  await updateCharacterInventory(characterId, inventory.inventorySlots, inventory.gold);
 }
 
 async function addGoldToInventory(characterId, amount) {
@@ -72,7 +73,7 @@ async function addGoldToInventory(characterId, amount) {
   }
 
   const newGoldAmount = inventory.gold + amount;
-  await updateCharacterInventory(characterId, inventory.inventory_slots, newGoldAmount);
+  await updateCharacterInventory(characterId, inventory.inventorySlots, newGoldAmount);
 }
 
 async function removeGoldFromInventory(characterId, amount) {
@@ -86,7 +87,7 @@ async function removeGoldFromInventory(characterId, amount) {
   }
 
   const newGoldAmount = inventory.gold - amount;
-  await updateCharacterInventory(characterId, inventory.inventory_slots, newGoldAmount);
+  await updateCharacterInventory(characterId, inventory.inventorySlots, newGoldAmount);
 }
 
 module.exports = { 

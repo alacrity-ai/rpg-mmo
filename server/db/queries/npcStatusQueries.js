@@ -1,4 +1,5 @@
 const { query } = require('../database');
+const NpcStatus = require('../../models/NpcStatus');
 
 async function getNpcStatusById(npcInstanceId) {
   const sql = 'SELECT * FROM npc_status WHERE npc_instance_id = ?';
@@ -7,7 +8,7 @@ async function getNpcStatusById(npcInstanceId) {
   if (rows.length > 0) {
     const npcStatus = rows[0];
     npcStatus.statuses = JSON.parse(npcStatus.statuses);
-    return npcStatus;
+    return new NpcStatus(npcStatus);
   }
   return null;
 }

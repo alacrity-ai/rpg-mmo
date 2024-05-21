@@ -1,8 +1,18 @@
 const { query } = require('../database');
+const Character = require('../../models/Character');
+const { getClassTemplateByName } = require('./classTemplatesQueries');
 
 async function createCharacter(userId, characterName, characterClass) {
+  // Get base stats from the class template
+  const classTemplate = await getClassTemplateByName(characterClass);
+  if (!classTemplate) {
+    throw new Error(`Class template not found for class: ${characterClass}`);
+  }
+  
+  const baseStats = JSON.stringify(classTemplate.baseStats);
+
   const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats) VALUES (?, ?, ?, ?, ?)';
-  const params = [userId, characterName, characterClass, '{}', '{}'];
+  const params = [userId, characterName, characterClass, baseStats, baseStats];
   const result = await query(sql, params);
   return result.insertId;
 }
@@ -12,10 +22,16 @@ async function getCharacter(userId, characterName) {
   const params = [userId, characterName];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    const character = rows[0];
-    character.base_stats = JSON.parse(character.base_stats);
-    character.current_stats = JSON.parse(character.current_stats);
-    return character;
+    return new Character({
+      id: rows[0].id,
+      user_id: rows[0].user_id,
+      name: rows[0].name,
+      characterClass: rows[0].class,
+      baseStats: JSON.parse(rows[0].base_stats),
+      currentStats: JSON.parse(rows[0].current_stats),
+      current_area_id: rows[0].current_area_id,
+      socket_id: rows[0].socket_id,
+    });
   }
   return null;
 }
@@ -24,11 +40,24 @@ async function getCharactersByUser(userId) {
   const sql = 'SELECT * FROM characters WHERE user_id = ?';
   const params = [userId];
   const rows = await query(sql, params);
-  return rows.map(row => ({
-    ...row,
-    base_stats: JSON.parse(row.base_stats),
-    current_stats: JSON.parse(row.current_stats)
-  }));
+  return rows.map(row => {
+    console.log('Row retrieved:', row);
+    try {
+      return new Character({
+        id: row.id,
+        user_id: row.user_id,
+        name: row.name,
+        characterClass: row.class,
+        baseStats: row.baseStats,
+        currentStats: row.currentStats,
+        current_area_id: row.current_area_id,
+        socket_id: row.socket_id,
+      });
+    } catch (err) {
+      console.error('Error parsing character stats:', err.message, 'Base stats:', row.base_stats, 'Current stats:', row.current_stats);
+      throw err;
+    }
+  });
 }
 
 async function getCharacterStats(characterId) {
@@ -36,10 +65,10 @@ async function getCharacterStats(characterId) {
   const params = [characterId];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    const stats = rows[0];
-    stats.base_stats = JSON.parse(stats.base_stats);
-    stats.current_stats = JSON.parse(stats.current_stats);
-    return stats;
+    return {
+      baseStats: JSON.parse(rows[0].base_stats),
+      currentStats: JSON.parse(rows[0].current_stats),
+    };
   }
   return null;
 }

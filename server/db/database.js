@@ -123,6 +123,7 @@ async function initTables() {
       base_stats JSON,
       current_stats JSON,
       current_area_id INT,
+      socket_id VARCHAR(255),
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (current_area_id) REFERENCES area_instances(id)
     )`,
