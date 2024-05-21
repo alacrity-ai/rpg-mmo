@@ -1,0 +1,12 @@
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS characters;
+DROP TABLE IF EXISTS item_instances;
+DROP TABLE IF EXISTS item_templates;
+DROP TABLE IF EXISTS npc_instances;
+DROP TABLE IF EXISTS npc_templates;
+DROP TABLE IF EXISTS object_instances;
+DROP TABLE IF EXISTS object_templates;
+DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS zone_connections;
+DROP TABLE IF EXISTS zones;
+SET FOREIGN_KEY_CHECKS = 1;
