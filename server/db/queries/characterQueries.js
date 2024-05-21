@@ -99,11 +99,29 @@ async function updateCharacterStats(characterId, currentStats) {
   await query(sql, params);
 }
 
+async function getCharactersByIds(characterIds) {
+  // Convert the array of character IDs to a comma-separated string
+  const idsString = characterIds.join(',');
+  const sql = `SELECT * FROM characters WHERE id IN (${idsString})`;
+  const rows = await query(sql);
+  return rows.map(row => new Character({
+    id: row.id,
+    user_id: row.user_id,
+    name: row.name,
+    characterClass: row.class,
+    baseStats: row.base_stats,
+    currentStats: row.current_stats,
+    current_area_id: row.current_area_id,
+    socket_id: row.socket_id,
+  }));
+}
+
 module.exports = { 
   createCharacter, 
   getCharacter, 
   getCharactersByUser, 
   getCharacterStats, 
-  getCharacterArea,
-  updateCharacterStats 
+  getCharacterArea, 
+  updateCharacterStats,
+  getCharactersByIds
 };

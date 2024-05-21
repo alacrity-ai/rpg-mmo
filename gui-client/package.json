@@ -16,7 +16,8 @@
     "express": "^4.19.2",
     "http-server": "^14.1.1",
     "phaser": "^3.80.1",
-    "phaser3-rex-plugins": "^1.80.3"
+    "phaser3-rex-plugins": "^1.80.3",
+    "socket.io-client": "^4.7.5"
   },
   "devDependencies": {
     "vite": "^5.2.11"

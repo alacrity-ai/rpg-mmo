@@ -2,13 +2,29 @@ require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
+const cors = require('cors'); // Import cors
 const { handleCommand, defaultZone } = require('./handlers/commandHandler');
 const { initTables } = require('./db/database');
 const { populateTables } = require('./db/populateTables');
 
 const app = express();
 const server = http.createServer(app);
-const io = socketIo(server);
+const io = socketIo(server, {
+  cors: {
+    origin: '*', // Allow all origins
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type'],
+    credentials: true
+  }
+});
+
+// Use the cors middleware
+app.use(cors({
+  origin: '*', // Allow all origins
+  methods: ['GET', 'POST'],
+  allowedHeaders: ['Content-Type'],
+  credentials: true
+}));
 
 app.get('/', (req, res) => {
   res.send('MUD Server is running');

@@ -2,6 +2,7 @@
 import Phaser from 'phaser';
 import SoundFXManager from '../audio/SoundFXManager.js';
 import MusicManager from '../audio/MusicManager.js';
+import socketManager from '../SocketManager.js';
 
 export default class PreloaderScene extends Phaser.Scene {
     constructor() {
@@ -29,6 +30,9 @@ export default class PreloaderScene extends Phaser.Scene {
     }
 
     create() {
+        // Send test command to server
+        socketManager.sendCommand('help');
+
         // Initialize the SFX Manager
         SoundFXManager.onPreloadComplete();
         
@@ -36,6 +40,6 @@ export default class PreloaderScene extends Phaser.Scene {
         MusicManager.initialize(this);
 
         // Start the main scene
-        this.scene.start('MenuTestScene'); // or whichever scene you want to start with
+        this.scene.start('TownScene'); // or whichever scene you want to start with
     }
 }

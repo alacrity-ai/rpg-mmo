@@ -127,6 +127,11 @@ async function initTables() {
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (current_area_id) REFERENCES area_instances(id)
     )`,
+    `CREATE TABLE IF NOT EXISTS character_parties (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      party_members JSON NOT NULL,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
     `CREATE TABLE IF NOT EXISTS character_inventory (
       id INT AUTO_INCREMENT PRIMARY KEY,
       character_id INT NOT NULL,

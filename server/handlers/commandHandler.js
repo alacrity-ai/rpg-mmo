@@ -1,5 +1,5 @@
-const authHandler = require('./authHandler');
-const messageHandler = require('./messageHandler');
+const authHandler = require('./api/authHandler');
+const messageHandler = require('./api/messageHandler');
 const { Zone } = require('../models/zone');
 
 const defaultZone = new Zone('Starting Zone');
