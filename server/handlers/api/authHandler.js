@@ -1,8 +1,8 @@
 const crypto = require('crypto');
-const { createUser, getUserByUsername } = require('../db/queries/usersQueries');
-const characterQueries = require('../db/queries/characterQueries');
-const User = require('../models/User');
-const Character = require('../models/Character');
+const { createUser, getUserByUsername } = require('../../db/queries/usersQueries');
+const characterQueries = require('../../db/queries/characterQueries');
+const User = require('../../models/User');
+const Character = require('../../models/Character');
 
 async function createAccount(socket, [username, password]) {
     if (typeof password !== 'string') {
