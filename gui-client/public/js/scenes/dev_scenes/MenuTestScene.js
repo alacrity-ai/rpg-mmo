@@ -7,7 +7,7 @@ import ErrorMenu from '../../interface/menu/ErrorMenu.js';
 
 export default class MenuTestScene extends Phaser.Scene {
     constructor() {
-        super({ key: 'TestScene' });
+        super({ key: 'MenuTestScene' });
     }
 
     preload() {

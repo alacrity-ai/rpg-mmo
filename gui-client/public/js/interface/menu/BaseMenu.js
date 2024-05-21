@@ -131,6 +131,12 @@ class BaseMenu {
                         this.currentPage--;
                         renderTable();
                     }
+                })
+                .on('pointerover', () => {
+                    upArrow.setStyle({ fill: '#ffff00' }); // Highlight in yellow
+                })
+                .on('pointerout', () => {
+                    upArrow.setStyle({ fill: '#ffffff' }); // Revert to white
                 });
             container.add(upArrow);
 
@@ -143,6 +149,12 @@ class BaseMenu {
                         this.currentPage++;
                         renderTable();
                     }
+                })
+                .on('pointerover', () => {
+                    downArrow.setStyle({ fill: '#ffff00' }); // Highlight in yellow
+                })
+                .on('pointerout', () => {
+                    downArrow.setStyle({ fill: '#ffffff' }); // Revert to white
                 });
             container.add(downArrow);
         };
@@ -432,10 +444,15 @@ class BaseMenu {
             .setInteractive()
             .on('pointerdown', () => {
                 this.hide();
+            })
+            .on('pointerover', () => {
+                closeButton.setStyle({ fill: '#ffff00' }); // Highlight in yellow
+            })
+            .on('pointerout', () => {
+                closeButton.setStyle({ fill: '#fff' }); // Revert to white
             });
         this.tabs[0].push(closeButton); // Close button is added to the default tab
     }
-    
 
     addIconButton(x, y, iconName, callback, tooltip = null, tab = 0) {
         const iconButton = this.iconHelper.getIcon(iconName);
