@@ -1,12 +1,15 @@
 SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS characters;
+DROP TABLE IF EXISTS class_templates;
 DROP TABLE IF EXISTS item_instances;
 DROP TABLE IF EXISTS item_templates;
 DROP TABLE IF EXISTS npc_instances;
 DROP TABLE IF EXISTS npc_templates;
-DROP TABLE IF EXISTS object_instances;
-DROP TABLE IF EXISTS object_templates;
 DROP TABLE IF EXISTS users;
-DROP TABLE IF EXISTS zone_connections;
 DROP TABLE IF EXISTS zones;
+DROP TABLE IF EXISTS shop_templates;
+DROP TABLE IF EXISTS character_inventory;
+DROP TABLE IF EXISTS character_equipment;
+DROP TABLE IF EXISTS status_templates;
+DROP TABLE IF EXISTS npc_status;
 SET FOREIGN_KEY_CHECKS = 1;

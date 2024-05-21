@@ -26,7 +26,7 @@ async function initTables() {
       description TEXT
     )`,
     `CREATE TABLE IF NOT EXISTS npc_templates (
-      npc_template_id INT AUTO_INCREMENT PRIMARY KEY,
+      id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       sprite_key VARCHAR(255),
       description TEXT,
@@ -34,45 +34,119 @@ async function initTables() {
       base_stats TEXT
     )`,
     `CREATE TABLE IF NOT EXISTS item_templates (
-      item_template_id INT AUTO_INCREMENT PRIMARY KEY,
+      id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       description TEXT,
       item_type VARCHAR(255),
       is_equipment BOOLEAN DEFAULT 0,
-      equipment_type VARCHAR(255),
+      equipment_type ENUM(
+        'off-hand',
+        'one-hand',
+        'main-hand',
+        'two-hand',
+        'ammo',
+        'head',
+        'chest',
+        'hands',
+        'waist',
+        'feet',
+        'ring',
+        'neck'
+      ),
       icon_key VARCHAR(255),
+      classes VARCHAR(255),
       stats TEXT,
       is_collectible BOOLEAN DEFAULT 1,
       use_effect TEXT
     )`,
     `CREATE TABLE IF NOT EXISTS npc_instances (
-      npc_instance_id INT AUTO_INCREMENT PRIMARY KEY,
+      id INT AUTO_INCREMENT PRIMARY KEY,
       npc_template_id INT,
       current_zone_id INT,
       base_stats TEXT,
       current_stats TEXT,
       state TEXT,
-      FOREIGN KEY (npc_template_id) REFERENCES npc_templates(npc_template_id),
+      FOREIGN KEY (npc_template_id) REFERENCES npc_templates(id),
       FOREIGN KEY (current_zone_id) REFERENCES zones(id)
     )`,
+    `CREATE TABLE IF NOT EXISTS npc_status (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      npc_instance_id INT NOT NULL,
+      statuses JSON NOT NULL,
+      FOREIGN KEY (npc_instance_id) REFERENCES npc_instances(id)
+    )`,
+    `CREATE TABLE IF NOT EXISTS class_templates (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      base_stats JSON NOT NULL,
+      stat_level_scaling JSON NOT NULL,
+      description TEXT
+    )`,
     `CREATE TABLE IF NOT EXISTS characters (
-      character_id INT AUTO_INCREMENT PRIMARY KEY,
+      id INT AUTO_INCREMENT PRIMARY KEY,
       user_id INT NOT NULL,
       name VARCHAR(255) NOT NULL,
-      class VARCHAR(255),
+      class ENUM(
+        'rogue',
+        'monk',
+        'ranger',
+        'reaver',
+        'paladin',
+        'warrior',
+        'shaman',
+        'priest',
+        'druid',
+        'arcanist',
+        'elementalist',
+        'necromancer'
+      ) NOT NULL,
       base_stats TEXT,
       current_stats TEXT,
       current_zone_id INT,
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (current_zone_id) REFERENCES zones(id)
     )`,
-    `CREATE TABLE IF NOT EXISTS item_instances (
-      item_instance_id INT AUTO_INCREMENT PRIMARY KEY,
-      item_template_id INT,
-      owner_id INT,
-      quantity INT DEFAULT 1,
-      FOREIGN KEY (item_template_id) REFERENCES item_templates(item_template_id),
-      FOREIGN KEY (owner_id) REFERENCES characters(character_id)
+    `CREATE TABLE IF NOT EXISTS character_inventory (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      character_id INT NOT NULL,
+      inventory_slots VARCHAR(255) DEFAULT '0,0,0,0,0,0,0,0,0,0',
+      gold INT DEFAULT 0,
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )`,
+    `CREATE TABLE IF NOT EXISTS character_equipment (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      character_id INT NOT NULL,
+      main_hand INT DEFAULT NULL,
+      off_hand INT DEFAULT NULL,
+      two_hand INT DEFAULT NULL,
+      ammo INT DEFAULT NULL,
+      head INT DEFAULT NULL,
+      chest INT DEFAULT NULL,
+      hands INT DEFAULT NULL,
+      waist INT DEFAULT NULL,
+      feet INT DEFAULT NULL,
+      ring1 INT DEFAULT NULL,
+      ring2 INT DEFAULT NULL,
+      neck INT DEFAULT NULL,
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )`,
+    `CREATE TABLE IF NOT EXISTS character_status (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      character_id INT NOT NULL,
+      statuses JSON NOT NULL,
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )`,
+    `CREATE TABLE IF NOT EXISTS status_templates (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      description TEXT,
+      effect_type ENUM('buff', 'debuff') NOT NULL,
+      effect_details JSON NOT NULL
+    )`,
+    `CREATE TABLE IF NOT EXISTS shop_templates (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      inventory JSON NOT NULL
     )`
   ];
 

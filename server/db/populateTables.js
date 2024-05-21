@@ -2,6 +2,9 @@ require('dotenv').config();
 const { pool } = require('./database');
 const itemTemplates = require('./data/itemTemplates');
 const npcTemplates = require('./data/npcTemplates');
+const classTemplates = require('./data/classTemplates');
+const shopTemplates = require('./data/shopTemplates');
+const statusTemplates = require('./data/statusTemplates')
 
 async function populateItemTemplates() {
   const connection = await pool.getConnection();
@@ -69,9 +72,100 @@ async function populateNpcTemplates() {
   }
 }
 
+async function populateClassTemplates() {
+  const connection = await pool.getConnection();
+  try {
+    for (const classTemplate of classTemplates) {
+      const [rows] = await connection.query(
+        `SELECT * FROM class_templates WHERE name = ?`,
+        [classTemplate.name]
+      );
+
+      if (rows.length === 0) {
+        await connection.query(
+          `INSERT INTO class_templates (name, base_stats, stat_level_scaling, description)
+          VALUES (?, ?, ?, ?)`,
+          [
+            classTemplate.name,
+            classTemplate.base_stats,
+            classTemplate.stat_level_scaling,
+            classTemplate.description
+          ]
+        );
+      }
+    }
+    console.log('Class templates populated.');
+  } catch (err) {
+    console.error('Error populating class templates', err);
+  } finally {
+    connection.release();
+  }
+}
+
+async function populateShopTemplates() {
+  const connection = await pool.getConnection();
+  try {
+    for (const shop of shopTemplates) {
+      const [rows] = await connection.query(
+        `SELECT * FROM shop_templates WHERE name = ?`,
+        [shop.name]
+      );
+
+      if (rows.length === 0) {
+        await connection.query(
+          `INSERT INTO shop_templates (name, inventory)
+          VALUES (?, ?)`,
+          [
+            shop.name,
+            shop.inventory
+          ]
+        );
+      }
+    }
+    console.log('Shop templates populated.');
+  } catch (err) {
+    console.error('Error populating shop templates', err);
+  } finally {
+    connection.release();
+  }
+}
+
+async function populateStatusTemplates() {
+    const connection = await pool.getConnection();
+    try {
+      for (const status of statusTemplates) {
+        const [rows] = await connection.query(
+          `SELECT * FROM status_templates WHERE name = ?`,
+          [status.name]
+        );
+  
+        if (rows.length === 0) {
+          await connection.query(
+            `INSERT INTO status_templates (name, description, effect_type, effect_details)
+            VALUES (?, ?, ?, ?)`,
+            [
+              status.name,
+              status.description,
+              status.effect_type,
+              status.effect_details
+            ]
+          );
+        }
+      }
+      console.log('Status effect templates populated.');
+    } catch (err) {
+      console.error('Error populating status effect templates', err);
+    } finally {
+      connection.release();
+    }
+  }
+
 async function populateTables() {
   await populateItemTemplates();
   await populateNpcTemplates();
+  await populateClassTemplates();
+  await populateShopTemplates();
+  await populateStatusTemplates();
   console.log('All tables populated.');
 }
 
