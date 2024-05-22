@@ -1,5 +1,5 @@
 const { query } = require('../database');
-const ZoneTemplate = require('../models/ZoneTemplate');
+const ZoneTemplate = require('../../models/ZoneTemplate');
 
 async function getZoneTemplateById(id) {
   const sql = 'SELECT * FROM zone_templates WHERE id = ?';

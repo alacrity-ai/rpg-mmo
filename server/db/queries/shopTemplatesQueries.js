@@ -1,5 +1,5 @@
 const { query } = require('../database');
-const ShopTemplate = require('../models/ShopTemplate');
+const ShopTemplate = require('../../models/ShopTemplate');
 
 async function getShopTemplateById(id) {
   const sql = 'SELECT * FROM shop_templates WHERE id = ?';

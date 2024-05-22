@@ -1,5 +1,5 @@
 const { query } = require('../database');
-const ZoneInstance = require('../models/ZoneInstance');
+const ZoneInstance = require('../../models/ZoneInstance');
 
 async function getZoneInstanceById(id) {
   const sql = 'SELECT * FROM zone_instances WHERE id = ?';
@@ -24,4 +24,17 @@ async function getAllZoneInstances() {
   }));
 }
 
-module.exports = { getZoneInstanceById, getAllZoneInstances };
+async function createZoneInstance(params) {
+  const sql = 'INSERT INTO zone_instances (name, template_id, areas) VALUES (?, ?, ?)';
+  const areas = JSON.stringify(params.areas);
+  const result = await query(sql, [params.name, params.template_id, areas]);
+  const zoneInstance = new ZoneInstance({
+    id: result.insertId,
+    name: params.name,
+    template_id: params.template_id,
+    areas: params.areas
+  });
+  return zoneInstance;
+}
+
+module.exports = { createZoneInstance, getZoneInstanceById, getAllZoneInstances };

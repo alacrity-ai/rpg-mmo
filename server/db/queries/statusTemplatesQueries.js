@@ -1,5 +1,5 @@
 const { query } = require('../database');
-const StatusTemplate = require('../models/StatusTemplate');
+const StatusTemplate = require('../../models/StatusTemplate');
 
 async function getStatusEffectById(id) {
   const sql = 'SELECT * FROM status_templates WHERE id = ?';

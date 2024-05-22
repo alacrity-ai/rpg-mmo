@@ -1,5 +1,5 @@
 const { query } = require('../database');
-const NpcTemplate = require('../models/NpcTemplate');
+const NpcTemplate = require('../../models/NpcTemplate');
 
 async function getNPCTemplateByName(name) {
   const sql = 'SELECT * FROM npc_templates WHERE name = ?';
