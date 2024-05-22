@@ -9,12 +9,7 @@ build:
 
 # Run the Docker container
 run: stop
-	docker run -d -p $(PORT):$(PORT) --name $(CONTAINER_NAME) $(IMAGE_NAME)
-
-# Stop the Docker container
-stop:
-	-docker stop $(CONTAINER_NAME)
-	-docker rm $(CONTAINER_NAME)
+	docker run -d -p $(PORT):$(PORT) $(IMAGE_NAME)
 
 # Clean up Docker images
 clean:
