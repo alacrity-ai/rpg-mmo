@@ -1,2 +1,89 @@
-# rpg-mmo
-Example mmo using database driven backend
+# MMO Project
+
+## Overview
+
+This project is an MMO (Massively Multiplayer Online) game that combines a graphical client, a server to handle game logic and communication, and a database for storing game data. The game features a transition from a text-based to a graphical interface, utilizing a 32-bit pixel art style. It includes multiple scenes such as towns, expeditions, and combat encounters.
+
+## Repository Structure
+
+- **client**: Contains the graphical interface for the game.
+- **server**: Manages game logic, communication, and interaction with the database.
+- **database**: Contains database setup and initial data population scripts.
+
+## High-Level Description
+
+### Client
+
+The client is responsible for rendering the game's graphical interface. It handles user interactions, displays various game scenes (towns, expeditions, combat encounters), and communicates with the server for real-time updates.
+
+### Server
+
+The server manages game logic and communication between clients. It handles authentication, command processing, message handling, and database interactions. The server ensures the game state is synchronized across all clients.
+
+### Database
+
+The database stores all game data, including player information, NPCs, items, and more. It uses Docker for easy setup and management. Initial data population scripts are provided to populate the database with necessary data.
+
+## Conclusion
+
+This project combines a graphical client, server, and database to create a fully functional MMO game. Follow the instructions above to set up the database, run the server, and start the client to begin development or testing.
+
+## Developer Guide
+
+### Instantiating the Database for Testing
+
+1. Navigate to the `database` folder: `cd database`
+2. Build the Docker container:
+    
+    `make build`
+    
+3. Connect to the database (`mysql` client must be installed):
+    
+    `make connect`
+    
+
+**Note**: Ensure you have Docker installed on your system.
+
+### Running the Server
+
+1. Navigate to the `server` folder:
+    
+    `cd server`
+    
+2. Install the necessary dependencies:
+    
+    `npm install`
+    
+3. Ensure you have a `.env` file in the `server` directory with the following content:
+    
+```
+DB_HOST=127.0.0.1
+DB_USER=root
+DB_PASSWORD=rootpassword
+DB_NAME=testdb
+```
+    
+4. Start the server:
+    
+    `node index.js`
+
+### Running the Client
+
+1. Navigate to the `client` folder:
+    
+    `cd client`
+    
+2. Install the necessary dependencies:
+    
+    `npm install`
+    
+3. Ensure you have a `.env` file in the `client` directory with the following content:
+    
+    `VITE_SERVER_URL=http://localhost:3000`
+    
+4. Start the client:
+    
+    `npm start`
+    
+    This should open the client in your browser window. Make sure the server is running before starting the client.
+
