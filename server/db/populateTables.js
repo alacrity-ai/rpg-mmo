@@ -6,7 +6,37 @@ const classTemplates = require('./data/classTemplates');
 const shopTemplates = require('./data/shopTemplates');
 const statusTemplates = require('./data/statusTemplates')
 const zoneTemplates = require('./data/zoneTemplates');
+const encounterTemplates = require('./data/encounterTemplates');
 
+
+async function populateEncounterTemplates() {
+  const connection = await pool.getConnection();
+  try {
+    for (const encounter of encounterTemplates) {
+      const [rows] = await connection.query(
+        `SELECT * FROM encounter_templates WHERE name = ?`,
+        [encounter.name]
+      );
+
+      if (rows.length === 0) {
+        await connection.query(
+          `INSERT INTO encounter_templates (name, enemies, is_boss)
+          VALUES (?, ?, ?)`,
+          [
+            encounter.name,
+            encounter.enemies,
+            encounter.is_boss
+          ]
+        );
+      }
+    }
+    console.log('Encounter templates populated.');
+  } catch (err) {
+    console.error('Error populating encounter templates', err);
+  } finally {
+    connection.release();
+  }
+}
 
 async function populateZoneTemplates() {
   const connection = await pool.getConnection();
@@ -19,12 +49,12 @@ async function populateZoneTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO zone_templates (name, description, hostile_npcs, friendly_npcs, image_folder_path, min_areas, max_areas, music_key)
+          `INSERT INTO zone_templates (name, description, encounters, friendly_npcs, image_folder_path, min_areas, max_areas, music_key)
           VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             zone.name,
             zone.description,
-            zone.hostile_npcs,
+            zone.encounters,
             zone.friendly_npcs,
             zone.image_folder_path,
             zone.min_areas,
@@ -199,6 +229,7 @@ async function populateStatusTemplates() {
   }
 
 async function populateTables() {
+  await populateEncounterTemplates();
   await populateItemTemplates();
   await populateNpcTemplates();
   await populateZoneTemplates();

@@ -1,3 +1,5 @@
+// db/queries/areaInstancesQueries.js
+
 const { query } = require('../database');
 const AreaInstance = require('../../models/AreaInstance');
 
@@ -9,8 +11,9 @@ async function getAreaInstanceById(id) {
     return new AreaInstance({
       id: rows[0].id,
       background_image: rows[0].background_image,
-      hostileNpcs: rows[0].hostile_npcs,
+      encounter: rows[0].encounter,
       friendlyNpcs: rows[0].friendly_npcs,
+      created_at: rows[0].created_at
     });
   }
   return null;
@@ -22,30 +25,31 @@ async function getAllAreaInstances() {
   return rows.map(row => new AreaInstance({
     id: row.id,
     background_image: row.background_image,
-    hostileNpcs: row.hostile_npcs,
+    encounter: row.encounter,
     friendlyNpcs: row.friendly_npcs,
+    created_at: row.created_at
   }));
 }
 
 async function createAreaInstance(params) {
-  const sql = 'INSERT INTO area_instances (background_image, hostile_npcs, friendly_npcs) VALUES (?, ?, ?)';
-  const hostileNpcs = JSON.stringify(params.hostileNpcs);
+  const sql = 'INSERT INTO area_instances (background_image, encounter, friendly_npcs, created_at) VALUES (?, ?, ?, ?)';
   const friendlyNpcs = JSON.stringify(params.friendlyNpcs);
-  const result = await query(sql, [params.background_image, hostileNpcs, friendlyNpcs]);
+  const result = await query(sql, [params.background_image, params.encounter, friendlyNpcs, new Date()]);
   const areaInstance = new AreaInstance({
     id: result.insertId,
     background_image: params.background_image,
-    hostileNpcs: params.hostileNpcs,
-    friendlyNpcs: params.friendlyNpcs
+    encounter: params.encounter,
+    friendlyNpcs: params.friendlyNpcs,
+    created_at: new Date()
   });
   return areaInstance;
 }
 
-async function getHostileNPCsByAreaInstanceId(id) {
-  const sql = 'SELECT hostile_npcs FROM area_instances WHERE id = ?';
+async function getEncounterByAreaInstanceId(id) {
+  const sql = 'SELECT encounter FROM area_instances WHERE id = ?';
   const params = [id];
   const rows = await query(sql, params);
-  return rows.length > 0 ? rows[0].hostile_npcs : null;
+  return rows.length > 0 ? rows[0].encounter : null;
 }
 
 async function getFriendlyNPCsByAreaInstanceId(id) {
@@ -55,4 +59,10 @@ async function getFriendlyNPCsByAreaInstanceId(id) {
   return rows.length > 0 ? rows[0].friendly_npcs : null;
 }
 
-module.exports = { createAreaInstance, getAreaInstanceById, getAllAreaInstances, getHostileNPCsByAreaInstanceId, getFriendlyNPCsByAreaInstanceId };
+module.exports = {
+  createAreaInstance,
+  getAreaInstanceById,
+  getAllAreaInstances,
+  getEncounterByAreaInstanceId,
+  getFriendlyNPCsByAreaInstanceId
+};

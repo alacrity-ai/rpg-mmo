@@ -1,4 +1,5 @@
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS encounter_templates;
 DROP TABLE IF EXISTS zone_templates;
 DROP TABLE IF EXISTS zone_instances;
 DROP TABLE IF EXISTS area_instances;

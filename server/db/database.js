@@ -20,11 +20,17 @@ async function initTables() {
       username VARCHAR(255) UNIQUE NOT NULL,
       password_hash VARCHAR(255) NOT NULL
     )`,
+    `CREATE TABLE IF NOT EXISTS encounter_templates (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      enemies JSON,
+      is_boss BOOLEAN DEFAULT 0
+    )`,
     `CREATE TABLE IF NOT EXISTS zone_templates (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       description TEXT,
-      hostile_npcs JSON,
+      encounters JSON,
       friendly_npcs JSON,
       image_folder_path VARCHAR(255),
       min_areas INT,
@@ -36,13 +42,16 @@ async function initTables() {
       name VARCHAR(255) NOT NULL,
       template_id INT,
       areas JSON,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (template_id) REFERENCES zone_templates(id)
     )`,
     `CREATE TABLE IF NOT EXISTS area_instances (
       id INT AUTO_INCREMENT PRIMARY KEY,
       background_image VARCHAR(255),
-      hostile_npcs JSON,
-      friendly_npcs JSON
+      encounter INT DEFAULT NULL,
+      friendly_npcs JSON,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (encounter) REFERENCES encounter_templates(id)
     )`,
     `CREATE TABLE IF NOT EXISTS item_templates (
       id INT AUTO_INCREMENT PRIMARY KEY,

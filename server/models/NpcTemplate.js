@@ -45,17 +45,5 @@ class NpcTemplate {
    * });
    * 
    * console.log(npcTemplate);
-   * // NpcTemplate {
-   * //   id: 1,
-   * //   name: 'Rat',
-   * //   spriteKey: 'rat_sprite',
-   * //   description: 'A small, skittish rodent.',
-   * //   scriptPath: 'scripts/rat_behavior.js',
-   * //   baseStats: { strength: 3, agility: 5, health: 20 },
-   * //   lootTable: [
-   * //     { item_id: 1, chance_to_drop: 0.5 },
-   * //     { item_id: 7, chance_to_drop: 0.1 }
-   * //   ]
-   * // }
    */
   
