@@ -1,3 +1,5 @@
+// models/User.js
+
 class User {
     constructor({ id, username, password_hash }) {
       this.id = id;
@@ -6,5 +8,5 @@ class User {
     }
   }
   
-  module.exports = User;
+module.exports = User;
   

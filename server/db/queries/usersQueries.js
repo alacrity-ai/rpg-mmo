@@ -1,3 +1,4 @@
+// db/queries/usersQueries.js
 const { query } = require('../database');
 const User = require('../../models/User');
 
