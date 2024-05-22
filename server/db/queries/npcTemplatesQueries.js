@@ -1,17 +1,20 @@
+// db/queries/npcTemplatesQueries.js
+
 const { query } = require('../database');
 const NpcTemplate = require('../../models/NpcTemplate');
+const { getNpcDialogueTemplateById } = require('./npcDialogueTemplatesQueries');
 
 async function getNPCTemplateByName(name) {
   const sql = 'SELECT * FROM npc_templates WHERE name = ?';
   const params = [name];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    const npcTemplate = new NpcTemplate({
+    return new NpcTemplate({
       ...rows[0],
       base_stats: rows[0].base_stats,
-      loot_table: rows[0].loot_table
+      loot_table: rows[0].loot_table,
+      npc_dialogue_template_id: rows[0].npc_dialogue_template_id
     });
-    return npcTemplate;
   }
   return null;
 }
@@ -21,12 +24,12 @@ async function getNPCTemplateById(id) {
   const params = [id];
   const rows = await query(sql, params);
   if (rows.length > 0) {
-    const npcTemplate = new NpcTemplate({
+    return new NpcTemplate({
       ...rows[0],
       base_stats: rows[0].base_stats,
-      loot_table: rows[0].loot_table
+      loot_table: rows[0].loot_table,
+      npc_dialogue_template_id: rows[0].npc_dialogue_template_id
     });
-    return npcTemplate;
   }
   return null;
 }
@@ -37,8 +40,27 @@ async function getAllNPCTemplates() {
   return rows.map(row => new NpcTemplate({
     ...row,
     base_stats: row.base_stats,
-    loot_table: row.loot_table
+    loot_table: row.loot_table,
+    npc_dialogue_template_id: row.npc_dialogue_template_id
   }));
 }
 
-module.exports = { getNPCTemplateByName, getNPCTemplateById, getAllNPCTemplates };
+async function getNpcDialogueByNpcTemplateId(npcTemplateId) {
+  const sql = 'SELECT npc_dialogue_template_id FROM npc_templates WHERE id = ?';
+  const params = [npcTemplateId];
+  const rows = await query(sql, params);
+  if (rows.length > 0) {
+    const dialogueTemplateId = rows[0].npc_dialogue_template_id;
+    if (dialogueTemplateId) {
+      return await getNpcDialogueTemplateById(dialogueTemplateId);
+    }
+  }
+  return null;
+}
+
+module.exports = { 
+  getNPCTemplateByName, 
+  getNPCTemplateById, 
+  getAllNPCTemplates,
+  getNpcDialogueByNpcTemplateId
+};

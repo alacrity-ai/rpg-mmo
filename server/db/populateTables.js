@@ -7,7 +7,65 @@ const shopTemplates = require('./data/shopTemplates');
 const statusTemplates = require('./data/statusTemplates')
 const zoneTemplates = require('./data/zoneTemplates');
 const encounterTemplates = require('./data/encounterTemplates');
+const characterFlagTemplates = require('./data/characterFlagTemplates');
+const npcDialogueTemplates = require('./data/npcDialogueTemplates');
 
+
+async function populateNpcDialogueTemplates() {
+  const connection = await pool.getConnection();
+  try {
+    for (const dialogue of npcDialogueTemplates) {
+      const [rows] = await connection.query(
+        `SELECT * FROM npc_dialogue_templates WHERE description = ?`,
+        [dialogue.description]
+      );
+
+      if (rows.length === 0) {
+        await connection.query(
+          `INSERT INTO npc_dialogue_templates (description, script_path)
+          VALUES (?, ?)`,
+          [
+            dialogue.description,
+            dialogue.script_path
+          ]
+        );
+      }
+    }
+    console.log('NPC dialogue templates populated.');
+  } catch (err) {
+    console.error('Error populating NPC dialogue templates', err);
+  } finally {
+    connection.release();
+  }
+}
+
+async function populateCharacterFlagTemplates() {
+  const connection = await pool.getConnection();
+  try {
+    for (const flag of characterFlagTemplates) {
+      const [rows] = await connection.query(
+        `SELECT * FROM character_flag_templates WHERE name = ?`,
+        [flag.name]
+      );
+
+      if (rows.length === 0) {
+        await connection.query(
+          `INSERT INTO character_flag_templates (name, description)
+          VALUES (?, ?)`,
+          [
+            flag.name,
+            flag.description
+          ]
+        );
+      }
+    }
+    console.log('Character flag templates populated.');
+  } catch (err) {
+    console.error('Error populating character flag templates', err);
+  } finally {
+    connection.release();
+  }
+}
 
 async function populateEncounterTemplates() {
   const connection = await pool.getConnection();
@@ -118,15 +176,16 @@ async function populateNpcTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO npc_templates (name, sprite_key, description, script_path, base_stats, loot_table)
-          VALUES (?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO npc_templates (name, sprite_key, description, script_path, base_stats, loot_table, npc_dialogue_template_id)
+          VALUES (?, ?, ?, ?, ?, ?, ?)`,
           [
             npc.name,
             npc.sprite_key,
             npc.description,
             npc.script_path,
             npc.base_stats,
-            npc.loot_table
+            npc.loot_table,
+            npc.npc_dialogue_template_id
           ]
         );
       }
@@ -138,7 +197,6 @@ async function populateNpcTemplates() {
     connection.release();
   }
 }
-
 
 async function populateClassTemplates() {
   const connection = await pool.getConnection();
@@ -229,6 +287,8 @@ async function populateStatusTemplates() {
   }
 
 async function populateTables() {
+  await populateNpcDialogueTemplates();
+  await populateCharacterFlagTemplates();
   await populateEncounterTemplates();
   await populateItemTemplates();
   await populateNpcTemplates();

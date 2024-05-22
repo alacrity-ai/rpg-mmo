@@ -1,4 +1,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS npc_dialogue_instances;
+DROP TABLE IF EXISTS npc_dialogue_templates;
+DROP TABLE IF EXISTS character_flag_templates;
 DROP TABLE IF EXISTS encounter_templates;
 DROP TABLE IF EXISTS zone_templates;
 DROP TABLE IF EXISTS zone_instances;

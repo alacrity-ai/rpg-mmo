@@ -14,9 +14,9 @@ class Character {
      * @param {Object} params.baseStats - The base stats of the character.
      * @param {Object} params.currentStats - The current stats of the character.
      * @param {number} params.current_area_id - The ID of the current area the character is in.
-     * @param {string} params.socket_id - The socket ID associated with the character.
+     * @param {Array<number>} params.flags - An array of flag IDs.
      */
-    constructor({ id, user_id, name, characterClass, baseStats, currentStats, current_area_id, socket_id }) {
+    constructor({ id, user_id, name, characterClass, baseStats, currentStats, current_area_id, flags }) {
       this.id = id;
       this.userId = user_id;
       this.name = name;
@@ -24,9 +24,36 @@ class Character {
       this.baseStats = baseStats;
       this.currentStats = currentStats;
       this.currentAreaId = current_area_id;
-      this.socketId = socket_id;
+      this.flags = flags;
     }
   }
   
-module.exports = Character;
+  module.exports = Character;
+  
+  /**
+   * Example usage:
+   *
+   * const character = new Character({
+   *   id: 1,
+   *   user_id: 1,
+   *   name: 'Thalion',
+   *   characterClass: 'ranger',
+   *   baseStats: { strength: 10, wisdom: 15, intelligence: 8 },
+   *   currentStats: { strength: 10, wisdom: 15, intelligence: 8 },
+   *   current_area_id: 1,
+   *   flags: [1, 2, 3]
+   * });
+   *
+   * console.log(character);
+   * // Character {
+   * //   id: 1,
+   * //   userId: 1,
+   * //   name: 'Thalion',
+   * //   characterClass: 'ranger',
+   * //   baseStats: { strength: 10, wisdom: 15, intelligence: 8 },
+   * //   currentStats: { strength: 10, wisdom: 15, intelligence: 8 },
+   * //   currentAreaId: 1,
+   * //   flags: [1, 2, 3]
+   * // }
+   */
   

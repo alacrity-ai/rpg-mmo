@@ -10,7 +10,7 @@ class AreaInstance {
    * @param {number} params.id - The ID of the area instance.
    * @param {string} params.backgroundImage - The background image for the area instance.
    * @param {number} [params.encounter] - The ID of the encounter associated with the area.
-   * @param {Object} params.friendlyNpcs - A map of friendly NPC instance IDs to their quantities.
+   * @param {Object} params.friendlyNpcs - A map of friendly NPC template IDs to their quantities.
    * @param {Date} params.created_at - The timestamp when the area instance was created.
    */
   constructor({ id, background_image, encounter = null, friendlyNpcs, created_at }) {

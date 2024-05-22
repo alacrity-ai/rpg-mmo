@@ -79,6 +79,11 @@ async function initTables() {
       is_collectible BOOLEAN DEFAULT 1,
       use_effect JSON
     )`,
+    `CREATE TABLE IF NOT EXISTS npc_dialogue_templates (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      description TEXT NOT NULL,
+      script_path VARCHAR(255) NOT NULL
+    )`,
     `CREATE TABLE IF NOT EXISTS npc_templates (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
@@ -86,7 +91,9 @@ async function initTables() {
       description TEXT,
       script_path VARCHAR(255),
       base_stats JSON,
-      loot_table JSON
+      loot_table JSON,
+      npc_dialogue_template_id INT,
+      FOREIGN KEY (npc_dialogue_template_id) REFERENCES npc_dialogue_templates(id)
     )`,
     `CREATE TABLE IF NOT EXISTS npc_instances (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -132,9 +139,22 @@ async function initTables() {
       base_stats JSON,
       current_stats JSON,
       current_area_id INT,
-      socket_id VARCHAR(255),
+      flags TEXT,
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (current_area_id) REFERENCES area_instances(id)
+    )`,
+    `CREATE TABLE IF NOT EXISTS npc_dialogue_instances (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      npc_dialogue_template_id INT NOT NULL,
+      character_id INT NOT NULL,
+      state INT DEFAULT 0,
+      FOREIGN KEY (npc_dialogue_template_id) REFERENCES npc_dialogue_templates(id),
+      FOREIGN KEY (character_id) REFERENCES characters(id)
+    )`,
+    `CREATE TABLE IF NOT EXISTS character_flag_templates (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      description TEXT
     )`,
     `CREATE TABLE IF NOT EXISTS character_parties (
       id INT AUTO_INCREMENT PRIMARY KEY,

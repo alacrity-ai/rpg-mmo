@@ -1,6 +1,10 @@
+// db/queries/characterQueries.js
+
 const { query } = require('../database');
 const Character = require('../../models/Character');
 const { getClassTemplateByName } = require('./classTemplatesQueries');
+const { getCharacterFlagTemplateByName } = require('./characterFlagTemplatesQueries');
+
 
 async function createCharacter(userId, characterName, characterClass) {
   // Convert characterName and characterClass to lowercase
@@ -18,13 +22,32 @@ async function createCharacter(userId, characterName, characterClass) {
   if (!classTemplate) {
     throw new Error(`Class template not found for class: ${lowerCaseCharacterClass}`);
   }
-  
+
   const baseStats = JSON.stringify(classTemplate.baseStats);
 
-  const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats) VALUES (?, ?, ?, ?, ?)';
-  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats];
+  const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats, flags) VALUES (?, ?, ?, ?, ?, ?)';
+  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats, ''];
   const result = await query(sql, params);
   return result.insertId;
+}
+
+async function getCharacterById(id) {
+  const sql = 'SELECT * FROM characters WHERE id = ?';
+  const params = [id];
+  const rows = await query(sql, params);
+  if (rows.length > 0) {
+    return new Character({
+      id: rows[0].id,
+      user_id: rows[0].user_id,
+      name: rows[0].name,
+      characterClass: rows[0].class,
+      baseStats: rows[0].base_stats,
+      currentStats: rows[0].current_stats,
+      current_area_id: rows[0].current_area_id,
+      flags: rows[0].flags ? rows[0].flags.split(',').map(Number) : []
+    });
+  }
+  return null;
 }
 
 async function getCharacter(userId, characterName) {
@@ -43,7 +66,7 @@ async function getCharacter(userId, characterName) {
       baseStats: rows[0].base_stats,
       currentStats: rows[0].current_stats,
       current_area_id: rows[0].current_area_id,
-      socket_id: rows[0].socket_id,
+      flags: rows[0].flags ? rows[0].flags.split(',').map(Number) : []
     });
   }
   return null;
@@ -55,7 +78,7 @@ async function getCharactersByUser(userId) {
   const rows = await query(sql, params);
   return rows.map(row => {
     try {
-      console.log(typeof(row.base_stats), typeof(row.current_stats))
+      console.log(typeof(row.base_stats), typeof(row.current_stats));
       return new Character({
         id: row.id,
         user_id: row.user_id,
@@ -64,7 +87,7 @@ async function getCharactersByUser(userId) {
         baseStats: row.base_stats,
         currentStats: row.current_stats,
         current_area_id: row.current_area_id,
-        socket_id: row.socket_id,
+        flags: row.flags ? row.flags.split(',').map(Number) : []
       });
     } catch (err) {
       console.error('Error parsing character stats:', err.message, 'Base stats:', row.base_stats, 'Current stats:', row.current_stats);
@@ -80,7 +103,7 @@ async function getCharacterStats(characterId) {
   if (rows.length > 0) {
     return {
       baseStats: rows[0].base_stats,
-      currentStats: rows[0].current_stats,
+      currentStats: rows[0].current_stats
     };
   }
   return null;
@@ -112,16 +135,70 @@ async function getCharactersByIds(characterIds) {
     baseStats: row.base_stats,
     currentStats: row.current_stats,
     current_area_id: row.current_area_id,
-    socket_id: row.socket_id,
+    flags: row.flags ? row.flags.split(',').map(Number) : []
   }));
 }
 
+async function updateCharacterFlags(characterId, flags) {
+  const sql = 'UPDATE characters SET flags = ? WHERE id = ?';
+  const params = [flags.join(','), characterId];
+  await query(sql, params);
+}
+
+async function addCharacterFlag(characterId, flag) {
+  let flagId;
+  if (typeof flag === 'number') {
+    flagId = flag;
+  } else if (typeof flag === 'string') {
+    const flagTemplate = await getCharacterFlagTemplateByName(flag);
+    if (!flagTemplate) throw new Error(`Flag with name ${flag} not found`);
+    flagId = flagTemplate.id;
+  } else {
+    throw new Error('Invalid flag type');
+  }
+
+  const character = await getCharacterById(characterId);
+  if (!character) throw new Error(`Character with ID ${characterId} not found`);
+
+  const flags = character.flags ? character.flags : [];
+  if (!flags.includes(flagId)) {
+    flags.push(flagId);
+    await updateCharacterFlags(characterId, flags);
+  }
+}
+
+async function removeCharacterFlag(characterId, flag) {
+  let flagId;
+  if (typeof flag === 'number') {
+    flagId = flag;
+  } else if (typeof flag === 'string') {
+    const flagTemplate = await getCharacterFlagTemplateByName(flag);
+    if (!flagTemplate) throw new Error(`Flag with name ${flag} not found`);
+    flagId = flagTemplate.id;
+  } else {
+    throw new Error('Invalid flag type');
+  }
+
+  const character = await getCharacterById(characterId);
+  if (!character) throw new Error(`Character with ID ${characterId} not found`);
+
+  const flags = character.flags ? character.flags : [];
+  const index = flags.indexOf(flagId);
+  if (index > -1) {
+    flags.splice(index, 1);
+    await updateCharacterFlags(characterId, flags);
+  }
+}
+
 module.exports = { 
+  getCharacterById,
   createCharacter, 
   getCharacter, 
   getCharactersByUser, 
   getCharacterStats, 
   getCharacterArea, 
   updateCharacterStats,
-  getCharactersByIds
+  getCharactersByIds,
+  addCharacterFlag,
+  removeCharacterFlag
 };
