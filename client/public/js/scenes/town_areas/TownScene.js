@@ -8,7 +8,6 @@ import InteractiveZoneManager from '../../interface/InteractiveZoneManager.js';
 import CustomCursor from '../../interface/CustomCursor.js';
 import PointLightManager from '../../graphics/PointLight.js';
 import PartyDisplayManager from '../../interface/PartyDisplayManager.js';
-import socketManager from '../../SocketManager.js';
 
 export default class TownScene extends Phaser.Scene {
     constructor() {
