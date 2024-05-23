@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { pool } = require('./database');
+const areaEventTemplates = require('./data/areaEventTemplates');
 const itemTemplates = require('./data/itemTemplates');
 const npcTemplates = require('./data/npcTemplates');
 const classTemplates = require('./data/classTemplates');
@@ -107,8 +108,8 @@ async function populateZoneTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO zone_templates (name, description, encounters, friendly_npcs, image_folder_path, min_areas, max_areas, music_key)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO zone_templates (name, description, encounters, friendly_npcs, image_folder_path, min_areas, max_areas, area_events, music_key)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             zone.name,
             zone.description,
@@ -117,6 +118,7 @@ async function populateZoneTemplates() {
             zone.image_folder_path,
             zone.min_areas,
             zone.max_areas,
+            zone.area_events,
             zone.music_key
           ]
         );
@@ -284,9 +286,39 @@ async function populateStatusTemplates() {
     } finally {
       connection.release();
     }
+}
+
+async function populateAreaEventTemplates() {
+  const connection = await pool.getConnection();
+  try {
+    for (const event of areaEventTemplates) {
+      const [rows] = await connection.query(
+        `SELECT * FROM area_event_templates WHERE id = ?`,
+        [event.id]
+      );
+
+      if (rows.length === 0) {
+        await connection.query(
+          `INSERT INTO area_event_templates (id, name, event_script)
+          VALUES (?, ?, ?)`,
+          [
+            event.id,
+            event.name,
+            event.event_script
+          ]
+        );
+      }
+    }
+    console.log('Area event templates populated.');
+  } catch (err) {
+    console.error('Error populating area event templates', err);
+  } finally {
+    connection.release();
   }
+}
 
 async function populateTables() {
+  await populateAreaEventTemplates();
   await populateNpcDialogueTemplates();
   await populateCharacterFlagTemplates();
   await populateEncounterTemplates();

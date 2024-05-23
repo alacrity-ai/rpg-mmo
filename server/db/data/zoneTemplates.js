@@ -11,6 +11,10 @@ const zoneTemplates = [
     friendly_npcs: JSON.stringify([
       { npc_id: 2, chance_to_spawn: 0.5, max_instances: 1 }  // Example: Donkey
     ]),
+    area_events: JSON.stringify([
+      { template_id: 1, probability: 0.2, max_instances: 2 },
+      { template_id: 2, probability: 0.1, max_instances: 1 }
+    ]),
     image_folder_path: 'assets/images/zones/enchanted-forest',
     min_areas: 3,
     max_areas: 7,
@@ -25,6 +29,9 @@ const zoneTemplates = [
     ]),
     friendly_npcs: JSON.stringify([
       { npc_id: 2, chance_to_spawn: 0.3, max_instances: 2 }  // Example: Ghostly Guide
+    ]),
+    area_events: JSON.stringify([
+      { template_id: 3, probability: 0.3, max_instances: 1 }
     ]),
     image_folder_path: 'assets/images/zones/haunted-woods',
     min_areas: 5,
@@ -41,6 +48,9 @@ const zoneTemplates = [
     friendly_npcs: JSON.stringify([
       { npc_id: 2, chance_to_spawn: 0.2, max_instances: 1 }  // Example: Lost Wanderer
     ]),
+    area_events: JSON.stringify([
+      { template_id: 4, probability: 0.4, max_instances: 2 }
+    ]),
     image_folder_path: 'assets/images/zones/dark-forest',
     min_areas: 7,
     max_areas: 12,
@@ -53,6 +63,9 @@ const zoneTemplates = [
       { encounter_id: 1, probability: 0.4 }
     ]),
     friendly_npcs: JSON.stringify([]),
+    area_events: JSON.stringify([
+      { template_id: 5, probability: 0.5, max_instances: 3 }
+    ]),
     image_folder_path: 'assets/images/zones/abandoned-mine',
     min_areas: 2,
     max_areas: 5,

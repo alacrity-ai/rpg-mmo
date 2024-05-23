@@ -18,6 +18,10 @@ describe('ZoneTemplate', () => {
       image_folder_path: 'assets/images/zones/enchanted-forest',
       min_areas: 3,
       max_areas: 7,
+      area_events: [
+        { template_id: 1, probability: 0.2, max_instances: 2 },
+        { template_id: 2, probability: 0.1, max_instances: 1 }
+      ],
       music_key: 'forest_music1'
     });
 
@@ -34,6 +38,10 @@ describe('ZoneTemplate', () => {
     expect(zoneTemplate.imageFolderPath).toBe('assets/images/zones/enchanted-forest');
     expect(zoneTemplate.minAreas).toBe(3);
     expect(zoneTemplate.maxAreas).toBe(7);
+    expect(zoneTemplate.areaEvents).toEqual([
+      { template_id: 1, probability: 0.2, max_instances: 2 },
+      { template_id: 2, probability: 0.1, max_instances: 1 }
+    ]);
     expect(zoneTemplate.musicKey).toBe('forest_music1');
   });
 
@@ -47,6 +55,7 @@ describe('ZoneTemplate', () => {
       image_folder_path: 'assets/images/zones/desert-wasteland',
       min_areas: 1,
       max_areas: 5,
+      area_events: [],
       music_key: 'desert_music1'
     });
 
@@ -58,6 +67,7 @@ describe('ZoneTemplate', () => {
     expect(zoneTemplate.imageFolderPath).toBe('assets/images/zones/desert-wasteland');
     expect(zoneTemplate.minAreas).toBe(1);
     expect(zoneTemplate.maxAreas).toBe(5);
+    expect(zoneTemplate.areaEvents).toEqual([]);
     expect(zoneTemplate.musicKey).toBe('desert_music1');
   });
 });

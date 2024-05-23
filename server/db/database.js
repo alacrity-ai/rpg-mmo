@@ -37,6 +37,7 @@ async function initTables() {
       image_folder_path VARCHAR(255),
       min_areas INT,
       max_areas INT,
+      area_events JSON,
       music_key VARCHAR(255)
     )`,
     `CREATE TABLE IF NOT EXISTS zone_instances (
@@ -47,14 +48,31 @@ async function initTables() {
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (template_id) REFERENCES zone_templates(id)
     )`,
+    `CREATE TABLE IF NOT EXISTS area_event_templates (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      event_script TEXT NOT NULL
+    )`,
+    `CREATE TABLE IF NOT EXISTS area_event_instances (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      template_id INT NOT NULL,
+      phase INT NOT NULL,
+      phase_start_time TIMESTAMP NOT NULL,
+      action_votes JSON NOT NULL,
+      completed BOOLEAN DEFAULT FALSE,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (template_id) REFERENCES area_event_templates(id)
+    )`,
     `CREATE TABLE IF NOT EXISTS area_instances (
       id INT AUTO_INCREMENT PRIMARY KEY,
       background_image VARCHAR(255),
       encounter INT DEFAULT NULL,
       friendly_npcs JSON,
       explored BOOLEAN DEFAULT FALSE,
+      event_instance_id INT DEFAULT NULL,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (encounter) REFERENCES encounter_templates(id)
+      FOREIGN KEY (encounter) REFERENCES encounter_templates(id),
+      FOREIGN KEY (event_instance_id) REFERENCES area_event_instances(id)
     )`,
     `CREATE TABLE IF NOT EXISTS item_templates (
       id INT AUTO_INCREMENT PRIMARY KEY,

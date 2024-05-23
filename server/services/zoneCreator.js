@@ -1,54 +1,80 @@
 const { getZoneTemplateById } = require('../db/queries/zoneTemplatesQueries');
 const { createZoneInstance } = require('../db/queries/zoneInstancesQueries');
 const { createAreaInstance } = require('../db/queries/areaInstancesQueries');
+const { createAreaEventInstance } = require('../db/queries/areaEventInstancesQueries');
 const { getEncounterTemplateById } = require('../db/queries/encounterTemplatesQueries');
-const { getRandomInt } = require('../utilities/helpers');
+const { getRandomInt, getRandomFloat } = require('../utilities/helpers');
 const { generateGrid, mapCoordinatesToAreas } = require('./areas/mapFunctions');
 
 async function createZoneInstanceFromTemplate(templateId, params = {}) {
-  try {
-    // Fetch the zone template
-    const zoneTemplate = await getZoneTemplateById(templateId);
-    if (!zoneTemplate) {
-      throw new Error('Zone template not found');
-    }
-
-    // Determine the number of areas to create
-    const numAreas = getRandomInt(zoneTemplate.minAreas, zoneTemplate.maxAreas);
-
-    // Generate the area instances
-    const areaInstances = [];
-    let bossEncounterUsed = false;
-
-    for (let i = 0; i < numAreas; i++) {
-      const encounterId = await generateEncounter(zoneTemplate.encounters, bossEncounterUsed);
-      const encounterTemplate = encounterId ? await getEncounterTemplateById(encounterId) : null;
-
-      if (encounterTemplate && encounterTemplate.isBoss) {
-        bossEncounterUsed = true;
+    try {
+      // Fetch the zone template
+      const zoneTemplate = await getZoneTemplateById(templateId);
+      if (!zoneTemplate) {
+        throw new Error('Zone template not found');
       }
-
-      const areaInstance = await createAreaInstance({
-        background_image: `${zoneTemplate.imageFolderPath}/area_${i}.png`,
-        encounter: encounterId,
-        friendlyNpcs: generateNpcs(zoneTemplate.friendlyNpcs)
+  
+      // Determine the number of areas to create
+      const numAreas = getRandomInt(zoneTemplate.minAreas, zoneTemplate.maxAreas);
+  
+      // Track used area events
+      const usedAreaEvents = new Map();
+  
+      // Generate the area instances
+      const areaInstances = [];
+      let bossEncounterUsed = false;
+  
+      for (let i = 0; i < numAreas; i++) {
+        const encounterId = await generateEncounter(zoneTemplate.encounters, bossEncounterUsed);
+        const encounterTemplate = encounterId ? await getEncounterTemplateById(encounterId) : null;
+  
+        if (encounterTemplate && encounterTemplate.isBoss) {
+          bossEncounterUsed = true;
+        }
+  
+        const eventInstanceId = await maybeCreateAreaEventInstance(zoneTemplate.areaEvents, usedAreaEvents);
+  
+        const areaInstance = await createAreaInstance({
+          background_image: `${zoneTemplate.imageFolderPath}/area_${i}.png`,
+          encounter: encounterId,
+          friendlyNpcs: generateNpcs(zoneTemplate.friendlyNpcs),
+          event_instance_id: eventInstanceId
+        });
+        areaInstances.push(areaInstance);
+      }
+  
+      // Create the zone instance
+      const areaConnections = generateAreaConnections(numAreas);
+      const zoneInstance = await createZoneInstance({
+        name: params.name || zoneTemplate.name,
+        template_id: templateId,
+        areas: areaConnections
       });
-      areaInstances.push(areaInstance);
+  
+      return zoneInstance;
+    } catch (error) {
+      console.error('Error creating zone instance:', error);
+      throw error;
     }
+}
 
-    // Create the zone instance
-    const areaConnections = generateAreaConnections(numAreas);
-    const zoneInstance = await createZoneInstance({
-      name: params.name || zoneTemplate.name,
-      template_id: templateId,
-      areas: areaConnections
-    });
-
-    return zoneInstance;
-  } catch (error) {
-    console.error('Error creating zone instance:', error);
-    throw error;
-  }
+async function maybeCreateAreaEventInstance(areaEvents, usedAreaEvents) {
+    for (const event of areaEvents) {
+      const { template_id, probability, max_instances } = event;
+      const currentInstances = usedAreaEvents.get(template_id) || 0;
+  
+      if (currentInstances < max_instances && getRandomFloat(0, 1) <= probability) {
+        const eventInstance = await createAreaEventInstance({
+          template_id,
+          phase: 1,
+          action_votes: {},
+          completed: false
+        });
+        usedAreaEvents.set(template_id, currentInstances + 1);
+        return eventInstance.id;
+      }
+    }
+    return null;
 }
 
 async function generateEncounter(encounters, bossEncounterUsed) {

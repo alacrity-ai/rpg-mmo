@@ -12,14 +12,16 @@ class AreaInstance {
    * @param {number} [params.encounter] - The ID of the encounter associated with the area.
    * @param {Object} params.friendlyNpcs - A map of friendly NPC template IDs to their quantities.
    * @param {boolean} [params.explored] - Whether the area has been explored.
+   * @param {number} [params.event_instance_id] - The ID of the event instance associated with the area.
    * @param {Date} params.created_at - The timestamp when the area instance was created.
    */
-  constructor({ id, background_image, encounter = null, friendlyNpcs, explored = false, created_at }) {
+  constructor({ id, background_image, encounter = null, friendlyNpcs, explored = false, event_instance_id = null, created_at }) {
     this.id = id;
     this.background_image = background_image;
     this.encounter = encounter;
     this.friendlyNpcs = friendlyNpcs;
     this.explored = !!explored;  // Ensure boolean value
+    this.event_instance_id = event_instance_id;
     this.created_at = created_at;
   }
 }
@@ -35,6 +37,7 @@ module.exports = AreaInstance;
  *   encounter: 1,
  *   friendlyNpcs: { 201: 1 },
  *   explored: false,
+ *   event_instance_id: 1,
  *   created_at: new Date()
  * });
  */

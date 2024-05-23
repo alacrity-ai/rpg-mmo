@@ -11,7 +11,8 @@ async function getZoneTemplateById(id) {
     const zoneTemplate = new ZoneTemplate({
       ...rows[0],
       encounters: rows[0].encounters,
-      friendly_npcs: rows[0].friendly_npcs
+      friendly_npcs: rows[0].friendly_npcs,
+      area_events: rows[0].area_events
     });
     return zoneTemplate;
   }
@@ -26,7 +27,8 @@ async function getZoneTemplateByName(name) {
     const zoneTemplate = new ZoneTemplate({
       ...rows[0],
       encounters: rows[0].encounters,
-      friendly_npcs: rows[0].friendly_npcs
+      friendly_npcs: rows[0].friendly_npcs,
+      area_events: rows[0].area_events
     });
     return zoneTemplate;
   }
@@ -39,7 +41,8 @@ async function getAllZoneTemplates() {
   return rows.map(row => new ZoneTemplate({
     ...row,
     encounters: row.encounters,
-    friendly_npcs: row.friendly_npcs
+    friendly_npcs: row.friendly_npcs,
+    area_events: row.area_events
   }));
 }
 
@@ -57,10 +60,19 @@ async function getFriendlyNPCsByZoneTemplateId(id) {
   return rows.length > 0 ? rows[0].friendly_npcs : null;
 }
 
+async function getAreaEventsByZoneTemplateId(id) {
+  const sql = 'SELECT area_events FROM zone_templates WHERE id = ?';
+  const params = [id];
+  const rows = await query(sql, params);
+  return rows.length > 0 ? rows[0].area_events : null;
+}
+
 module.exports = { 
   getZoneTemplateById, 
   getZoneTemplateByName, 
   getAllZoneTemplates, 
   getEncountersByZoneTemplateId, 
-  getFriendlyNPCsByZoneTemplateId 
+  getFriendlyNPCsByZoneTemplateId,
+  getAreaEventsByZoneTemplateId
 };
+

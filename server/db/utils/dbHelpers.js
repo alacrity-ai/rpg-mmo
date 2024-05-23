@@ -10,12 +10,14 @@ async function resetDatabase() {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 20,
     queueLimit: 0
   });
 
   const dropTableQueries = [
     'SET FOREIGN_KEY_CHECKS = 0;',
+    'DROP TABLE IF EXISTS area_event_instances;',
+    'DROP TABLE IF EXISTS area_event_templates;',
     'DROP TABLE IF EXISTS npc_dialogue_instances;',
     'DROP TABLE IF EXISTS npc_dialogue_templates;',
     'DROP TABLE IF EXISTS character_flag_templates;',
