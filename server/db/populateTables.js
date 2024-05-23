@@ -143,8 +143,8 @@ async function populateItemTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO item_templates (name, description, item_type, is_equipment, equipment_type, icon_key, stats, is_collectible, use_effect)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO item_templates (name, description, item_type, is_equipment, equipment_type, icon_key, classes, stats, is_collectible, use_effect)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             item.name,
             item.description,
@@ -152,9 +152,10 @@ async function populateItemTemplates() {
             item.is_equipment,
             item.equipment_type,
             item.icon_key,
-            item.stats,
+            JSON.stringify(item.classes), // Ensure classes are stored as JSON
+            JSON.stringify(item.stats), // Ensure stats are stored as JSON
             item.is_collectible,
-            item.use_effect
+            JSON.stringify(item.use_effect) // Ensure use_effect is stored as JSON
           ]
         );
       }
@@ -166,6 +167,7 @@ async function populateItemTemplates() {
     connection.release();
   }
 }
+
 
 async function populateNpcTemplates() {
   const connection = await pool.getConnection();

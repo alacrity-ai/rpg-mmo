@@ -23,6 +23,18 @@ class SocketManager {
         console.log('Message from server:', msg);
       });
 
+      this.socket.on('response', (response) => {
+        if (response.error) {
+          console.error(response.error);
+        } else {
+          console.log(response.data);
+        }
+      });
+
+      this.socket.on('serverTick', (msg) => {
+        console.log('Server tick:', msg);
+      });
+
       this.socket.on('disconnect', () => {
         console.log('Disconnected from MUD server');
       });

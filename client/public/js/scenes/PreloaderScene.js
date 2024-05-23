@@ -2,7 +2,7 @@
 import Phaser from 'phaser';
 import SoundFXManager from '../audio/SoundFXManager.js';
 import MusicManager from '../audio/MusicManager.js';
-import socketManager from '../SocketManager.js';
+import api from '../api'
 
 export default class PreloaderScene extends Phaser.Scene {
     constructor() {
@@ -30,8 +30,31 @@ export default class PreloaderScene extends Phaser.Scene {
     }
 
     create() {
-        // Send test command to server
-        socketManager.sendCommand('help');
+        api.auth.createUser('test', 'test').then((data) => {
+            console.log('User created:', data);
+        }).catch((error) => {
+            console.error('User creation error:', error);
+        });
+
+        api.auth.login('test', 'test').then((data) => {
+            console.log('Logged in:', data);
+        }).catch((error) => {
+            console.error('Login error:', error);
+        });
+
+        // sleep(5000);
+
+        // api.auth.createCharacter('test', 'mage').then((data) => {
+        //     console.log('Character created:', data);
+        // }).catch((error) => {
+        //     console.error('Character creation error:', error);
+        // });
+
+        // api.auth.characterLogin('test').then((data) => {
+        //     console.log('Character logged in:', data);
+        // }).catch((error) => {
+        //     console.error('Character login error:', error);
+        // });
 
         // Initialize the SFX Manager
         SoundFXManager.onPreloadComplete();

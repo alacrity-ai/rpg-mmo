@@ -1,8 +1,20 @@
 import socketManager from '../SocketManager';
 
+const createUser = (username, password) => {
+  return new Promise((resolve, reject) => {
+    socketManager.socket.emit('command', `create ${username} ${password}`, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
 const login = (username, password) => {
   return new Promise((resolve, reject) => {
-    socketManager.socket.emit('login', { username, password }, (response) => {
+    socketManager.socket.emit('command', `login ${username} ${password}`, (response) => {
       if (response.error) {
         reject(response.error);
       } else {
@@ -12,9 +24,9 @@ const login = (username, password) => {
   });
 };
 
-const logout = () => {
+const createCharacter = (characterName, characterClass) => {
   return new Promise((resolve, reject) => {
-    socketManager.socket.emit('logout', {}, (response) => {
+    socketManager.socket.emit('command', `character new ${characterName} ${characterClass}`, (response) => {
       if (response.error) {
         reject(response.error);
       } else {
@@ -24,9 +36,9 @@ const logout = () => {
   });
 };
 
-const register = (username, password) => {
+const characterLogin = (characterName) => {
   return new Promise((resolve, reject) => {
-    socketManager.socket.emit('register', { username, password }, (response) => {
+    socketManager.socket.emit('command', `character login ${characterName}`, (response) => {
       if (response.error) {
         reject(response.error);
       } else {
@@ -37,7 +49,8 @@ const register = (username, password) => {
 };
 
 export default {
+  createUser,
   login,
-  logout,
-  register,
+  createCharacter,
+  characterLogin,
 };

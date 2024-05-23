@@ -1,8 +1,9 @@
+// api/shop.js
 import socketManager from '../SocketManager';
 
-const getShopItems = (shopId) => {
+const viewShopInventory = (shopId) => {
   return new Promise((resolve, reject) => {
-    socketManager.socket.emit('getShopItems', { shopId }, (response) => {
+    socketManager.socket.emit('shopCommand', { command: 'viewShopInventory', shopId }, (response) => {
       if (response.error) {
         reject(response.error);
       } else {
@@ -14,7 +15,7 @@ const getShopItems = (shopId) => {
 
 const buyItem = (shopId, itemId) => {
   return new Promise((resolve, reject) => {
-    socketManager.socket.emit('buyItem', { shopId, itemId }, (response) => {
+    socketManager.socket.emit('shopCommand', { command: 'buyItem', shopId, itemId }, (response) => {
       if (response.error) {
         reject(response.error);
       } else {
@@ -25,6 +26,6 @@ const buyItem = (shopId, itemId) => {
 };
 
 export default {
-  getShopItems,
+  viewShopInventory,
   buyItem,
 };

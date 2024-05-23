@@ -9,7 +9,7 @@ async function getItemTemplateById(id) {
     const itemTemplate = rows[0];
     itemTemplate.stats = itemTemplate.stats;
     itemTemplate.use_effect = itemTemplate.use_effect;
-    itemTemplate.classes = itemTemplate.classes.split(',').map(Number);
+    itemTemplate.classes = itemTemplate.classes
     return new ItemTemplate(itemTemplate);
   }
   return null;
@@ -23,7 +23,7 @@ async function getItemTemplateByName(name) {
     const itemTemplate = rows[0];
     itemTemplate.stats = itemTemplate.stats;
     itemTemplate.use_effect = itemTemplate.use_effect;
-    itemTemplate.classes = itemTemplate.classes.split(',').map(Number);
+    itemTemplate.classes = itemTemplate.classes
     return new ItemTemplate(itemTemplate);
   }
   return null;
@@ -35,7 +35,7 @@ async function getAllItemTemplates() {
   return rows.map(row => {
     row.stats = row.stats;
     row.use_effect = row.use_effect;
-    row.classes = row.classes.split(',').map(Number);
+    row.classes = row.classes
     return new ItemTemplate(row);
   });
 }

@@ -1,12 +1,13 @@
+// handlers/commandHandler.js
 const authHandler = require('./api/authHandler');
 const messageHandler = require('./api/messageHandler');
 const { Zone } = require('../models/zone');
 
 const defaultZone = new Zone('Starting Zone');
 
-function handleCommand(socket, input, io) {
+async function handleCommand(socket, input, io) {
     const [command, ...args] = input.split(' ');
-    console.log(`Received command: ${command}`)
+    console.log(`Received command: ${command}`);
     if (!socket.user && (command !== 'login' && command !== 'create' && command !== 'help')) {
         socket.emit('message', 'You need to be logged in to use this command.');
         return;
@@ -19,37 +20,37 @@ function handleCommand(socket, input, io) {
 
     switch (command) {
         case 'create':
-            authHandler.createAccount(socket, args);
+            await authHandler.createAccount(socket, args);
             break;
         case 'login':
-            authHandler.login(socket, args);
+            await authHandler.login(socket, args);
             break;
         case 'character':
             const [subcommand, ...subArgs] = args;
             switch (subcommand) {
                 case 'new':
-                    authHandler.createCharacter(socket, subArgs);
+                    await authHandler.createCharacter(socket, subArgs);
                     break;
                 case 'login':
-                    authHandler.characterLogin(socket, subArgs, defaultZone, io);
+                    await authHandler.characterLogin(socket, subArgs, defaultZone, io);
                     break;
                 case 'list':
-                    authHandler.listCharacters(socket);
+                    await authHandler.listCharacters(socket);
                     break;
                 case 'info':
                     const characterName = subArgs.join(' ');
-                    authHandler.characterInfo(socket, characterName);
+                    await authHandler.characterInfo(socket, characterName);
                     break;
                 default:
                     socket.emit('message', 'Unknown character subcommand.');
             }
             break;
         case 'logout':
-            authHandler.logout(socket, defaultZone, io);
+            await authHandler.logout(socket, defaultZone, io);
             break;
         case 'say':
             if (socket.character) {
-                messageHandler.handleMessage(io, socket, `${socket.character.name} says: "${args.join(' ')}"`, defaultZone);
+                await messageHandler.handleMessage(io, socket, `${socket.character.name} says: "${args.join(' ')}"`, defaultZone);
             }
             break;
         case 'help':

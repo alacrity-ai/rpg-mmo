@@ -6,6 +6,7 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
+    "worker": "node worker.js",
     "test": "jest --runInBand --silent=false --forceExit"
   },
   "keywords": [
@@ -20,8 +21,10 @@
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
+    "ioredis": "^5.4.1",
     "mysql2": "^3.9.7",
     "socket.io": "^4.7.5",
+    "socket.io-client": "^4.7.5",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
@@ -29,7 +32,9 @@
     "nodemon": "^3.0.1"
   },
   "jest": {
-    "testMatch": ["**/test/**/*.js"]
+    "testMatch": [
+      "**/test/**/*.js"
+    ]
   },
   "engines": {
     "node": ">=20.9.0"

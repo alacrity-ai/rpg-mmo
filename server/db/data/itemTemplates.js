@@ -14,7 +14,7 @@ const itemTemplates = [
       effect_type: 'restore_health',
       amount: 50
     }),
-    classes: '1,2,3,4,5,6,7,8,9,10,11,12'
+    classes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   },
   {
     name: 'Mana Potion',
@@ -31,7 +31,7 @@ const itemTemplates = [
       effect_type: 'restore_mana',
       amount: 40
     }),
-    classes: '1,2,3,4,5,6,7,8,9,10,11,12'
+    classes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   },
   {
     name: 'Round Shield',
@@ -45,7 +45,7 @@ const itemTemplates = [
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '4,5,6'
+    classes: [4, 5, 6]
   },
   {
     name: 'Short Bow',
@@ -59,7 +59,7 @@ const itemTemplates = [
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '3'
+    classes: [3]
   },
   {
     name: 'Bronze Helmet',
@@ -73,7 +73,7 @@ const itemTemplates = [
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '4,5,6'
+    classes: [4, 5, 6]
   },
   {
     name: 'Chestplate',
@@ -87,7 +87,7 @@ const itemTemplates = [
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '4,5,6'
+    classes: [4, 5, 6]
   },
   {
     name: 'Leather Boots',
@@ -102,7 +102,7 @@ const itemTemplates = [
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '1,2,3,4,5,6,7,8,9,10,11,12'
+    classes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   },
   {
     name: 'Ring of Strength',
@@ -116,7 +116,7 @@ const itemTemplates = [
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '1,2,3,4,5,6,7,8,9,10,11,12'
+    classes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   },
   {
     name: 'Amulet of Wisdom',
@@ -130,7 +130,7 @@ const itemTemplates = [
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '1,2,3,4,5,6,7,8,9,10,11,12'
+    classes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   },
   {
     name: 'Leaf Tunic',
@@ -144,7 +144,7 @@ const itemTemplates = [
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '1,2,3,4,5,6,7,8,9,10,11,12'
+    classes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   },
   {
     name: 'Iron Sword',
@@ -152,13 +152,13 @@ const itemTemplates = [
     item_type: 'weapon',
     is_equipment: true,
     equipment_type: 'one-hand',
-    icon_key: 'iron_sword_icon',
+    icon_key: 'iron-sword',
     stats: JSON.stringify({
       attack: 15
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '1,4,5,6'
+    classes: [1, 4, 5, 6]
   },
   {
     name: 'Golden Ring',
@@ -166,13 +166,13 @@ const itemTemplates = [
     item_type: 'accessory',
     is_equipment: true,
     equipment_type: 'ring',
-    icon_key: 'golden_ring_icon',
+    icon_key: 'gold-ring',
     stats: JSON.stringify({
       charisma: 3
     }),
     is_collectible: true,
     use_effect: null,
-    classes: '1,2,3,4,5,6,7,8,9,10,11,12'
+    classes: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
   }
 ];
 

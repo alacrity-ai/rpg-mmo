@@ -1,5 +1,6 @@
 # Volume
 database/volume
+redis/volume
 
 # Node.js
 node_modules/

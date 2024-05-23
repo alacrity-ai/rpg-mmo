@@ -1,8 +1,30 @@
-import api from '../api';
+import socketManager from '../SocketManager';
 
-api.item.getItemDetails(itemId).then(itemDetails => {
-  console.log('Item details:', itemDetails);
-  // Update the UI with the item details
-}).catch(error => {
-  console.error('Error fetching item details:', error);
-});
+const viewShopInventory = (shopId) => {
+  return new Promise((resolve, reject) => {
+    socketManager.socket.emit('viewShopInventory', { shopId }, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
+const buyItem = (shopId, itemId) => {
+  return new Promise((resolve, reject) => {
+    socketManager.socket.emit('buyItem', { shopId, itemId }, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
+export default {
+  viewShopInventory,
+  buyItem,
+};

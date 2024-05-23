@@ -95,7 +95,7 @@ async function initTables() {
         'neck'
       ),
       icon_key VARCHAR(255),
-      classes VARCHAR(255),
+      classes JSON,
       stats JSON,
       is_collectible BOOLEAN DEFAULT 1,
       use_effect JSON

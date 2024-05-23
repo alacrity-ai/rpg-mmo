@@ -6,75 +6,75 @@ const Character = require('../../models/Character');
 
 async function createAccount(socket, [username, password]) {
     if (typeof password !== 'string') {
-        socket.emit('message', 'Invalid password format.');
+        socket.emit('response', { error: 'Invalid password format.' });
         return;
     }
     const hash = crypto.createHash('sha256').update(password).digest('hex');
     try {
         await createUser(username, hash);
-        socket.emit('message', 'Account created successfully. You can now login.');
+        socket.emit('response', { data: 'Account created successfully. You can now login.' });
     } catch (err) {
-        socket.emit('message', 'Username already taken or error creating an account.');
+        socket.emit('response', { error: 'Username already taken or error creating an account.' });
         console.error(err.message);
     }
 }
 
 async function login(socket, [username, password]) {
     if (typeof password !== 'string') {
-        socket.emit('message', 'Invalid password format.');
+        socket.emit('response', { error: 'Invalid password format.' });
         return;
     }
     const hash = crypto.createHash('sha256').update(password).digest('hex');
     try {
         const user = await getUserByUsername(username);
         if (!user || user.passwordHash !== hash) {
-            socket.emit('message', 'Invalid username or password.');
+            socket.emit('response', { error: 'Invalid username or password.' });
         } else {
             socket.user = new User(user);
-            socket.emit('message', `Logged in as ${username}. Use 'character new' to create a new character or 'character login' to log in as a character.`);
+            socket.emit('response', { data: `Logged in as ${username}. Use 'character new' to create a new character or 'character login' to log in as a character.` });
         }
     } catch (err) {
-        socket.emit('message', 'Error logging in.');
+        socket.emit('response', { error: 'Error logging in.' });
         console.error(err.message);
     }
 }
 
 async function createCharacter(socket, [characterName, characterClass]) {
     if (!socket.user) {
-        socket.emit('message', 'You need to be logged in to create a character.');
+        socket.emit('response', { error: 'You need to be logged in to create a character.' });
         return;
     }
     const userId = socket.user.id;
 
     try {
         const characterId = await characterQueries.createCharacter(userId, characterName, characterClass);
-        socket.emit('message', `Character ${characterName} created successfully.`);
+        socket.emit('response', { data: `Character ${characterName} created successfully.` });
     } catch (err) {
-        socket.emit('message', 'Error creating character.');
+        socket.emit('response', { error: 'Error creating character.' });
         console.error(err.message);
     }
 }
 
 async function characterLogin(socket, [characterName], defaultZone, io) {
     if (!socket.user) {
-        socket.emit('message', 'You need to be logged in to log in as a character.');
+        socket.emit('response', { error: 'You need to be logged in to log in as a character.' });
         return;
     }
     const userId = socket.user.id;
     try {
         const characterData = await characterQueries.getCharacter(userId, characterName);
         if (!characterData) {
-            socket.emit('message', 'Character not found.');
+            socket.emit('response', { error: 'Character not found.' });
         } else {
             const character = new Character(characterData);
             socket.character = character;
             defaultZone.addPlayer(character);
             socket.join(defaultZone.name);
-            socket.emit('message', `Logged in as character ${character.name}.`);
+            socket.emit('response', { data: `Logged in as character ${character.name}.` });
             io.to(defaultZone.name).emit('message', `${character.name} has entered ${defaultZone.name}.`);
         }
     } catch (err) {
-        socket.emit('message', 'Error logging in as character.');
+        socket.emit('response', { error: 'Error logging in as character.' });
         console.error(err.message);
     }
 }
