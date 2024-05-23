@@ -52,6 +52,7 @@ async function initTables() {
       background_image VARCHAR(255),
       encounter INT DEFAULT NULL,
       friendly_npcs JSON,
+      explored BOOLEAN DEFAULT FALSE,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (encounter) REFERENCES encounter_templates(id)
     )`,

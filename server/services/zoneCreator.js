@@ -3,6 +3,7 @@ const { createZoneInstance } = require('../db/queries/zoneInstancesQueries');
 const { createAreaInstance } = require('../db/queries/areaInstancesQueries');
 const { getEncounterTemplateById } = require('../db/queries/encounterTemplatesQueries');
 const { getRandomInt } = require('../utilities/helpers');
+const { generateGrid, mapCoordinatesToAreas } = require('./areas/mapFunctions');
 
 async function createZoneInstanceFromTemplate(templateId, params = {}) {
   try {
@@ -36,10 +37,11 @@ async function createZoneInstanceFromTemplate(templateId, params = {}) {
     }
 
     // Create the zone instance
+    const areaConnections = generateAreaConnections(numAreas);
     const zoneInstance = await createZoneInstance({
       name: params.name || zoneTemplate.name,
       template_id: templateId,
-      areas: generateAreaConnections(areaInstances)
+      areas: areaConnections
     });
 
     return zoneInstance;
@@ -85,23 +87,14 @@ function generateNpcs(npcTemplate) {
   return npcTemplate;
 }
 
-function generateAreaConnections(areaInstances) {
-  // Generate a map of area connections
-  const connections = {};
-  for (let i = 0; i < areaInstances.length; i++) {
-    connections[areaInstances[i].id] = {
-      north: areaInstances[i + 1] ? areaInstances[i + 1].id : null,
-      south: areaInstances[i - 1] ? areaInstances[i - 1].id : null,
-      east: null,
-      west: null,
-      type: null
-    };
-  }
-  if (areaInstances.length > 0) {
-    connections[areaInstances[0].id].type = 'entrance';
-    connections[areaInstances[areaInstances.length - 1].id].type = 'exit';
-  }
-  return connections;
+function generateAreaConnections(numAreas) {
+  // Generate a grid of areas
+  const gridSize = 10; // Adjust grid size if needed
+  const grid = generateGrid(numAreas, numAreas, gridSize);
+
+  // Convert grid coordinates to area connections
+  const areaConnections = mapCoordinatesToAreas(grid);
+  return areaConnections;
 }
 
 async function createExpeditionZone(templateId, params) {

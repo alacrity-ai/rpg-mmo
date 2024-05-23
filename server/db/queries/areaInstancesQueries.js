@@ -13,6 +13,7 @@ async function getAreaInstanceById(id) {
       background_image: rows[0].background_image,
       encounter: rows[0].encounter,
       friendlyNpcs: rows[0].friendly_npcs,
+      explored: rows[0].explored === 1,  // Convert to boolean
       created_at: rows[0].created_at
     });
   }
@@ -27,19 +28,21 @@ async function getAllAreaInstances() {
     background_image: row.background_image,
     encounter: row.encounter,
     friendlyNpcs: row.friendly_npcs,
+    explored: row.explored === 1,  // Convert to boolean
     created_at: row.created_at
   }));
 }
 
 async function createAreaInstance(params) {
-  const sql = 'INSERT INTO area_instances (background_image, encounter, friendly_npcs, created_at) VALUES (?, ?, ?, ?)';
+  const sql = 'INSERT INTO area_instances (background_image, encounter, friendly_npcs, explored, created_at) VALUES (?, ?, ?, ?, ?)';
   const friendlyNpcs = JSON.stringify(params.friendlyNpcs);
-  const result = await query(sql, [params.background_image, params.encounter, friendlyNpcs, new Date()]);
+  const result = await query(sql, [params.background_image, params.encounter, friendlyNpcs, params.explored ? 1 : 0, new Date()]);
   const areaInstance = new AreaInstance({
     id: result.insertId,
     background_image: params.background_image,
     encounter: params.encounter,
     friendlyNpcs: params.friendlyNpcs,
+    explored: params.explored,
     created_at: new Date()
   });
   return areaInstance;

@@ -40,6 +40,6 @@ export default class PreloaderScene extends Phaser.Scene {
         MusicManager.initialize(this);
 
         // Start the main scene
-        this.scene.start('TownScene'); // or whichever scene you want to start with
+        this.scene.start('MenuTestScene'); // or whichever scene you want to start with
     }
 }

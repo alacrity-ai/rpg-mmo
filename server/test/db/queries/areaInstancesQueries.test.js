@@ -30,14 +30,16 @@ describe('AreaInstance Queries', () => {
       const params = {
         background_image: 'forest.png',
         encounter: 1, // Assuming the first inserted encounter template has ID 1
-        friendlyNpcs: { 201: 1 }
+        friendlyNpcs: { 201: 1 },
+        explored: false
       };
       const areaInstance = await createAreaInstance(params);
 
       expect(areaInstance).toBeInstanceOf(AreaInstance);
-      expect(areaInstance.backgroundImage).toBe(params.background_image);
+      expect(areaInstance.background_image).toBe(params.background_image);
       expect(areaInstance.encounter).toBe(params.encounter);
       expect(areaInstance.friendlyNpcs).toEqual(params.friendlyNpcs);
+      expect(areaInstance.explored).toBe(params.explored);
     });
   });
 
@@ -46,16 +48,18 @@ describe('AreaInstance Queries', () => {
       const params = {
         background_image: 'cave.png',
         encounter: 2, // Assuming the second inserted encounter template has ID 2
-        friendlyNpcs: { 202: 2 }
+        friendlyNpcs: { 202: 2 },
+        explored: true
       };
       const createdAreaInstance = await createAreaInstance(params);
       const retrievedAreaInstance = await getAreaInstanceById(createdAreaInstance.id);
 
       expect(retrievedAreaInstance).toBeInstanceOf(AreaInstance);
       expect(retrievedAreaInstance.id).toBe(createdAreaInstance.id);
-      expect(retrievedAreaInstance.backgroundImage).toBe(params.background_image);
+      expect(retrievedAreaInstance.background_image).toBe(params.background_image);
       expect(retrievedAreaInstance.encounter).toBe(params.encounter);
       expect(retrievedAreaInstance.friendlyNpcs).toEqual(params.friendlyNpcs);
+      expect(retrievedAreaInstance.explored).toBe(params.explored);
     });
   });
 
@@ -64,12 +68,14 @@ describe('AreaInstance Queries', () => {
       const params1 = {
         background_image: 'forest.png',
         encounter: 1, // Assuming the first inserted encounter template has ID 1
-        friendlyNpcs: { 201: 1 }
+        friendlyNpcs: { 201: 1 },
+        explored: false
       };
       const params2 = {
         background_image: 'desert.png',
         encounter: 2, // Assuming the second inserted encounter template has ID 2
-        friendlyNpcs: { 202: 2 }
+        friendlyNpcs: { 202: 2 },
+        explored: true
       };
       await createAreaInstance(params1);
       await createAreaInstance(params2);
@@ -86,7 +92,8 @@ describe('AreaInstance Queries', () => {
       const params = {
         background_image: 'forest.png',
         encounter: 1, // Assuming the first inserted encounter template has ID 1
-        friendlyNpcs: { 201: 1 }
+        friendlyNpcs: { 201: 1 },
+        explored: false
       };
       const createdAreaInstance = await createAreaInstance(params);
       const encounter = await getEncounterByAreaInstanceId(createdAreaInstance.id);
@@ -100,7 +107,8 @@ describe('AreaInstance Queries', () => {
       const params = {
         background_image: 'forest.png',
         encounter: 1, // Assuming the first inserted encounter template has ID 1
-        friendlyNpcs: { 201: 1 }
+        friendlyNpcs: { 201: 1 },
+        explored: false
       };
       const createdAreaInstance = await createAreaInstance(params);
       const friendlyNpcs = await getFriendlyNPCsByAreaInstanceId(createdAreaInstance.id);

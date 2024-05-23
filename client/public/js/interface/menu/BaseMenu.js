@@ -353,64 +353,72 @@ class BaseMenu {
         const tooltip = this.scene.add.text(0, 0, text, { fontSize: '14px', fill: '#fff', backgroundColor: '#000000' })
             .setOrigin(0.5, 1)
             .setVisible(false);
-
+    
         target.on('pointerover', () => {
             tooltip.setPosition(target.x, target.y - target.height / 2);
             tooltip.setVisible(true);
+            this.scene.children.bringToTop(tooltip); // Ensure the tooltip is on top
         });
-
+    
         target.on('pointerout', () => {
             tooltip.setVisible(false);
         });
-
+    
         this.tabs[this.currentTab].push(tooltip); // Tooltips are associated with the current tab
-    }
+    }    
 
-    addButton(x, y, width, height, text, callback, tooltip = null, tab = 0, backgroundColor = 0x555555, textColor = '#fff', borderRadius = 10) {
+    addButton(x, y, width, height, text, callback, tooltip = null, tab = 0, backgroundColor = 0x555555, textColor = '#fff', borderRadius = 10, fontSize = '16px', locked = false) {
         // Create a container for the button
         const buttonContainer = this.scene.add.container(x, y);
-
+    
         // Create the button background with rounded edges
         const buttonBackground = this.scene.add.graphics();
         buttonBackground.fillStyle(backgroundColor, 1);
         buttonBackground.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
-
+    
+        if (!locked) {
+            buttonBackground.lineStyle(2, 0xffffff, 1); // White border initially
+            buttonBackground.strokeRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
+        }
+    
         // Create the text
-        const buttonText = this.scene.add.text(0, 0, text, { fontSize: '16px', fill: textColor })
+        const buttonText = this.scene.add.text(0, 0, text, { fontSize: fontSize, fill: textColor })
             .setOrigin(0.5, 0.5);
-
+    
         // Add background and text to the container
         buttonContainer.add(buttonBackground);
         buttonContainer.add(buttonText);
-
-        // Set interactivity on the container using the full dimensions of the button
-        buttonContainer.setSize(width, height);
-        buttonContainer.setInteractive({ useHandCursor: true }).on('pointerdown', callback);
-
-        // Set up hover events for highlighting the border (if desired)
-        buttonContainer.on('pointerover', () => {
-            buttonBackground.clear();
-            buttonBackground.fillStyle(backgroundColor, 1);
-            buttonBackground.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
-            buttonBackground.lineStyle(2, 0xffff00, 1); // Yellow border on hover
-            buttonBackground.strokeRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
-        });
-
-        buttonContainer.on('pointerout', () => {
-            buttonBackground.clear();
-            buttonBackground.fillStyle(backgroundColor, 1);
-            buttonBackground.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
-            buttonBackground.lineStyle(2, 0xffffff, 1); // White border
-            buttonBackground.strokeRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
-        });
-
+    
+        if (!locked) {
+            // Set interactivity on the container using the full dimensions of the button
+            buttonContainer.setSize(width, height);
+            buttonContainer.setInteractive({ useHandCursor: true }).on('pointerdown', callback);
+    
+            // Set up hover events for highlighting the border (if desired)
+            buttonContainer.on('pointerover', () => {
+                buttonBackground.clear();
+                buttonBackground.fillStyle(backgroundColor, 1);
+                buttonBackground.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
+                buttonBackground.lineStyle(2, 0xffff00, 1); // Yellow border on hover
+                buttonBackground.strokeRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
+            });
+    
+            buttonContainer.on('pointerout', () => {
+                buttonBackground.clear();
+                buttonBackground.fillStyle(backgroundColor, 1);
+                buttonBackground.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
+                buttonBackground.lineStyle(2, 0xffffff, 1); // White border
+                buttonBackground.strokeRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
+            });
+        }
+    
         // Add the button container to the specified tab
         this.addElementToTab(tab, buttonContainer);
-
+    
         // Add tooltip if provided
         if (tooltip) this.addTooltip(buttonContainer, tooltip);
     }
-
+    
     addClickableText(x, y, text, callback, style, tooltip = null, tab = 0) {
         const clickableText = this.scene.add.text(x, y, text, style)
             .setInteractive()
