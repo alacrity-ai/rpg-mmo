@@ -202,7 +202,3 @@ server.listen(PORT, async () => {
 });
 
 ```
-
-### Summary
-
-By following these steps, you can efficiently create and manage tasks in the system. This ensures that tasks are properly registered, handled, and executed in a modular and maintainable manner.
