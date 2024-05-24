@@ -30,37 +30,55 @@ export default class PreloaderScene extends Phaser.Scene {
     }
 
     create() {
-        api.auth.createUser('test', 'test')
+        // Attempt to log in regardless of whether createUser succeeded or failed
+        // console.log('Attempting to log in')
+        // api.auth.login('test', 'test')
+        // .then(data => {
+        //     console.log('User logged in successfully:', data);
+        // })
+        // .catch(error => {
+        //     console.error('Error logging in', error);
+        // })
+
+        api.auth.createUser('test4', 'test4')
         .then(data => {
-            console.log('User created successfully:', data);
+            console.log('Account created successfully', data);
         })
         .catch(error => {
-            console.error('Error creating user:', error);
+            console.error('Error creating account', error);
         })
-        .finally(() => {
-            // Attempt to log in regardless of whether createUser succeeded or failed
-            api.auth.login('test', 'test')
-            .then(data => {
-                console.log('User logged in successfully:', data);
-                // After logging in, create a character
-                return api.character.createCharacter('joe', 'arcanist');
-            })
-            .catch(error => {
-                console.error('Error creating character:', error);
-            })
-            .finally(() => {
-                // Attempt to character login regardless of whether createCharacter succeeded or failed
-                api.character.characterLogin('joe')
-                .then(data => {
-                    console.log('Character logged in successfully:', data);
-                    // Add any additional logic you want to execute after character login
-                })
-                .catch(error => {
-                    console.error('Error logging in character:', error);
-                    // Handle error, maybe show a message to the user
-                });
-            });
-        });
+
+        // api.auth.createUser('test', 'test')
+        // .then(data => {
+        //     console.log('User created successfully:', data);
+        // })
+        // .catch(error => {
+        //     console.error('Error creating user:', error);
+        // })
+        // .finally(() => {
+        //     // Attempt to log in regardless of whether createUser succeeded or failed
+        //     api.auth.login('test', 'test')
+        //     .then(data => {
+        //         console.log('User logged in successfully:', data);
+        //         // After logging in, create a character
+        //         return api.character.createCharacter('joe', 'arcanist');
+        //     })
+        //     .catch(error => {
+        //         console.error('Error creating character:', error);
+        //     })
+        //     .finally(() => {
+        //         // Attempt to character login regardless of whether createCharacter succeeded or failed
+        //         api.character.characterLogin('joe')
+        //         .then(data => {
+        //             console.log('Character logged in successfully:', data);
+        //             // Add any additional logic you want to execute after character login
+        //         })
+        //         .catch(error => {
+        //             console.error('Error logging in character:', error);
+        //             // Handle error, maybe show a message to the user
+        //         });
+        //     });
+        // });
 
         // Initialize the SFX Manager
         SoundFXManager.onPreloadComplete();

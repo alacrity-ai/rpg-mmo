@@ -5,9 +5,21 @@ const User = require('../../models/User');
 async function createUser(username, passwordHash) {
   // Convert username to lowercase
   const lowerCaseUsername = username.toLowerCase();
-  const sql = 'INSERT INTO users (username, password_hash) VALUES (?, ?)';
-  const params = [lowerCaseUsername, passwordHash];
-  await query(sql, params);
+  const insertSql = 'INSERT INTO users (username, password_hash) VALUES (?, ?)';
+  const insertParams = [lowerCaseUsername, passwordHash];
+  const result = await query(insertSql, insertParams);
+
+  // Check if insert was successful
+  if (result.affectedRows > 0) {
+    const selectSql = 'SELECT * FROM users WHERE id = ?';
+    const selectParams = [result.insertId];
+    const rows = await query(selectSql, selectParams);
+    if (rows.length > 0) {
+      return new User(rows[0]);
+    }
+  }
+
+  return null;
 }
 
 async function getUserByUsername(username) {
