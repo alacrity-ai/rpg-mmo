@@ -1,4 +1,6 @@
 import Phaser from 'phaser';
+import CircleMaskImagePlugin from 'phaser3-rex-plugins/plugins/circlemaskimage-plugin.js';
+
 import TownScene from './scenes/town_areas/TownScene.js';
 import MenuTestScene from './scenes/dev_scenes/MenuTestScene.js';
 import ArcaniumScene from './scenes/town_areas/ArcaniumScene.js';
@@ -8,9 +10,11 @@ import MapScene from './scenes/town_areas/MapScene.js';
 import MarketScene from './scenes/town_areas/MarketScene.js';
 import ExpeditionScene from './scenes/ExpeditionScene.js';
 import CombatScene from './scenes/CombatScene.js';
-import CircleMaskImagePlugin from 'phaser3-rex-plugins/plugins/circlemaskimage-plugin.js';
+import LoginScene from './scenes/LoginScene.js';
 import PreloaderScene from './scenes/PreloaderScene.js';
+
 import socketManager from './SocketManager.js';
+
 
 // Configuration for the Phaser game
 const config = {
@@ -32,7 +36,8 @@ const config = {
         BlacksmithScene,
         GuildhallScene,
         MarketScene,
-        MapScene
+        MapScene,
+        LoginScene
     ],
     plugins: {
         global: [{

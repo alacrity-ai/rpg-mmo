@@ -5,7 +5,6 @@ const Character = require('../../models/Character');
 const { getClassTemplateByName } = require('./classTemplatesQueries');
 const { getCharacterFlagTemplateByName } = require('./characterFlagTemplatesQueries');
 
-
 async function createCharacter(userId, characterName, characterClass) {
   // Convert characterName and characterClass to lowercase
   const lowerCaseCharacterName = characterName.toLowerCase();
@@ -26,7 +25,7 @@ async function createCharacter(userId, characterName, characterClass) {
   const baseStats = JSON.stringify(classTemplate.baseStats);
 
   const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats, flags) VALUES (?, ?, ?, ?, ?, ?)';
-  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats, ''];
+  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats, JSON.stringify([])];
   const result = await query(sql, params);
   return result.insertId;
 }
@@ -44,7 +43,7 @@ async function getCharacterById(id) {
       baseStats: rows[0].base_stats,
       currentStats: rows[0].current_stats,
       current_area_id: rows[0].current_area_id,
-      flags: rows[0].flags ? rows[0].flags.split(',').map(Number) : []
+      flags: rows[0].flags
     });
   }
   return null;
@@ -63,7 +62,7 @@ async function getCharacterByName(name) {
       baseStats: rows[0].base_stats,
       currentStats: rows[0].current_stats,
       current_area_id: rows[0].current_area_id,
-      flags: rows[0].flags ? rows[0].flags.split(',').map(Number) : []
+      flags: rows[0].flags
     });
   }
   return null;
@@ -85,7 +84,7 @@ async function getCharacter(userId, characterName) {
       baseStats: rows[0].base_stats,
       currentStats: rows[0].current_stats,
       current_area_id: rows[0].current_area_id,
-      flags: rows[0].flags ? rows[0].flags.split(',').map(Number) : []
+      flags: rows[0].flags
     });
   }
   return null;
@@ -106,7 +105,7 @@ async function getCharactersByUser(userId) {
         baseStats: row.base_stats,
         currentStats: row.current_stats,
         current_area_id: row.current_area_id,
-        flags: row.flags ? row.flags.split(',').map(Number) : []
+        flags: row.flags
       });
     } catch (err) {
       console.error('Error parsing character stats:', err.message, 'Base stats:', row.base_stats, 'Current stats:', row.current_stats);
@@ -154,13 +153,13 @@ async function getCharactersByIds(characterIds) {
     baseStats: row.base_stats,
     currentStats: row.current_stats,
     current_area_id: row.current_area_id,
-    flags: row.flags ? row.flags.split(',').map(Number) : []
+    flags: row.flags
   }));
 }
 
 async function updateCharacterFlags(characterId, flags) {
   const sql = 'UPDATE characters SET flags = ? WHERE id = ?';
-  const params = [flags.join(','), characterId];
+  const params = [JSON.stringify(flags), characterId];
   await query(sql, params);
 }
 

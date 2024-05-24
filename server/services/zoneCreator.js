@@ -5,6 +5,7 @@ const { createAreaEventInstance } = require('../db/queries/areaEventInstancesQue
 const { getEncounterTemplateById } = require('../db/queries/encounterTemplatesQueries');
 const { getRandomInt, getRandomFloat } = require('../utilities/helpers');
 const { generateGrid, mapCoordinatesToAreas } = require('./areas/mapFunctions');
+const logger = require('../utilities/logger');
 
 async function createZoneInstanceFromTemplate(templateId, params = {}) {
     try {
@@ -53,7 +54,7 @@ async function createZoneInstanceFromTemplate(templateId, params = {}) {
   
       return zoneInstance;
     } catch (error) {
-      console.error('Error creating zone instance:', error);
+      logger.error('Error creating zone instance:', error);
       throw error;
     }
 }
@@ -126,10 +127,10 @@ function generateAreaConnections(numAreas) {
 async function createExpeditionZone(templateId, params) {
   try {
     const zoneInstance = await createZoneInstanceFromTemplate(templateId, params);
-    console.log('Zone instance created:', zoneInstance);
+    logger.info('Zone instance created:', zoneInstance);
     return zoneInstance;
   } catch (error) {
-    console.error('Error creating expedition zone:', error);
+    logger.error('Error creating expedition zone:', error);
     throw error;
   }
 }

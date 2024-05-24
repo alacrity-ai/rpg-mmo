@@ -1,36 +1,36 @@
 export default class CustomCursor {
     constructor(scene) {
+        if (CustomCursor.instance) {
+            return CustomCursor.instance;
+        }
+
         this.scene = scene;
+        this.createCursor();
 
-        // Load the custom cursor images
-        this.scene.load.image('cursor', 'assets/images/ui/cursor.png');
-        this.scene.load.image('cursor_clicked', 'assets/images/ui/cursor_clicked.png');
-
-        // Wait for the preload method to complete
-        this.scene.load.once('complete', this.createCursor, this.scene);
+        CustomCursor.instance = this;
     }
 
     createCursor() {
         // Hide the default cursor
-        this.input.setDefaultCursor('none');
+        this.scene.input.setDefaultCursor('none');
 
         // Add custom cursors
-        this.customCursor = this.add.image(this.input.activePointer.x, this.input.activePointer.y, 'cursor').setDepth(1000).setOrigin(0, 0);
-        this.cursorClicked = this.add.image(this.input.activePointer.x, this.input.activePointer.y, 'cursor_clicked').setDepth(1000).setOrigin(0, 0).setVisible(false);
+        this.customCursor = this.scene.add.image(this.scene.input.activePointer.x, this.scene.input.activePointer.y, 'cursor').setDepth(1000).setOrigin(0, 0);
+        this.cursorClicked = this.scene.add.image(this.scene.input.activePointer.x, this.scene.input.activePointer.y, 'cursor_clicked').setDepth(1000).setOrigin(0, 0).setVisible(false);
 
         // Update cursor position on pointer move
-        this.input.on('pointermove', pointer => {
+        this.scene.input.on('pointermove', pointer => {
             this.customCursor.setPosition(pointer.x, pointer.y);
             this.cursorClicked.setPosition(pointer.x, pointer.y);
         });
 
         // Change cursor image on pointer down and up
-        this.input.on('pointerdown', () => {
+        this.scene.input.on('pointerdown', () => {
             this.customCursor.setVisible(false);
             this.cursorClicked.setVisible(true);
         });
 
-        this.input.on('pointerup', () => {
+        this.scene.input.on('pointerup', () => {
             this.customCursor.setVisible(true);
             this.cursorClicked.setVisible(false);
         });
@@ -42,5 +42,20 @@ export default class CustomCursor {
             this.customCursor.setPosition(this.scene.input.activePointer.x, this.scene.input.activePointer.y);
             this.cursorClicked.setPosition(this.scene.input.activePointer.x, this.scene.input.activePointer.y);
         }
+    }
+
+    static getInstance(scene) {
+        if (!CustomCursor.instance) {
+            CustomCursor.instance = new CustomCursor(scene);
+        } else {
+            CustomCursor.instance.scene = scene;
+        }
+        return CustomCursor.instance;
+    }
+
+    static init(scene) {
+        // Load the custom cursor images
+        scene.load.image('cursor', 'assets/images/ui/cursor.png');
+        scene.load.image('cursor_clicked', 'assets/images/ui/cursor_clicked.png');
     }
 }

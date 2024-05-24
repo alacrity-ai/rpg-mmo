@@ -10,6 +10,7 @@ const zoneTemplates = require('./data/zoneTemplates');
 const encounterTemplates = require('./data/encounterTemplates');
 const characterFlagTemplates = require('./data/characterFlagTemplates');
 const npcDialogueTemplates = require('./data/npcDialogueTemplates');
+const logger = require('../utilities/logger');
 
 
 async function populateNpcDialogueTemplates() {
@@ -32,9 +33,9 @@ async function populateNpcDialogueTemplates() {
         );
       }
     }
-    console.log('NPC dialogue templates populated.');
+    logger.info('NPC dialogue templates populated.');
   } catch (err) {
-    console.error('Error populating NPC dialogue templates', err);
+    logger.error('Error populating NPC dialogue templates', err);
   } finally {
     connection.release();
   }
@@ -60,9 +61,9 @@ async function populateCharacterFlagTemplates() {
         );
       }
     }
-    console.log('Character flag templates populated.');
+    logger.info('Character flag templates populated.');
   } catch (err) {
-    console.error('Error populating character flag templates', err);
+    logger.error('Error populating character flag templates', err);
   } finally {
     connection.release();
   }
@@ -89,9 +90,9 @@ async function populateEncounterTemplates() {
         );
       }
     }
-    console.log('Encounter templates populated.');
+    logger.info('Encounter templates populated.');
   } catch (err) {
-    console.error('Error populating encounter templates', err);
+    logger.error('Error populating encounter templates', err);
   } finally {
     connection.release();
   }
@@ -124,9 +125,9 @@ async function populateZoneTemplates() {
         );
       }
     }
-    console.log('Zone templates populated.');
+    logger.info('Zone templates populated.');
   } catch (err) {
-    console.error('Error populating zone templates', err);
+    logger.error('Error populating zone templates', err);
   } finally {
     connection.release();
   }
@@ -160,9 +161,9 @@ async function populateItemTemplates() {
         );
       }
     }
-    console.log('Item templates populated.');
+    logger.info('Item templates populated.');
   } catch (err) {
-    console.error('Error populating item templates', err);
+    logger.error('Error populating item templates', err);
   } finally {
     connection.release();
   }
@@ -194,9 +195,9 @@ async function populateNpcTemplates() {
         );
       }
     }
-    console.log('NPC templates populated.');
+    logger.info('NPC templates populated.');
   } catch (err) {
-    console.error('Error populating NPC templates', err);
+    logger.error('Error populating NPC templates', err);
   } finally {
     connection.release();
   }
@@ -224,9 +225,9 @@ async function populateClassTemplates() {
         );
       }
     }
-    console.log('Class templates populated.');
+    logger.info('Class templates populated.');
   } catch (err) {
-    console.error('Error populating class templates', err);
+    logger.error('Error populating class templates', err);
   } finally {
     connection.release();
   }
@@ -252,9 +253,9 @@ async function populateShopTemplates() {
         );
       }
     }
-    console.log('Shop templates populated.');
+    logger.info('Shop templates populated.');
   } catch (err) {
-    console.error('Error populating shop templates', err);
+    logger.error('Error populating shop templates', err);
   } finally {
     connection.release();
   }
@@ -282,9 +283,9 @@ async function populateStatusTemplates() {
           );
         }
       }
-      console.log('Status effect templates populated.');
+      logger.info('Status effect templates populated.');
     } catch (err) {
-      console.error('Error populating status effect templates', err);
+      logger.error('Error populating status effect templates', err);
     } finally {
       connection.release();
     }
@@ -311,9 +312,9 @@ async function populateAreaEventTemplates() {
         );
       }
     }
-    console.log('Area event templates populated.');
+    logger.info('Area event templates populated.');
   } catch (err) {
-    console.error('Error populating area event templates', err);
+    logger.error('Error populating area event templates', err);
   } finally {
     connection.release();
   }
@@ -330,7 +331,7 @@ async function populateTables() {
   await populateClassTemplates();
   await populateShopTemplates();
   await populateStatusTemplates();
-  console.log('All tables populated.');
+  logger.info('All tables populated.');
 }
 
 module.exports = { populateTables };

@@ -392,7 +392,7 @@ class BaseMenu {
         if (!locked) {
             // Set interactivity on the container using the full dimensions of the button
             buttonContainer.setSize(width, height);
-            buttonContainer.setInteractive({ useHandCursor: true }).on('pointerdown', callback);
+            buttonContainer.setInteractive({ useHandCursor: false }).on('pointerdown', callback);
     
             // Set up hover events for highlighting the border (if desired)
             buttonContainer.on('pointerover', () => {
@@ -420,13 +420,23 @@ class BaseMenu {
     }
     
     addClickableText(x, y, text, callback, style, tooltip = null, tab = 0) {
+        const originalColor = style.fill || '#fff'; // Default to white if no color is specified
+        const hoverColor = '#ffff00'; // Yellow
+    
         const clickableText = this.scene.add.text(x, y, text, style)
             .setInteractive()
-            .on('pointerdown', callback);
+            .on('pointerdown', callback)
+            .on('pointerover', () => {
+                clickableText.setStyle({ fill: hoverColor });
+            })
+            .on('pointerout', () => {
+                clickableText.setStyle({ fill: originalColor });
+            });
+    
         this.addElementToTab(tab, clickableText);
         if (tooltip) this.addTooltip(clickableText, tooltip);
     }
-
+    
     addScrollableArea(x, y, width, height, elements, tab = 0) {
         // Implementation for adding a scrollable area
     }
@@ -492,11 +502,13 @@ class BaseMenu {
 
     hide() {
         Object.values(this.tabs).flat().forEach(element => element.setVisible(false));
-        console.log('Hide called')
         if (this.onClose) {
-            console.log(`Calling callback: ${this.onClose} from hide`)
             this.onClose();
         }
+    }
+
+    hideNoOnclose() {
+        Object.values(this.tabs).flat().forEach(element => element.setVisible(false));
     }
 
     destroy() {

@@ -2,7 +2,7 @@ const Redis = require('ioredis');
 const { getShopTemplateById } = require('../../db/queries/shopTemplatesQueries');
 const { getItemTemplateById } = require('../../db/queries/itemTemplatesQueries');
 const taskRegistry = require('../server/taskRegistry');
-
+const logger = require('../../utilities/logger');
 const redis = new Redis();
 
 async function processViewShopInventoryTask(task) {
@@ -15,7 +15,7 @@ async function processViewShopInventoryTask(task) {
 
     if (!shop) {
       const result = { error: 'Shop not found.' };
-      console.log(`Shop not found for task ${taskId}`);
+      logger.info(`Shop not found for task ${taskId}`);
       await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
       return;
     }
@@ -40,11 +40,11 @@ async function processViewShopInventoryTask(task) {
     });
 
     const result = { success: true, data: structuredItems };
-    console.log(`View shop inventory successful for task ${taskId}`);
+    logger.info(`View shop inventory successful for task ${taskId}`);
     await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   } catch (error) {
     const result = { error: 'Failed to view shop inventory. ' + error.message };
-    console.log(`View shop inventory failed for task ${taskId}:`, error.message);
+    logger.info(`View shop inventory failed for task ${taskId}:`, error.message);
     await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   }
 }

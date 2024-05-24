@@ -25,7 +25,8 @@
     "mysql2": "^3.9.7",
     "socket.io": "^4.7.5",
     "socket.io-client": "^4.7.5",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "winston": "^3.13.0"
   },
   "devDependencies": {
     "jest": "^29.7.0",

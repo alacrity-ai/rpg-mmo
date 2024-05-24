@@ -24,9 +24,6 @@ export default class TownScene extends Phaser.Scene {
         this.load.audio('background-guildhall', 'assets/sounds/ambient/guildhall.wav')
         this.load.audio('background-arcanium', 'assets/sounds/ambient/arcanium.wav');
 
-        // Initialize the CustomCursor (preload assets)
-        this.customCursor = new CustomCursor(this);
-
         // Example party data
         this.party = [
             { frameCount: 20, prefix: 'priest', maxHealth: 80, maxMana: 100 },
@@ -93,7 +90,7 @@ export default class TownScene extends Phaser.Scene {
 
     update(time, delta) {
         // Update custom cursor position
-        this.customCursor.update();
+        CustomCursor.getInstance(this).update();
 
         // Update point lights with delta time
         this.pointLightManager.update(delta);

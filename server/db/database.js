@@ -1,8 +1,9 @@
 // db/database.js
 require('dotenv').config();
 const mysql = require('mysql2/promise');
+const logger = require('../utilities/logger');
 
-console.log(`Connecting to database host: ${process.env.DB_HOST}, with user: ${process.env.DB_USER}`)
+logger.info(`Connecting to database host: ${process.env.DB_HOST}, with user: ${process.env.DB_USER}`)
 
 // Create a connection pool to the database
 const pool = mysql.createPool({
@@ -231,9 +232,9 @@ async function initTables() {
     for (const script of tableCreationScripts) {
       await connection.query(script);
     }
-    console.log('Tables initialized.');
+    logger.info('Tables initialized.');
   } catch (err) {
-    console.error('Error creating tables', err);
+    logger.error('Error creating tables', err);
   } finally {
     connection.release();
   }
@@ -245,7 +246,7 @@ async function query(sql, params) {
     const [results] = await connection.execute(sql, params);
     return results;
   } catch (err) {
-    console.error('Database query error:', err);
+    logger.error('Database query error:', err);
     throw err;
   } finally {
     connection.release();

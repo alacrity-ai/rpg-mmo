@@ -8,6 +8,7 @@ const { populateTables } = require('./db/populateTables');
 const authHandler = require('./handlers/api/authHandler');
 const characterHandler = require('./handlers/api/characterHandler');
 const shopHandler  = require('./handlers/api/shopHandler');
+const logger = require('./utilities/logger');
 
 const app = express();
 const server = http.createServer(app);
@@ -32,7 +33,7 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  logger.info(`A user connected`);
 
   // Use imported event handlers
   authHandler(socket);
@@ -40,7 +41,7 @@ io.on('connection', (socket) => {
   shopHandler(socket);
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    logger.info('A user disconnected');
   });
 });
 
@@ -49,5 +50,5 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, async () => {
   await initTables();
   await populateTables(); // Call populateTables after initTables
-  console.log(`Server is running on port ${PORT}`);
+  logger.info(`Server is running on port ${PORT}`);
 });
