@@ -4,11 +4,12 @@ const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
 const Redis = require('ioredis');
-const { handleCommand, defaultZone } = require('./handlers/commandHandler');
-const { handleShopCommand } = require('./handlers/api/shopHandler');
 const { initTables } = require('./db/database');
 const { populateTables } = require('./db/populateTables');
 const { serverTick } = require('./services/server/tick');
+const authHandler = require('./handlers/api/authHandler');
+const characterHandler = require('./handlers/api/characterHandler');
+const shopHandler  = require('./handlers/api/shopHandler');
 
 const app = express();
 const server = http.createServer(app);
@@ -33,20 +34,15 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  socket.on('command', (input) => {
-    handleCommand(socket, input, io);
-  });
+  console.log('A user connected');
 
-  socket.on('shopCommand', (input, callback) => {
-    console.log('Received shop command:', input);
-    handleShopCommand(socket, input, io, callback);
-  });
+  // Use imported event handlers
+  authHandler(socket);
+  characterHandler(socket);
+  shopHandler(socket);
 
   socket.on('disconnect', () => {
-    if (socket.character) {
-      defaultZone.removePlayer(socket.id);
-      io.to(defaultZone.name).emit('message', `${socket.character.name} has left the zone.`);
-    }
+    console.log('A user disconnected');
   });
 });
 
@@ -73,6 +69,6 @@ server.listen(PORT, async () => {
   await populateTables(); // Call populateTables after initTables
   console.log(`Server is running on port ${PORT}`);
 
-  // // Start the server tick loop
+  // Start the server tick loop
   // serverTick();
 });

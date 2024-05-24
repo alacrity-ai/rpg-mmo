@@ -30,31 +30,37 @@ export default class PreloaderScene extends Phaser.Scene {
     }
 
     create() {
-        api.auth.createUser('test', 'test').then((data) => {
-            console.log('User created:', data);
-        }).catch((error) => {
-            console.error('User creation error:', error);
+        api.auth.createUser('test', 'test')
+        .then(data => {
+            console.log('User created successfully:', data);
+        })
+        .catch(error => {
+            console.error('Error creating user:', error);
+        })
+        .finally(() => {
+            // Attempt to log in regardless of whether createUser succeeded or failed
+            api.auth.login('test', 'test')
+            .then(data => {
+                console.log('User logged in successfully:', data);
+                // After logging in, create a character
+                return api.character.createCharacter('joe', 'arcanist');
+            })
+            .catch(error => {
+                console.error('Error creating character:', error);
+            })
+            .finally(() => {
+                // Attempt to character login regardless of whether createCharacter succeeded or failed
+                api.character.characterLogin('joe')
+                .then(data => {
+                    console.log('Character logged in successfully:', data);
+                    // Add any additional logic you want to execute after character login
+                })
+                .catch(error => {
+                    console.error('Error logging in character:', error);
+                    // Handle error, maybe show a message to the user
+                });
+            });
         });
-
-        api.auth.login('test', 'test').then((data) => {
-            console.log('Logged in:', data);
-        }).catch((error) => {
-            console.error('Login error:', error);
-        });
-
-        // sleep(5000);
-
-        // api.auth.createCharacter('test', 'mage').then((data) => {
-        //     console.log('Character created:', data);
-        // }).catch((error) => {
-        //     console.error('Character creation error:', error);
-        // });
-
-        // api.auth.characterLogin('test').then((data) => {
-        //     console.log('Character logged in:', data);
-        // }).catch((error) => {
-        //     console.error('Character login error:', error);
-        // });
 
         // Initialize the SFX Manager
         SoundFXManager.onPreloadComplete();
@@ -62,7 +68,7 @@ export default class PreloaderScene extends Phaser.Scene {
         // Initialize the MusicManager
         MusicManager.initialize(this);
 
-        // Start the main scene
-        this.scene.start('MenuTestScene'); // or whichever scene you want to start with
+        // // Start the main scene
+        this.scene.start('MenuTestScene'); 
     }
 }

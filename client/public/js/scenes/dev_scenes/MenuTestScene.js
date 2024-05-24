@@ -69,54 +69,55 @@ export default class MenuTestScene extends Phaser.Scene {
             const shopId = 1;
             api.shop.viewShopInventory(shopId).then(items => {
                 // Create and show the shop menu with the fetched items
+                console.log('Fetching shop inventory');
                 this.shopMenu = new ShopMenu(this, items);
                 this.shopMenu.show();
-              }).catch(error => {
-                console.error('Failed to fetch shop inventory:', error);
-                // Handle error, e.g., show an error message to the player
-              });
-              
-            // // Add an event listener to the close button of the shop menu
-            // this.shopMenu.onClose = () => {
-            //     if (this.shopMenu.tooltipMenu) {
-            //         this.shopMenu.tooltipMenu.destroy();
-            //         this.shopMenu.tooltipMenu = null;
-            //     }
-            //     this.time.delayedCall(1000, () => {
-            //         // Show the error menu after a 1-second delay
-            //         const errorMessage = "An error occurred! Please try again later.";
-            //         this.errorMenu = new ErrorMenu(this, errorMessage);
-            //         this.errorMenu.show();
+                // Add an event listener to the close button of the shop menu
+                this.shopMenu.onClose = () => {
+                    if (this.shopMenu.tooltipMenu) {
+                        this.shopMenu.tooltipMenu.destroy();
+                        this.shopMenu.tooltipMenu = null;
+                    }
+                    this.time.delayedCall(1000, () => {
+                        // Show the error menu after a 1-second delay
+                        const errorMessage = "An error occurred! Please try again later.";
+                        this.errorMenu = new ErrorMenu(this, errorMessage);
+                        this.errorMenu.show();
 
-            //         this.errorMenu.onClose = () => {
-            //             this.time.delayedCall(1000, () => {
-            //                 // Show the login menu after a 1-second delay
-            //                 this.loginMenu = new LoginMenu(this);
-            //                 this.loginMenu.show();
+                        this.errorMenu.onClose = () => {
+                            this.time.delayedCall(1000, () => {
+                                // Show the login menu after a 1-second delay
+                                this.loginMenu = new LoginMenu(this);
+                                this.loginMenu.show();
 
-            //                 this.loginMenu.onClose = () => {
-            //                     this.time.delayedCall(1000, () => {
-            //                         // Show the tutorial menu after a 1-second delay
-            //                         const tutorialText = "Welcome to the tutorial! Follow the instructions to learn how to play the game.";
-            //                         this.tutorialMenu = new TutorialMenu(this, tutorialText);
-            //                         this.tutorialMenu.show();
+                                this.loginMenu.onClose = () => {
+                                    this.time.delayedCall(1000, () => {
+                                        // Show the tutorial menu after a 1-second delay
+                                        const tutorialText = "Welcome to the tutorial! Follow the instructions to learn how to play the game.";
+                                        this.tutorialMenu = new TutorialMenu(this, tutorialText);
+                                        this.tutorialMenu.show();
 
-            //                         // Add an event listener to the close button of the tutorial menu
-            //                         this.tutorialMenu.onClose = () => {
-            //                             this.time.delayedCall(1000, () => {
-            //                                 // Show the dialogue menu after a 1-second delay
-            //                                 const knightDialogue = "Greetings, brave adventurer! Prepare yourself for the trials ahead.";
-            //                                 const atlasPath = 'assets/images/characters/knight/portrait/atlas.png';
-            //                                 this.dialogueMenu = new DialogueMenu(this, atlasPath, knightDialogue);
-            //                                 this.dialogueMenu.show();
-            //                             });
-            //                         };
-            //                     });
-            //                 };
-            //             });
-            //         };
-            //     });
-            // };
+                                        // Add an event listener to the close button of the tutorial menu
+                                        this.tutorialMenu.onClose = () => {
+                                            this.time.delayedCall(1000, () => {
+                                                // Show the dialogue menu after a 1-second delay
+                                                const knightDialogue = "Greetings, brave adventurer! Prepare yourself for the trials ahead.";
+                                                const atlasPath = 'assets/images/characters/knight/portrait/atlas.png';
+                                                this.dialogueMenu = new DialogueMenu(this, atlasPath, knightDialogue);
+                                                this.dialogueMenu.show();
+                                            });
+                                        };
+                                    });
+                                };
+                            });
+                        };
+                    });
+                };
+                }).catch(error => {
+                    console.error('Failed to fetch shop inventory:', error);
+                    // Handle error, e.g., show an error message to the player
+                });
+
         });
     }
 

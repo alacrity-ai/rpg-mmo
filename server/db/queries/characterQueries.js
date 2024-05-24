@@ -50,6 +50,25 @@ async function getCharacterById(id) {
   return null;
 }
 
+async function getCharacterByName(name) {
+  const sql = 'SELECT * FROM characters WHERE name = ?';
+  const params = [name];
+  const rows = await query(sql, params);
+  if (rows.length > 0) {
+    return new Character({
+      id: rows[0].id,
+      user_id: rows[0].user_id,
+      name: rows[0].name,
+      characterClass: rows[0].class,
+      baseStats: rows[0].base_stats,
+      currentStats: rows[0].current_stats,
+      current_area_id: rows[0].current_area_id,
+      flags: rows[0].flags ? rows[0].flags.split(',').map(Number) : []
+    });
+  }
+  return null;
+}
+
 async function getCharacter(userId, characterName) {
   // Convert characterName to lowercase
   const lowerCaseCharacterName = characterName.toLowerCase();
@@ -191,6 +210,7 @@ async function removeCharacterFlag(characterId, flag) {
 }
 
 module.exports = { 
+  getCharacterByName,
   getCharacterById,
   createCharacter, 
   getCharacter, 

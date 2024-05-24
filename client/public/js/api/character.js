@@ -1,8 +1,22 @@
 import socketManager from '../SocketManager';
 
-const getStats = () => {
+// Create a new character
+const createCharacter = (characterName, characterClass) => {
   return new Promise((resolve, reject) => {
-    socketManager.socket.emit('getStats', {}, (response) => {
+    socketManager.getSocket().emit('createCharacter', { characterName, characterClass }, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
+// Character login
+const characterLogin = (characterName) => {
+  return new Promise((resolve, reject) => {
+    socketManager.getSocket().emit('characterLogin', { characterName }, (response) => {
       if (response.error) {
         reject(response.error);
       } else {
@@ -13,5 +27,6 @@ const getStats = () => {
 };
 
 export default {
-  getStats,
+  createCharacter,
+  characterLogin,
 };
