@@ -69,7 +69,7 @@ export default class ShopMenu extends BaseMenu {
     }
 
     renderTooltip(selectedRowIndex) {
-        const tooltipX = this.x + 360;
+        const tooltipX = this.x + 320;
         const tooltipY = this.y;
 
         if (selectedRowIndex !== null && selectedRowIndex > 0) {

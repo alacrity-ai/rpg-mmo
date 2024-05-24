@@ -2,7 +2,7 @@ import { BaseMenu } from './BaseMenu.js';
 
 export default class PopupTooltipMenu extends BaseMenu {
     constructor(scene, x, y, iconKey, title, description) {
-        const width = 300;
+        const width = 220;
         const height = 150;
         const backgroundColor = 0x000000;
         const backgroundAlpha = 0.8;
@@ -19,12 +19,12 @@ export default class PopupTooltipMenu extends BaseMenu {
 
     createPopup() {
         // Add icon without border
-        this.addIcon(this.x - this.width / 2 + 20, this.y - this.height / 2 + 20, this.iconKey, null, 0, false);
+        this.addIcon(this.x - this.width / 2 + 25, this.y - this.height / 2 + 25, this.iconKey, null, 0, false);
 
         // Add title text area
-        this.addTextArea(this.x - this.width / 2 + 60, this.y - this.height / 2 + 20, this.width - 80, 30, this.title, { fontSize: '18px', fill: '#ffcc00' });
+        this.addTextArea(this.x - this.width / 2 + 50, this.y - this.height / 2 + 10, this.width - 40, 30, this.title, { fontSize: '18px', fill: '#ffcc00' });
 
         // Add description text area
-        this.addTextArea(this.x - this.width / 2 + 60, this.y - this.height / 2 + 50, this.width - 80, 60, this.description, { fontSize: '14px', fill: '#ffffff' });
+        this.addTextArea(this.x - this.width / 2 + 30, this.y - this.height / 2 + 50, this.width - 40, 60, this.description, { fontSize: '14px', fill: '#ffffff' });
     }
 }
