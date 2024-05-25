@@ -1,14 +1,19 @@
-export async function atlasToSprite(scene, atlasImagePath, frameRate = 10) {
+export async function atlasToSprite(scene, atlasImagePath, frameRate = 10, startingFrame = 0) {
     const atlasKey = atlasImagePath; // Use the image path as the unique key for the atlas
     const atlasJsonPath = atlasImagePath.replace('atlas.png', 'atlas.json'); // Replace the PNG extension with JSON
 
     return new Promise((resolve, reject) => {
         // Check if the texture is already loaded
         if (scene.textures.exists(atlasKey)) {
-            const frames = scene.textures.get(atlasKey).getFrameNames().map(frameName => ({
+            let frames = scene.textures.get(atlasKey).getFrameNames().map(frameName => ({
                 key: atlasKey,
                 frame: frameName
             }));
+
+            // Rearrange the frames based on the starting frame
+            if (startingFrame > 0) {
+                frames = frames.slice(startingFrame).concat(frames.slice(0, startingFrame));
+            }
 
             if (!scene.anims.exists(`${atlasKey}_anim`)) {
                 scene.anims.create({
@@ -27,10 +32,15 @@ export async function atlasToSprite(scene, atlasImagePath, frameRate = 10) {
         scene.load.atlas(atlasKey, atlasImagePath, atlasJsonPath);
 
         scene.load.once('complete', () => {
-            const frames = scene.textures.get(atlasKey).getFrameNames().map(frameName => ({
+            let frames = scene.textures.get(atlasKey).getFrameNames().map(frameName => ({
                 key: atlasKey,
                 frame: frameName
             }));
+
+            // Rearrange the frames based on the starting frame
+            if (startingFrame > 0) {
+                frames = frames.slice(startingFrame).concat(frames.slice(0, startingFrame));
+            }
 
             scene.anims.create({
                 key: `${atlasKey}_anim`,

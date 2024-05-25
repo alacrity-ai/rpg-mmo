@@ -30,9 +30,9 @@ class BaseMenu {
         this.rowData = [];
     }
 
-    async addPortrait(x, y, atlasImagePath, tab = 0, callback = null) {
+    async addPortrait(x, y, atlasImagePath, tab = 0, callback = null, startingFrame = 0) {
         try {
-            const spriteConfig = await atlasToSprite(this.scene, atlasImagePath);
+            const spriteConfig = await atlasToSprite(this.scene, atlasImagePath, 10, startingFrame);
     
             // Create the sprite and add it to the scene
             const sprite = this.scene.add.sprite(x, y, spriteConfig.key).play(spriteConfig.animKey);

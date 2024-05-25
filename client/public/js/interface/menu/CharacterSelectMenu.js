@@ -11,7 +11,7 @@ export default class CharacterSelectMenu extends BaseMenu {
 
         super(scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
 
-        // this.characterData = characterData; // Array of character data
+        // this.characterData = characterData;
         this.characterData = [
             {"id":1,"userId":1,"name":"mike","characterClass":"paladin","baseStats":{"stamina":7,"strength":6,"intelligence":4},"currentStats":{"stamina":7,"strength":6,"intelligence":4},"currentAreaId":null,"flags":""},
             {"id":2,"userId":1,"name":"john","characterClass":"priest","baseStats":{"stamina":5,"strength":4,"intelligence":8},"currentStats":{"stamina":5,"strength":4,"intelligence":8},"currentAreaId":null,"flags":""},
@@ -44,8 +44,9 @@ export default class CharacterSelectMenu extends BaseMenu {
             const atlasImagePath = `assets/images/characters/${character.characterClass}/portrait/atlas.png`;
 
             // Add character portrait with login callback
-            await this.addPortrait(posX, posY, atlasImagePath, 0, () => this.handleCharacterLogin(character.name));
-
+            const startingFrame = Phaser.Math.Between(1, 10);
+            await this.addPortrait(posX, posY, atlasImagePath, 0, () => this.handleCharacterLogin(character.name), startingFrame);
+            
             // Add character name below the portrait
             this.addText(posX, posY + 64, character.name, { fontSize: '16px', fill: '#fff' });
 
