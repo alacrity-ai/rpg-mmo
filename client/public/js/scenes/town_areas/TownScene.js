@@ -15,7 +15,7 @@ export default class TownScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('background', 'assets/images/zones/town-1/town.png');
+        this.load.image('background-town', 'assets/images/zones/town-1/town.png');
 
         // Initialize the Music Manager
         this.load.audio('background-music', 'assets/music/forest-1.mp3');
@@ -40,8 +40,11 @@ export default class TownScene extends Phaser.Scene {
         // Initialize SoundFXManager
         SoundFXManager.initialize(this);
 
+        // Get CustomCursor instance
+        CustomCursor.getInstance(this);
+
         // Add the background image and ensure it fits the canvas
-        const background = this.add.image(0, 0, 'background').setOrigin(0, 0);
+        const background = this.add.image(0, 0, 'background-town').setOrigin(0, 0);
         background.setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
 
         // Initialize PartyDisplayManager

@@ -1,6 +1,7 @@
 import { BaseMenu } from './BaseMenu.js';
 import ErrorMenu from '../../interface/menu/ErrorMenu.js';
 import UserRegistrationMenu from './UserRegistrationMenu.js';
+import CharacterSelectMenu from './CharacterSelectMenu.js'; // Import CharacterSelectMenu
 import api from '../../api';
 
 export default class LoginMenu extends BaseMenu {
@@ -43,11 +44,31 @@ export default class LoginMenu extends BaseMenu {
         api.auth.login(username, password)
             .then(data => {
                 console.log('User logged in successfully:', data);
+                // Store user ID in the Phaser registry
+                this.scene.registry.set('userId', data.id);
+                
+                // Fetch character data
+                api.character.characterList()
+                    .then(characters => {
+                        console.log('Characters:', characters);
+                        // Create and show the character select menu
+                        const characterSelectMenu = new CharacterSelectMenu(this.scene, characters);
+                        characterSelectMenu.show();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching character list:', error);
+                        // Show error message
+                        const errorMessage = 'Failed to load character list';
+                        const errorMenu = new ErrorMenu(this.scene, errorMessage);
+                        errorMenu.onClose = () => {
+                            this.show();
+                        };
+                        this.hideNoOnclose();
+                        errorMenu.show();
+                    });
+
                 // Hide the login menu
                 this.hide();
-
-                // Proceed with post-login logic (e.g., navigate to another menu or scene)
-                // For example: this.scene.start('MainMenu');
             })
             .catch(error => {
                 console.error('Error logging in:', error);

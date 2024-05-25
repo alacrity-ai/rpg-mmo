@@ -27,10 +27,17 @@ export default class LoginScene extends Phaser.Scene {
 
         // Initialize SoundFXManager
         SoundFXManager.initialize(this);
+
+        // Get CustomCursor instance
+        CustomCursor.getInstance(this);
     }
 
     update(time, delta) {
         // Update custom cursor position
         CustomCursor.getInstance(this).update();
+    }
+
+    cleanup() {
+        this.textures.removeKey('background');
     }
 }

@@ -16,9 +16,6 @@ export default class BaseScene extends Phaser.Scene {
 
     preload() {
         this.load.image(this.backgroundKey, `assets/images/zones/town-1/${this.backgroundKey}.png`);
-
-        // Initialize the CustomCursor (preload assets)
-        this.customCursor = new CustomCursor(this);
     }
 
     create() {
@@ -33,8 +30,8 @@ export default class BaseScene extends Phaser.Scene {
         // Initialize the InteractiveZoneManager
         this.interactiveZoneManager = new InteractiveZoneManager(this);
 
-        // Add interactive areas using InteractiveZoneManager (to be customized in each scene)
-        // Example: this.interactiveZoneManager.createInteractiveArea(x, y, width, height, 'Label', () => {});
+        // Initializ the CustomCursor
+        CustomCursor.getInstance(this);
 
         // Add the arrow-down-red icon to the bottom right of the screen
         const arrowDownRedIcon = this.iconHelper.getIcon('arrow-down-red');
@@ -57,7 +54,7 @@ export default class BaseScene extends Phaser.Scene {
 
     update(time, delta) {
         // Update custom cursor position
-        this.customCursor.update();
+        CustomCursor.getInstance(this).update();
 
         // Update debug coordinates
         this.debug.update(this.input.activePointer);

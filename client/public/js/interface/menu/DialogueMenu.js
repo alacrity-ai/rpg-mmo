@@ -1,5 +1,4 @@
 import { BaseMenu } from './BaseMenu.js';
-import { atlasToSprite } from '../../graphics/AtlasTools.js';
 
 export default class DialogueMenu extends BaseMenu {
     constructor(scene, atlasImagePath, textContent, width = 400, height = 300) {
@@ -17,43 +16,9 @@ export default class DialogueMenu extends BaseMenu {
     }
 
     async createDialogueMenu() {
-        // Add graphic or animation centered at the top
-        const graphicY = this.y - this.height / 2 + (this.height / 4);
-        try {
-            const spriteConfig = await atlasToSprite(this.scene, this.atlasImagePath);
-
-            // Create the sprite and add it to the scene
-            const sprite = this.scene.add.sprite(this.x, graphicY, spriteConfig.key).play(spriteConfig.animKey);
-            this.addElementToTab(0, sprite);
-
-            // Create a rounded white border above the sprite
-            const spriteWidth = sprite.displayWidth;
-            const spriteHeight = sprite.displayHeight;
-            const borderRadius = 10;
-
-            // Create the mask shape (rounded rectangle)
-            const maskShape = this.scene.add.graphics();
-            maskShape.fillStyle(0xffffff, 1);
-            maskShape.fillRoundedRect(this.x - spriteWidth / 2, graphicY - spriteHeight / 2, spriteWidth, spriteHeight, borderRadius);
-
-            // Create a mask from the shape and apply it to the sprite
-            const mask = maskShape.createGeometryMask();
-            sprite.setMask(mask);
-
-            // Hide the mask shape itself (it's only needed for the mask)
-            maskShape.setVisible(false);
-
-            // Create the border graphics
-            const border = this.scene.add.graphics();
-            border.lineStyle(2, 0xffffff, 1);
-            border.strokeRoundedRect(this.x - spriteWidth / 2, graphicY - spriteHeight / 2, spriteWidth, spriteHeight, borderRadius);
-
-            // Ensure the border is above the sprite
-            border.depth = sprite.depth + 1;
-            this.addElementToTab(0, border);
-        } catch (error) {
-            console.error('Error loading graphic:', error);
-        }
+        // Add portrait at the top
+        const portraitY = this.y - this.height / 2 + (this.height / 4);
+        await this.addPortrait(this.x, portraitY, this.atlasImagePath);
 
         // Add text area below the graphic
         const textY = graphicY + (this.height / 4) + 10; // 10px padding between graphic and text

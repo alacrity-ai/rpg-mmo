@@ -1,4 +1,6 @@
 import IconHelper from '../IconHelper.js'; // Adjust the path as necessary
+import { atlasToSprite } from '../../graphics/AtlasTools.js';
+
 
 class BaseMenu {
     constructor(scene, x, y, width, height, backgroundColor = 0x000000, backgroundAlpha = 0.8, borderRadius = 10, spriteSheetKey = null, onClose = null, hasCloseButton = false) {
@@ -27,6 +29,60 @@ class BaseMenu {
         this.selectedRow = null;
         this.rowData = [];
     }
+
+    async addPortrait(x, y, atlasImagePath, tab = 0, callback = null) {
+        try {
+            const spriteConfig = await atlasToSprite(this.scene, atlasImagePath);
+    
+            // Create the sprite and add it to the scene
+            const sprite = this.scene.add.sprite(x, y, spriteConfig.key).play(spriteConfig.animKey);
+            this.addElementToTab(tab, sprite);
+    
+            // Create a rounded white border above the sprite
+            const spriteWidth = sprite.displayWidth;
+            const spriteHeight = sprite.displayHeight;
+            const borderRadius = 10;
+    
+            // Create the mask shape (rounded rectangle)
+            const maskShape = this.scene.add.graphics();
+            maskShape.fillStyle(0xffffff, 1);
+            maskShape.fillRoundedRect(x - spriteWidth / 2, y - spriteHeight / 2, spriteWidth, spriteHeight, borderRadius);
+    
+            // Create a mask from the shape and apply it to the sprite
+            const mask = maskShape.createGeometryMask();
+            sprite.setMask(mask);
+    
+            // Hide the mask shape itself (it's only needed for the mask)
+            maskShape.setVisible(false);
+    
+            // Create the border graphics
+            const border = this.scene.add.graphics();
+            border.lineStyle(2, 0xffffff, 1);
+            border.strokeRoundedRect(x - spriteWidth / 2, y - spriteHeight / 2, spriteWidth, spriteHeight, borderRadius);
+    
+            // Ensure the border is above the sprite
+            border.depth = sprite.depth + 1;
+            this.addElementToTab(tab, border);
+    
+            if (callback) {
+                // Set interactivity on the sprite
+                sprite.setInteractive({ useHandCursor: false })
+                    .on('pointerdown', callback)
+                    .on('pointerover', () => {
+                        border.clear();
+                        border.lineStyle(2, 0xffff00, 1); // Yellow border on hover
+                        border.strokeRoundedRect(x - spriteWidth / 2, y - spriteHeight / 2, spriteWidth, spriteHeight, borderRadius);
+                    })
+                    .on('pointerout', () => {
+                        border.clear();
+                        border.lineStyle(2, 0xffffff, 1); // White border
+                        border.strokeRoundedRect(x - spriteWidth / 2, y - spriteHeight / 2, spriteWidth, spriteHeight, borderRadius);
+                    });
+            }
+        } catch (error) {
+            console.error('Error loading portrait:', error);
+        }
+    }  
 
     addTable(x, y, width, height, rowData, columnWidths, tab = 0, onRowSelected = null) {
         this.rowData = rowData;

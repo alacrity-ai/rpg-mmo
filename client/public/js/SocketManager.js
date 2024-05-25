@@ -7,7 +7,11 @@ class SocketManager {
 
   connect(serverUrl) {
     return new Promise((resolve, reject) => {
-      this.socket = io(serverUrl);
+      this.socket = io(serverUrl, {
+        query: {
+          token: import.meta.env.VITE_CLIENT_TOKEN
+        }
+      });
 
       this.socket.on('connect', () => {
         console.log('Connected to server');

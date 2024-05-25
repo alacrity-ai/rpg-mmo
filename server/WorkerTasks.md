@@ -28,7 +28,7 @@ async function processViewShopInventoryTask(task) {
 
     if (!shop) {
       const result = { error: 'Shop not found.' };
-      console.log(`Shop not found for task ${taskId}`);
+      logger.info(`Shop not found for task ${taskId}`);
       await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
       return;
     }
@@ -53,11 +53,11 @@ async function processViewShopInventoryTask(task) {
     });
 
     const result = { success: true, data: structuredItems };
-    console.log(`View shop inventory successful for task ${taskId}`);
+    logger.info(`View shop inventory successful for task ${taskId}`);
     await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   } catch (error) {
     const result = { error: 'Failed to view shop inventory. ' + error.message };
-    console.log(`View shop inventory failed for task ${taskId}:`, error.message);
+    logger.info(`View shop inventory failed for task ${taskId}:`, error.message);
     await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   }
 }
@@ -92,7 +92,7 @@ async function processTasks() {
   while (true) {
     const task = await getTask();
     if (task) {
-      console.log('Processing task:', task);
+      logger.info('Processing task:', task);
       const { taskType } = task;
       const taskHandler = taskRegistry.getHandler(taskType);
 
@@ -100,23 +100,23 @@ async function processTasks() {
         try {
           await taskHandler(task);
         } catch (error) {
-          console.error(`Failed to process task ${taskType}:`, error);
+          logger.error(`Failed to process task ${taskType}:`, error);
           const result = { error: `Failed to process task ${taskType}. ` + error.message };
           await redis.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
         }
       } else {
-        console.error(`No handler found for task type: ${taskType}`);
+        logger.error(`No handler found for task type: ${taskType}`);
         const result = { error: `No handler found for task type: ${taskType}` };
         await redis.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
       }
     } else {
-      console.log('No tasks in queue, waiting...');
+      logger.info('No tasks in queue, waiting...');
       await new Promise((resolve) => setTimeout(resolve, 1000)); // Wait a bit before checking again
     }
   }
 }
 
-processTasks().catch(console.error);
+processTasks().catch(logger.error);
 
 ```
 
@@ -178,18 +178,18 @@ app.get('/', (req, res) => {
 });
 
 io.on('connection', (socket) => {
-  console.log('A user connected');
+  logger.info('A user connected');
 
   // Use imported event handlers
-  console.log('Attaching authHandler');
+  logger.info('Attaching authHandler');
   authHandler(socket);
-  console.log('Attaching characterHandler');
+  logger.info('Attaching characterHandler');
   characterHandler(socket);
-  console.log('Attaching shopHandler'); // Attach new handler
+  logger.info('Attaching shopHandler'); // Attach new handler
   shopHandler(socket);
 
   socket.on('disconnect', () => {
-    console.log('A user disconnected');
+    logger.info('A user disconnected');
   });
 });
 
@@ -198,7 +198,44 @@ const PORT = process.env.PORT || 3000;
 server.listen(PORT, async () => {
   await initTables();
   await populateTables(); // Call populateTables after initTables
-  console.log(`Server is running on port ${PORT}`);
+  logger.info(`Server is running on port ${PORT}`);
 });
+
+```
+
+
+Example Corresponding Client Side API for viewShopInventory.
+
+This is kept in the client repo, in api/shop.js:
+
+```
+// api/shop.js
+import socketManager from '../SocketManager';
+
+const viewShopInventory = (shopId) => {
+  return new Promise((resolve, reject) => {
+    socketManager.getSocket().emit('viewShopInventory', { shopId }, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
+export default {
+  viewShopInventory,
+};
+```
+
+The client can then call this from a scene like:
+
+```
+api.shop.viewShopInventory(shopId).then(items => {
+                // Create and show the shop menu with the fetched items
+                logger.info('Fetching shop inventory');
+                this.shopMenu = new ShopMenu(this, items);
+                this.shopMenu.show();
 
 ```

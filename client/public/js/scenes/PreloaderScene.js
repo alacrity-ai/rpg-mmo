@@ -33,6 +33,9 @@ export default class PreloaderScene extends Phaser.Scene {
     }
 
     create() {
+        // Get CustomCursor instance
+        CustomCursor.getInstance(this);
+        
         // Initialize the SFX Manager
         SoundFXManager.onPreloadComplete();
         

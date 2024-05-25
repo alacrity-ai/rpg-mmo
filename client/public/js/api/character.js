@@ -14,9 +14,22 @@ const createCharacter = (characterName, characterClass) => {
 };
 
 // Character login
-const characterLogin = (characterName) => {
+const loginCharacter = (characterName) => {
   return new Promise((resolve, reject) => {
-    socketManager.getSocket().emit('characterLogin', { characterName }, (response) => {
+    socketManager.getSocket().emit('loginCharacter', { characterName }, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
+// Character list
+const characterList = () => {
+  return new Promise((resolve, reject) => {
+    socketManager.getSocket().emit('characterList', {}, (response) => {
       if (response.error) {
         reject(response.error);
       } else {
@@ -27,6 +40,7 @@ const characterLogin = (characterName) => {
 };
 
 export default {
+  characterList,
   createCharacter,
-  characterLogin,
+  loginCharacter,
 };
