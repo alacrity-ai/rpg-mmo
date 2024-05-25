@@ -79,10 +79,13 @@ class BaseMenu {
                         border.strokeRoundedRect(x - spriteWidth / 2, y - spriteHeight / 2, spriteWidth, spriteHeight, borderRadius);
                     });
             }
+    
+            // Return an object containing the created elements
+            return { sprite, maskShape, border };
         } catch (error) {
             console.error('Error loading portrait:', error);
         }
-    }  
+    }    
 
     addTable(x, y, width, height, rowData, columnWidths, tab = 0, onRowSelected = null) {
         this.rowData = rowData;

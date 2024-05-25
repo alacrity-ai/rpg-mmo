@@ -46,26 +46,10 @@ export default class LoginMenu extends BaseMenu {
                 console.log('User logged in successfully:', data);
                 // Store user ID in the Phaser registry
                 this.scene.registry.set('userId', data.id);
-                
-                // Fetch character data
-                api.character.characterList()
-                    .then(characters => {
-                        console.log('Characters:', characters);
-                        // Create and show the character select menu
-                        const characterSelectMenu = new CharacterSelectMenu(this.scene, characters);
-                        characterSelectMenu.show();
-                    })
-                    .catch(error => {
-                        console.error('Error fetching character list:', error);
-                        // Show error message
-                        const errorMessage = 'Failed to load character list';
-                        const errorMenu = new ErrorMenu(this.scene, errorMessage);
-                        errorMenu.onClose = () => {
-                            this.show();
-                        };
-                        this.hideNoOnclose();
-                        errorMenu.show();
-                    });
+
+                // Switch to CharacterSelectMenu
+                const characterSelectMenu = new CharacterSelectMenu(this.scene);
+                characterSelectMenu.show();
 
                 // Hide the login menu
                 this.hide();

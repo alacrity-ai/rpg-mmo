@@ -1,8 +1,9 @@
 import { BaseMenu } from './BaseMenu.js';
+import CharacterCreateMenu from './CharacterCreateMenu.js';
 import api from '../../api';
 
 export default class CharacterSelectMenu extends BaseMenu {
-    constructor(scene, characterData, width = 700, height = 500) { // Adjusted width and height for better layout
+    constructor(scene, width = 700, height = 500) { // Adjusted width and height for better layout
         const x = scene.sys.game.config.width / 2;
         const y = scene.sys.game.config.height / 2;
         const backgroundColor = 0x000000;
@@ -11,22 +12,28 @@ export default class CharacterSelectMenu extends BaseMenu {
 
         super(scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
 
-        // this.characterData = characterData;
-        this.characterData = [
-            {"id":1,"userId":1,"name":"mike","characterClass":"paladin","baseStats":{"stamina":7,"strength":6,"intelligence":4},"currentStats":{"stamina":7,"strength":6,"intelligence":4},"currentAreaId":null,"flags":""},
-            {"id":2,"userId":1,"name":"john","characterClass":"priest","baseStats":{"stamina":5,"strength":4,"intelligence":8},"currentStats":{"stamina":5,"strength":4,"intelligence":8},"currentAreaId":null,"flags":""},
-            {"id":3,"userId":1,"name":"sarah","characterClass":"knight","baseStats":{"stamina":8,"strength":7,"intelligence":3},"currentStats":{"stamina":8,"strength":7,"intelligence":3},"currentAreaId":null,"flags":""},
-            {"id":4,"userId":1,"name":"lucas","characterClass":"mage","baseStats":{"stamina":4,"strength":3,"intelligence":9},"currentStats":{"stamina":4,"strength":3,"intelligence":9},"currentAreaId":null,"flags":""},
-            {"id":5,"userId":1,"name":"anna","characterClass":"rogue","baseStats":{"stamina":6,"strength":5,"intelligence":6},"currentStats":{"stamina":6,"strength":5,"intelligence":6},"currentAreaId":null,"flags":""},
-            {"id":6,"userId":1,"name":"mark","characterClass":"paladin","baseStats":{"stamina":7,"strength":6,"intelligence":4},"currentStats":{"stamina":7,"strength":6,"intelligence":4},"currentAreaId":null,"flags":""},
-            {"id":7,"userId":1,"name":"julia","characterClass":"priest","baseStats":{"stamina":5,"strength":4,"intelligence":8},"currentStats":{"stamina":5,"strength":4,"intelligence":8},"currentAreaId":null,"flags":""},
-            {"id":8,"userId":1,"name":"dave","characterClass":"knight","baseStats":{"stamina":8,"strength":7,"intelligence":3},"currentStats":{"stamina":8,"strength":7,"intelligence":3},"currentAreaId":null,"flags":""},
-            {"id":9,"userId":1,"name":"emma","characterClass":"mage","baseStats":{"stamina":4,"strength":3,"intelligence":9},"currentStats":{"stamina":4,"strength":3,"intelligence":9},"currentAreaId":null,"flags":""},
-            {"id":10,"userId":1,"name":"chris","characterClass":"rogue","baseStats":{"stamina":6,"strength":5,"intelligence":6},"currentStats":{"stamina":6,"strength":5,"intelligence":6},"currentAreaId":null,"flags":""},
-            {"id":11,"userId":1,"name":"bella","characterClass":"paladin","baseStats":{"stamina":7,"strength":6,"intelligence":4},"currentStats":{"stamina":7,"strength":6,"intelligence":4},"currentAreaId":null,"flags":""}
-        ]
+        this.characterData = []; // Initialize with an empty array
 
-        this.createCharacterSelectMenu();      
+        this.loadCharacterData();
+    }
+
+    async loadCharacterData() {
+        try {
+            const characters = await api.character.characterList();
+            console.log('Characters:', characters);
+            this.characterData = characters;
+            this.createCharacterSelectMenu(); // Create the menu after fetching the data
+        } catch (error) {
+            console.error('Error fetching character list:', error);
+            // Show error message
+            const errorMessage = 'Failed to load character list';
+            const errorMenu = new ErrorMenu(this.scene, errorMessage);
+            errorMenu.onClose = () => {
+                this.scene.scene.start('LoginScene'); // Go back to the login menu on error
+            };
+            this.hideNoOnclose();
+            errorMenu.show();
+        }
     }
 
     async createCharacterSelectMenu() {
@@ -95,7 +102,12 @@ export default class CharacterSelectMenu extends BaseMenu {
     handleNewCharacter() {
         // Implement logic to create a new character
         console.log('New Character button clicked');
-        // For example: this.scene.start('CharacterCreationMenu');
+        // Switch to CharacterSelectMenu
+        const characterCreateMenu = new CharacterCreateMenu(this.scene);
+        characterCreateMenu.show();
+
+        // Hide the login menu
+        this.hide();        
     }
 
     addText(x, y, text, style, tab = 0) {
