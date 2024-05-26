@@ -22,6 +22,12 @@ export default class PreloaderScene extends Phaser.Scene {
         // Initialize the SFX Manager
         SoundFXManager.initialize(this);
         SoundFXManager.preloadSounds([
+            'assets/sounds/menu/ui_1.wav',
+            'assets/sounds/menu/ui_2.wav',
+            'assets/sounds/menu/ui_3.wav',
+            'assets/sounds/menu/ui_4.wav',
+            'assets/sounds/menu/ui_5.wav',
+            'assets/sounds/menu/ui_6.wav',
             'assets/sounds/door_open.wav',
             'assets/sounds/door_close.wav',
             'assets/sounds/menu/menu_highlight.wav',
@@ -35,7 +41,7 @@ export default class PreloaderScene extends Phaser.Scene {
     create() {
         // Get CustomCursor instance
         CustomCursor.getInstance(this);
-        
+
         // Initialize the SFX Manager
         SoundFXManager.onPreloadComplete();
         

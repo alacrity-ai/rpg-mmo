@@ -1,4 +1,5 @@
-import IconHelper from '../IconHelper.js'; // Adjust the path as necessary
+import IconHelper from '../IconHelper.js'; // 
+import SoundFXManager from '../../audio/SoundFXManager.js';
 import { atlasToSprite } from '../../graphics/AtlasTools.js';
 
 
@@ -69,8 +70,12 @@ class BaseMenu {
             if (callback) {
                 // Set interactivity on the sprite
                 sprite.setInteractive({ useHandCursor: false })
-                    .on('pointerdown', callback)
+                    .on('pointerdown', () => {
+                        SoundFXManager.playSound('assets/sounds/menu/ui_3.wav');
+                        callback();
+                    })
                     .on('pointerover', () => {
+                        SoundFXManager.playSound('assets/sounds/menu/ui_1.wav');
                         border.clear();
                         border.lineStyle(2, 0xffff00, 1); // Yellow border on hover
                         border.strokeRoundedRect(x - spriteWidth / 2, y - spriteHeight / 2, spriteWidth, spriteHeight, borderRadius);
@@ -155,6 +160,7 @@ class BaseMenu {
                 // Add interaction to row background
                 rowBackground.setInteractive(new Phaser.Geom.Rectangle(-width / 2 + padding, offsetY - rowHeight / 2 + 5, width - padding * 2, rowHeight - 10), Phaser.Geom.Rectangle.Contains)
                     .on('pointerdown', () => {
+                        SoundFXManager.playSound('assets/sounds/menu/ui_2.wav');
                         this.selectedRow = rowIndexGlobal;
                         renderTable();
                         if (onRowSelected) {
@@ -328,6 +334,7 @@ class BaseMenu {
         container.setInteractive(); // Make the container interactive
         container.on('pointerdown', () => {
             if (this.scene.input.keyboard.enabled) {
+                SoundFXManager.playSound('assets/sounds/menu/ui_2.wav');
                 this.focusedInput = { tab, inputIndex };
                 this.updateInputBorders();
             }
@@ -342,8 +349,10 @@ class BaseMenu {
             }
             if (this.focusedInput && this.focusedInput.tab === tab && this.focusedInput.inputIndex === inputIndex) {
                 if (event.key === "Backspace") {
+                    SoundFXManager.playSound('assets/sounds/menu/ui_4.wav');
                     currentText = currentText.slice(0, -1); // Remove last character
                 } else if (event.key.length === 1 && currentText.length < maxLength) {
+                    SoundFXManager.playSound('assets/sounds/menu/ui_3.wav');
                     let char = event.key;
     
                     if (isName) {
@@ -467,10 +476,14 @@ class BaseMenu {
         if (!locked) {
             // Set interactivity on the container using the full dimensions of the button
             buttonContainer.setSize(width, height);
-            buttonContainer.setInteractive({ useHandCursor: false }).on('pointerdown', callback);
+            buttonContainer.setInteractive({ useHandCursor: false }).on('pointerdown', () => {
+                SoundFXManager.playSound('assets/sounds/menu/ui_5.wav');
+                callback(); 
+            });
     
             // Set up hover events for highlighting the border (if desired)
             buttonContainer.on('pointerover', () => {
+                SoundFXManager.playSound('assets/sounds/menu/ui_1.wav');
                 buttonBackground.clear();
                 buttonBackground.fillStyle(backgroundColor, 1);
                 buttonBackground.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
@@ -500,8 +513,12 @@ class BaseMenu {
     
         const clickableText = this.scene.add.text(x, y, text, style)
             .setInteractive()
-            .on('pointerdown', callback)
+            .on('pointerdown', () => {
+                SoundFXManager.playSound('assets/sounds/menu/ui_5.wav');
+                callback();
+            })
             .on('pointerover', () => {
+                SoundFXManager.playSound('assets/sounds/menu/ui_1.wav');
                 clickableText.setStyle({ fill: hoverColor });
             })
             .on('pointerout', () => {
@@ -536,9 +553,11 @@ class BaseMenu {
         const closeButton = this.scene.add.text(this.x + this.width / 2 - 20, this.y - this.height / 2 + 20, 'X', { fontSize: '16px', fill: '#fff' })
             .setInteractive()
             .on('pointerdown', () => {
+                SoundFXManager.playSound('assets/sounds/menu/ui_4.wav');
                 this.hide();
             })
             .on('pointerover', () => {
+                SoundFXManager.playSound('assets/sounds/menu/ui_1.wav');
                 closeButton.setStyle({ fill: '#ffff00' }); // Highlight in yellow
             })
             .on('pointerout', () => {
@@ -550,7 +569,10 @@ class BaseMenu {
     addIconButton(x, y, iconName, callback, tooltip = null, tab = 0) {
         const iconButton = this.iconHelper.getIcon(iconName);
         iconButton.setPosition(x, y);
-        iconButton.on('pointerdown', callback);
+        iconButton.on('pointerdown', () => {
+            SoundFXManager.playSound('assets/sounds/menu/ui_2.wav');
+            callback();
+        });
         this.addElementToTab(tab, iconButton);
         if (tooltip) this.addTooltip(iconButton, tooltip);
     }
@@ -577,10 +599,16 @@ class BaseMenu {
 
     hide() {
         Object.values(this.tabs).flat().forEach(element => element.setVisible(false));
+        
+        // Reset focused input
+        this.focusedInput = null;
+        this.updateInputBorders(); // Update the borders to reflect the change
+    
         if (this.onClose) {
             this.onClose();
         }
     }
+    
 
     hideNoOnclose() {
         Object.values(this.tabs).flat().forEach(element => element.setVisible(false));
