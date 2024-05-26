@@ -43,7 +43,7 @@ export default class LoginMenu extends BaseMenu {
 
         api.auth.login(username, password)
             .then(data => {
-                console.log('User logged in successfully:', data);
+                console.log('User logged in successfully');
                 // Store user ID in the Phaser registry
                 this.scene.registry.set('userId', data.id);
 

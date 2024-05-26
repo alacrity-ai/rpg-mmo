@@ -3,6 +3,7 @@ import LoginMenu from '../interface/menu/LoginMenu.js';
 import MusicManager from '../audio/MusicManager.js';
 import SoundFXManager from '../audio/SoundFXManager.js';
 import CustomCursor from '../interface/CustomCursor.js';
+import { addBackgroundImage } from '../graphics/BackgroundManager.js';
 
 export default class LoginScene extends Phaser.Scene {
     constructor() {
@@ -11,19 +12,17 @@ export default class LoginScene extends Phaser.Scene {
 
     preload() {
         this.load.image('background', 'assets/images/zones/forest-1/1-7.png');
-        this.load.audio('background-music', 'assets/music/forest-1.mp3');
+        this.load.audio('background-music-menu', 'assets/music/battle_music.mp3');
     }
 
     create() {
-        // Add the background image and ensure it fits the canvas
-        const background = this.add.image(0, 0, 'background').setOrigin(0, 0);
-        background.setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
+        addBackgroundImage(this, 'background', this.sys.game.config.width, this.sys.game.config.height);
 
         this.loginMenu = new LoginMenu(this);
         this.loginMenu.show();
 
         // Initialize the music manager
-        MusicManager.playMusic('background-music');
+        MusicManager.playMusic('background-music-menu');
 
         // Initialize SoundFXManager
         SoundFXManager.initialize(this);

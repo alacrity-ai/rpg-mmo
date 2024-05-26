@@ -1,4 +1,5 @@
 import { BaseMenu } from './BaseMenu.js';
+import ErrorMenu from './ErrorMenu.js';
 import api from '../../api';
 
 export default class CharacterCreateMenu extends BaseMenu {
@@ -55,10 +56,6 @@ export default class CharacterCreateMenu extends BaseMenu {
         // Add "Create" button at the bottom
         const buttonY = this.y + this.height / 2 - 30;
         const buttonSpacing = 110; // Adjust spacing between buttons
-        // Light green = 0x00ff00
-        // Dark green = 0x00cc00
-        // Darker green = 0x009900
-        // Even darker green = 0x006600
         this.addButton(this.x - buttonSpacing / 2, buttonY, 100, 40, 'Create', () => this.handleCreate(), null, 0, 0x006600);
 
         // Add "Back" button next to the "Create" button
@@ -142,5 +139,10 @@ export default class CharacterCreateMenu extends BaseMenu {
         const textElement = this.scene.add.text(x, y, text, style).setOrigin(0.5);
         this.addElementToTab(tab, textElement);
         return textElement;
+    }
+
+    reload() {
+        this.destroy(); // Destroy current instance elements
+        this.fetchClassTemplates(); // Fetch class templates and recreate the menu
     }
 }

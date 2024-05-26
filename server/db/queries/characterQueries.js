@@ -10,6 +10,11 @@ async function createCharacter(userId, characterName, characterClass) {
   const lowerCaseCharacterName = characterName.toLowerCase();
   const lowerCaseCharacterClass = characterClass.toLowerCase();
 
+  // Check if characterName has a minimum of 2 letters and contains only letters
+  if (!/^[a-zA-Z]{2,}$/.test(lowerCaseCharacterName)) {
+    throw new Error('Character name must be at least 2 letters long and contain only letters.');
+  }
+
   // Check if a character with the same name already exists for the user
   const existingCharacter = await getCharacter(userId, lowerCaseCharacterName);
   if (existingCharacter) {

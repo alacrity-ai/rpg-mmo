@@ -4,6 +4,8 @@ redis/volume
 raw_images/
 flipped/
 backup_images/
+raw_music/
+raw_sounds/
 
 # Node.js
 node_modules/

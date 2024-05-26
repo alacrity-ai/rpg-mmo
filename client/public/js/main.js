@@ -19,8 +19,8 @@ import socketManager from './SocketManager.js';
 // Configuration for the Phaser game
 const config = {
     type: Phaser.AUTO,
-    width: 1050,
-    height: 600,
+    width: 1000,
+    height: 562,
     scale: {
         mode: Phaser.Scale.FIT,
         autoCenter: Phaser.Scale.CENTER_BOTH,
@@ -48,7 +48,8 @@ const config = {
     },
     audio: {
         disableWebAudio: false
-    }
+    },
+    pixelArt: false, // Ensures pixel art is rendered without smoothing
 };
 
 // Connect to the server using the URL from .env

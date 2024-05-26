@@ -1,5 +1,6 @@
 import { BaseMenu } from './BaseMenu.js';
 import CharacterCreateMenu from './CharacterCreateMenu.js';
+import { capitalizeFirstLetter } from '../../utils/stringUtils.js';
 import api from '../../api';
 
 export default class CharacterSelectMenu extends BaseMenu {
@@ -20,7 +21,6 @@ export default class CharacterSelectMenu extends BaseMenu {
     async loadCharacterData() {
         try {
             const characters = await api.character.characterList();
-            console.log('Characters:', characters);
             this.characterData = characters;
             this.createCharacterSelectMenu(); // Create the menu after fetching the data
         } catch (error) {
@@ -54,11 +54,9 @@ export default class CharacterSelectMenu extends BaseMenu {
             const startingFrame = Phaser.Math.Between(1, 10);
             await this.addPortrait(posX, posY, atlasImagePath, 0, () => this.handleCharacterLogin(character.name), startingFrame);
             
-            // Add character name above the portrait
-            this.addText(posX, posY + 64, character.name.charAt(0).toUpperCase() + character.name.slice(1), { fontSize: '16px', fill: '#fff' });
-
-            // Add character class below the name
-            this.addText(posX, posY + 84, character.characterClass, { fontSize: '14px', fill: '#ccc' });
+            // Add character name and class
+            this.addText(posX, posY + 64, capitalizeFirstLetter(character.name), { fontSize: '16px', fill: '#fff' });
+            this.addText(posX, posY + 84, capitalizeFirstLetter(character.characterClass), { fontSize: '14px', fill: '#ccc' });
 
             // Add character level below the class
             this.addText(posX, posY + 104, `Level ${character.level || 1}`, { fontSize: '14px', fill: '#ccc' });
@@ -100,10 +98,13 @@ export default class CharacterSelectMenu extends BaseMenu {
     }
 
     handleNewCharacter() {
+        // Implement logic to create a new character
+        console.log('New Character button clicked');
         // Switch to CharacterSelectMenu
         const characterCreateMenu = new CharacterCreateMenu(this.scene);
         characterCreateMenu.onClose = () => {
             this.show();
+            this.reload();
         };
         characterCreateMenu.show();
 
@@ -114,5 +115,11 @@ export default class CharacterSelectMenu extends BaseMenu {
     addText(x, y, text, style, tab = 0) {
         const textElement = this.scene.add.text(x, y, text, style).setOrigin(0.5);
         this.addElementToTab(tab, textElement);
+    }
+
+    reload() {
+        this.destroy();
+        this.addWindow(this.x, this.y, this.width, this.height, this.backgroundColor, this.backgroundAlpha, this.borderRadius);
+        this.loadCharacterData();
     }
 }

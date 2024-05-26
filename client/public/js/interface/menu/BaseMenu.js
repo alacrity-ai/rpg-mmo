@@ -4,6 +4,8 @@ import { atlasToSprite } from '../../graphics/AtlasTools.js';
 
 class BaseMenu {
     constructor(scene, x, y, width, height, backgroundColor = 0x000000, backgroundAlpha = 0.8, borderRadius = 10, spriteSheetKey = null, onClose = null, hasCloseButton = false) {
+        this.initParams = { scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius, spriteSheetKey, onClose, hasCloseButton };
+
         this.scene = scene;
         this.x = x;
         this.y = y;
@@ -587,6 +589,12 @@ class BaseMenu {
     destroy() {
         Object.values(this.tabs).flat().forEach(element => element.destroy());
         this.tabs = { 0: [] }; // Reset tabs
+    }
+
+    reload() {
+        this.destroy(); // Destroy current instance elements
+        const { scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius, spriteSheetKey, onClose, hasCloseButton } = this.initParams;
+        new BaseMenu(scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius, spriteSheetKey, onClose, hasCloseButton);
     }
 }
 

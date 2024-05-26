@@ -8,6 +8,7 @@ import InteractiveZoneManager from '../../interface/InteractiveZoneManager.js';
 import CustomCursor from '../../interface/CustomCursor.js';
 import PointLightManager from '../../graphics/PointLight.js';
 import PartyDisplayManager from '../../interface/PartyDisplayManager.js';
+import { addBackgroundImage } from '../../graphics/BackgroundManager.js';
 
 export default class TownScene extends Phaser.Scene {
     constructor() {
@@ -44,8 +45,7 @@ export default class TownScene extends Phaser.Scene {
         CustomCursor.getInstance(this);
 
         // Add the background image and ensure it fits the canvas
-        const background = this.add.image(0, 0, 'background-town').setOrigin(0, 0);
-        background.setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
+        addBackgroundImage(this, 'background-town', this.sys.game.config.width, this.sys.game.config.height);
 
         // Initialize PartyDisplayManager
         this.partyDisplayManager = new PartyDisplayManager(this, this.party);
@@ -86,9 +86,9 @@ export default class TownScene extends Phaser.Scene {
 
         // Add pulsating point lights
         this.pointLightManager = new PointLightManager(this);
-        this.pointLightManager.addPointLight(539, 380, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.004);
-        this.pointLightManager.addPointLight(643, 380, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.006);
-        this.pointLightManager.addPointLight(347.5, 466, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.003); 
+        this.pointLightManager.addPointLight(510, 355, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.004);
+        this.pointLightManager.addPointLight(613, 355, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.006);
+        this.pointLightManager.addPointLight(331, 434, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.003); 
     }
 
     update(time, delta) {

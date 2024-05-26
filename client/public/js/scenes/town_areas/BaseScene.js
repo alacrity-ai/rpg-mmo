@@ -6,6 +6,7 @@ import InteractiveZoneManager from '../../interface/InteractiveZoneManager.js';
 import CustomCursor from '../../interface/CustomCursor.js';
 import MusicManager from '../../audio/MusicManager.js';
 import Debug from '../../interface/Debug.js';
+import { addBackgroundImage } from '../../graphics/BackgroundManager.js';
 
 export default class BaseScene extends Phaser.Scene {
     constructor(key, backgroundKey, musicKey = 'background-music') {
@@ -20,8 +21,7 @@ export default class BaseScene extends Phaser.Scene {
 
     create() {
         // Add the background image and ensure it fits the canvas
-        const background = this.add.image(0, 0, this.backgroundKey).setOrigin(0, 0);
-        background.setDisplaySize(this.sys.game.config.width, this.sys.game.config.height);
+        addBackgroundImage(this, this.backgroundKey, this.sys.game.config.width, this.sys.game.config.height);
 
         // Initialize the IconHelper
         this.iconHelper = new IconHelper(this, 'icons');
