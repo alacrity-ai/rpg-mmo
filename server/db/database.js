@@ -115,6 +115,7 @@ async function initTables() {
       base_stats JSON,
       loot_table JSON,
       npc_dialogue_template_id INT,
+      battler_sprite_path VARCHAR(255),
       FOREIGN KEY (npc_dialogue_template_id) REFERENCES npc_dialogue_templates(id)
     )`,
     `CREATE TABLE IF NOT EXISTS npc_instances (

@@ -13,7 +13,8 @@ async function getNPCTemplateByName(name) {
       ...rows[0],
       base_stats: rows[0].base_stats,
       loot_table: rows[0].loot_table,
-      npc_dialogue_template_id: rows[0].npc_dialogue_template_id
+      npc_dialogue_template_id: rows[0].npc_dialogue_template_id,
+      battler_sprite_path: rows[0].battler_sprite_path
     });
   }
   return null;
@@ -28,7 +29,8 @@ async function getNPCTemplateById(id) {
       ...rows[0],
       base_stats: rows[0].base_stats,
       loot_table: rows[0].loot_table,
-      npc_dialogue_template_id: rows[0].npc_dialogue_template_id
+      npc_dialogue_template_id: rows[0].npc_dialogue_template_id,
+      battler_sprite_path: rows[0].battler_sprite_path
     });
   }
   return null;
@@ -41,7 +43,8 @@ async function getAllNPCTemplates() {
     ...row,
     base_stats: row.base_stats,
     loot_table: row.loot_table,
-    npc_dialogue_template_id: row.npc_dialogue_template_id
+    npc_dialogue_template_id: row.npc_dialogue_template_id,
+    battler_sprite_path: row.battler_sprite_path
   }));
 }
 

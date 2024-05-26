@@ -1,5 +1,3 @@
-// models/NpcTemplate.js
-
 /**
  * Class representing an NPC template.
  */
@@ -20,8 +18,9 @@ class NpcTemplate {
    * @param {number} params.baseStats.intelligence - The base intelligence of the NPC.
    * @param {Object} params.loot_table - The loot table for the NPC.
    * @param {number} [params.npc_dialogue_template_id] - The ID of the dialogue template associated with the NPC (nullable).
+   * @param {string} params.battler_sprite_path - The path to the battler sprite for the NPC.
    */
-  constructor({ id, name, sprite_key, description, script_path, base_stats, loot_table, npc_dialogue_template_id = null }) {
+  constructor({ id, name, sprite_key, description, script_path, base_stats, loot_table, npc_dialogue_template_id = null, battler_sprite_path }) {
     this.id = id;
     this.name = name;
     this.spriteKey = sprite_key;
@@ -30,6 +29,7 @@ class NpcTemplate {
     this.baseStats = base_stats;
     this.lootTable = loot_table;
     this.npcDialogueTemplateId = npc_dialogue_template_id;
+    this.battlerSpritePath = battler_sprite_path;
   }
 }
 
@@ -49,21 +49,7 @@ module.exports = NpcTemplate;
  *     { item_id: 1, chance_to_drop: 0.5 },
  *     { item_id: 7, chance_to_drop: 0.1 }
  *   ],
- *   npc_dialogue_template_id: null
+ *   npc_dialogue_template_id: null,
+ *   battler_sprite_path: 'assets/sprites/rat_battler.png'
  * });
- *
- * console.log(npcTemplate);
- * // NpcTemplate {
- * //   id: 1,
- * //   name: 'Rat',
- * //   spriteKey: 'rat_sprite',
- * //   description: 'A small, skittish rodent.',
- * //   scriptPath: 'scripts/rat_behavior.js',
- * //   baseStats: { health: 20, mana: 0, strength: 3, stamina: 5, intelligence: 1 },
- * //   lootTable: [
- * //     { item_id: 1, chance_to_drop: 0.5 },
- * //     { item_id: 7, chance_to_drop: 0.1 }
- * //   ],
- * //   npcDialogueTemplateId: null
- * // }
  */
