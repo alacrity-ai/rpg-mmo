@@ -94,8 +94,8 @@ def process_png_images_in_folder(folder_path, width, height, num_colors, saturat
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Resize and reduce color palette of PNG images.')
     parser.add_argument('folder_path', type=str, help='Path to the folder containing PNG images.')
-    parser.add_argument('--width', type=int, default=640, help='Width to resize images to (default: 640).')
-    parser.add_argument('--height', type=int, default=360, help='Height to resize images to (default: 360).')
+    parser.add_argument('--width', type=int, default=1000, help='Width to resize images to (default: 1000).')
+    parser.add_argument('--height', type=int, default=562, help='Height to resize images to (default: 562).')
     parser.add_argument('--colorpalette', type=int, default=16, help='Max colors in the final output (default: 16).')
     parser.add_argument('--saturation', type=float, default=1, help='Saturation level for the final output (default: 1).')
 

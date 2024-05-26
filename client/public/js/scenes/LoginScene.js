@@ -11,7 +11,7 @@ export default class LoginScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('background', 'assets/images/zones/forest-1/1-7.png');
+        this.load.image('background', 'assets/images/zones/menu-1/menu_1.png');
         this.load.audio('background-music-menu', 'assets/music/battle_music.mp3');
     }
 

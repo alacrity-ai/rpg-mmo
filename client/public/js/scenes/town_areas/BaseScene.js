@@ -38,7 +38,7 @@ export default class BaseScene extends Phaser.Scene {
         const { width, height } = this.sys.game.config;
 
         // Position the icon at the bottom right
-        arrowDownRedIcon.setPosition(width - 60, 550); // Adjust as needed for padding
+        arrowDownRedIcon.setPosition(width - 60, 530); // Adjust as needed for padding
 
         // Add an event listener to switch back to TownScene
         arrowDownRedIcon.setInteractive();
