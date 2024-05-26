@@ -1,4 +1,5 @@
 import { BaseMenu } from './BaseMenu.js';
+import api from '../../api';
 
 export default class CharacterCreateMenu extends BaseMenu {
     constructor(scene, width = 700, height = 500) {
@@ -10,25 +11,27 @@ export default class CharacterCreateMenu extends BaseMenu {
 
         super(scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
 
-        this.portraitY = y - height / 4.4;
-        this.classes = [
-            'rogue',
-            'monk',
-            'ranger',
-            'reaver',
-            'paladin',
-            'warrior',
-            'shaman',
-            'priest',
-            'druid',
-            'arcanist',
-            'elementalist',
-            'necromancer'
-        ];
-
+        this.portraitY = y - height / 4.8;
+        this.classes = [];
         this.currentClassIndex = 0;
 
-        this.createCharacterCreateMenu();
+        this.fetchClassTemplates();
+    }
+
+    async fetchClassTemplates() {
+        try {
+            const classTemplates = await api.character.classList();
+            this.classes = classTemplates.map(classTemplate => classTemplate.name);
+            this.classTemplates = classTemplates;
+
+            if (this.classes.length > 0) {
+                this.createCharacterCreateMenu();
+            } else {
+                console.error('No class templates available');
+            }
+        } catch (error) {
+            console.error('Error fetching class templates:', error);
+        }
     }
 
     async createCharacterCreateMenu() {
@@ -38,7 +41,7 @@ export default class CharacterCreateMenu extends BaseMenu {
         const offset = this.width / 4;
 
         // Add name input
-        this.addTextInput(this.x, nameInputY, 300, 40, 'Name');
+        this.addTextInput(this.x, nameInputY, 300, 40, 'Name', 0, 16, false, true);
 
         // Add left arrow button
         this.addButton(this.x - offset, this.portraitY, buttonSize, buttonSize, '←', () => this.switchClass(-1), null, 0, 0x555555, '#fff', 10, 20);
@@ -46,13 +49,17 @@ export default class CharacterCreateMenu extends BaseMenu {
         // Add right arrow button
         this.addButton(this.x + offset, this.portraitY, buttonSize, buttonSize, '→', () => this.switchClass(1), null, 0, 0x555555, '#fff', 10, 20);
 
-        // Render initial portrait and class name
+        // Render initial portrait and class info
         await this.renderClass();
 
         // Add "Create" button at the bottom
         const buttonY = this.y + this.height / 2 - 30;
         const buttonSpacing = 110; // Adjust spacing between buttons
-        this.addButton(this.x - buttonSpacing / 2, buttonY, 100, 40, 'Create', () => this.handleCreate());
+        // Light green = 0x00ff00
+        // Dark green = 0x00cc00
+        // Darker green = 0x009900
+        // Even darker green = 0x006600
+        this.addButton(this.x - buttonSpacing / 2, buttonY, 100, 40, 'Create', () => this.handleCreate(), null, 0, 0x006600);
 
         // Add "Back" button next to the "Create" button
         this.addButton(this.x + buttonSpacing / 2, buttonY, 100, 40, 'Back', () => this.handleBack());
@@ -64,10 +71,12 @@ export default class CharacterCreateMenu extends BaseMenu {
     }
 
     async renderClass() {
+        // make the first letter uppercase of characterClass
         const characterClass = this.classes[this.currentClassIndex];
+        const classTemplate = this.classTemplates[this.currentClassIndex];
         const atlasImagePath = `assets/images/characters/${characterClass}/portrait/atlas.png`;
 
-        // Clear previous portrait and class name if they exist
+        // Clear previous portrait and class info if they exist
         if (this.portrait) {
             this.portrait.sprite.destroy();
             this.portrait.maskShape.destroy();
@@ -76,24 +85,57 @@ export default class CharacterCreateMenu extends BaseMenu {
         if (this.classNameText) {
             this.classNameText.destroy();
         }
+        if (this.baseStatsText) {
+            this.baseStatsText.forEach(text => text.destroy());
+        }
+        if (this.descriptionText) {
+            this.descriptionText.destroy();
+        }
 
         // Add character portrait
         this.portrait = await this.addPortrait(this.x, this.portraitY, atlasImagePath, 0);
 
         // Add class name below the portrait
-        this.classNameText = this.addText(this.x, this.y - this.height / 4 + 80, characterClass, { fontSize: '16px', fill: '#fff' });
+        this.classNameText = this.addText(this.x, this.y - this.height / 4 + 90, characterClass.charAt(0).toUpperCase() + characterClass.slice(1), { fontSize: '24px', fill: '#fff' });
+        // Add base stats below the class name
+        const baseStats = classTemplate.baseStats;
+        this.baseStatsText = [
+            this.addText(this.x, this.y - this.height / 4 + 120, `Strength: ${baseStats.strength}`, { fontSize: '18px', fill: '#ccc' }),
+            this.addText(this.x, this.y - this.height / 4 + 145, `Stamina: ${baseStats.stamina}`, { fontSize: '18px', fill: '#ccc' }),
+            this.addText(this.x, this.y - this.height / 4 + 170, `Intelligence: ${baseStats.intelligence}`, { fontSize: '18px', fill: '#ccc' })
+        ];
+
+        // Add class description below the base stats
+        this.descriptionText = this.addText(this.x, this.y - this.height / 4 + 220, classTemplate.description, { fontSize: '16px', fill: '#ccc', wordWrap: { width: 300 } });
     }
 
     handleCreate() {
-        const characterName = this.getTextInputValue(0, 0); // Get the name from the input field
+        // Get the name from the input field as all lowercase
+        const characterName = this.getTextInputValue(0, 0).toLowerCase();
         const selectedClass = this.classes[this.currentClassIndex];
-        console.log(`New ${selectedClass} with name ${characterName} created`);
-        // Implement logic to create a new character
+        console.log(`Creating ${selectedClass} with name ${characterName}`);
+        // Call api.character.createCharacter with the character name and selected class
+        api.character.createCharacter(characterName, selectedClass)
+            .then(data => {
+                console.log('Character created successfully:', data);
+                // Hide the character create menu
+                this.hide();
+            })
+            .catch(error => {
+                console.error('Error creating character:', error);
+                // Show error message
+                const errorMessage = 'Error creating character';
+                const errorMenu = new ErrorMenu(this.scene, errorMessage);
+                errorMenu.onClose = () => {
+                    this.show();
+                };
+                this.hideNoOnclose();
+                errorMenu.show();
+            });
     }
 
     handleBack() {
-        console.log('Back button clicked');
-        // Implement logic to go back to the previous menu
+        this.hide();
     }
 
     addText(x, y, text, style, tab = 0) {

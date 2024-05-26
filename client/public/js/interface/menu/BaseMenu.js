@@ -296,7 +296,7 @@ class BaseMenu {
         return wrappedText;
     }    
 
-    addTextInput(x, y, width, height, placeholder, tab = 0, maxLength = 50, isSecret = false) {
+    addTextInput(x, y, width, height, placeholder, tab = 0, maxLength = 50, isSecret = false, isName = false, allowSpaces = false) {
         const container = this.scene.add.container(x, y);
     
         // Create the text input background with a rounded white border
@@ -342,7 +342,20 @@ class BaseMenu {
                 if (event.key === "Backspace") {
                     currentText = currentText.slice(0, -1); // Remove last character
                 } else if (event.key.length === 1 && currentText.length < maxLength) {
-                    currentText += event.key; // Add character
+                    let char = event.key;
+    
+                    if (isName) {
+                        if (!/[a-zA-Z]/.test(char)) return; // Allow only letters
+                        if (!allowSpaces && char === ' ') return; // Disallow spaces if not allowed
+                        char = char.toLowerCase(); // Convert to lowercase
+                        if (currentText.length === 0) {
+                            char = char.toUpperCase(); // First character uppercase
+                        }
+                    } else {
+                        if (!allowSpaces && char === ' ') return; // Disallow spaces if not allowed
+                    }
+    
+                    currentText += char; // Add character
                 } else if (event.keyCode === Phaser.Input.Keyboard.KeyCodes.TAB) {
                     event.preventDefault(); // Prevent default tab behavior
                     this.scene.input.keyboard.enabled = false; // Temporarily disable keyboard input
@@ -352,6 +365,7 @@ class BaseMenu {
                 }
                 const displayText = isSecret ? '*'.repeat(currentText.length) : currentText;
                 text.setText(displayText || placeholder); // Update text display, show placeholder if empty
+                text.setStyle({ fill: currentText ? '#ffffff' : '#888888' }); // Change text color based on content
                 this.textInputs[tab][inputIndex].currentText = currentText; // Update stored text
             }
         });
@@ -360,7 +374,7 @@ class BaseMenu {
         this.addElementToTab(tab, container);
     
         return container;
-    }
+    }      
     
     focusNextInput() {
         if (this.focusedInput) {

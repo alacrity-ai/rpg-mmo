@@ -1,9 +1,23 @@
 const Redis = require('ioredis');
 const { createCharacter, getCharacterByName, getCharactersByUser } = require('../../db/queries/characterQueries');
-const { getClassTemplateByName } = require('../../db/queries/classTemplatesQueries');
+const { getClassTemplateByName, getAllClasses } = require('../../db/queries/classTemplatesQueries');
 const taskRegistry = require('../server/taskRegistry');
 const logger = require('../../utilities/logger');
 const redis = new Redis();
+
+async function processClassListTask(task) {
+    const {taskId, data} = task.taskData;
+    try {
+        const classes = await getAllClasses();
+        const result = { success: true, data: classes };
+        logger.info(`Class list retrieval successful for task ${taskId}`);
+        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    } catch (error) {
+        const result = { error: 'Failed to retrieve class list. ' + error.message };
+        logger.error(`Class list retrieval failed for task ${taskId}:`, error.message);
+        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    }
+}
 
 async function processCharacterListTask(task) {
     const { taskId, data } = task.taskData;
@@ -76,11 +90,13 @@ async function processLoginCharacterTask(task) {
 
 
 // Register task handlers
+taskRegistry.register('classList', processClassListTask);
 taskRegistry.register('characterList', processCharacterListTask);
 taskRegistry.register('createCharacter', processCreateCharacterTask);
 taskRegistry.register('loginCharacter', processLoginCharacterTask);
 
 module.exports = {
+  processClassListTask,
   processCharacterListTask,
   processCreateCharacterTask,
   processLoginCharacterTask,

@@ -54,8 +54,8 @@ export default class CharacterSelectMenu extends BaseMenu {
             const startingFrame = Phaser.Math.Between(1, 10);
             await this.addPortrait(posX, posY, atlasImagePath, 0, () => this.handleCharacterLogin(character.name), startingFrame);
             
-            // Add character name below the portrait
-            this.addText(posX, posY + 64, character.name, { fontSize: '16px', fill: '#fff' });
+            // Add character name above the portrait
+            this.addText(posX, posY + 64, character.name.charAt(0).toUpperCase() + character.name.slice(1), { fontSize: '16px', fill: '#fff' });
 
             // Add character class below the name
             this.addText(posX, posY + 84, character.characterClass, { fontSize: '14px', fill: '#ccc' });
@@ -100,10 +100,11 @@ export default class CharacterSelectMenu extends BaseMenu {
     }
 
     handleNewCharacter() {
-        // Implement logic to create a new character
-        console.log('New Character button clicked');
         // Switch to CharacterSelectMenu
         const characterCreateMenu = new CharacterCreateMenu(this.scene);
+        characterCreateMenu.onClose = () => {
+            this.show();
+        };
         characterCreateMenu.show();
 
         // Hide the login menu

@@ -1,6 +1,9 @@
 # Volume
 database/volume
 redis/volume
+raw_images/
+flipped/
+backup_images/
 
 # Node.js
 node_modules/
