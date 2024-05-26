@@ -6,6 +6,8 @@ flipped/
 backup_images/
 raw_music/
 raw_sounds/
+raw_video/
+to_video/
 
 # Node.js
 node_modules/

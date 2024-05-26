@@ -19,7 +19,7 @@ def truncate_and_fade_wav(input_wav_file, output_file, duration=60, fade_duratio
     audio = AudioSegment.from_wav(input_wav_file)
     
     # Truncate to the specified duration (in milliseconds)
-    truncated_audio = audio[:duration * 1000]
+    truncated_audio = audio[:duration * 1900]
     
     # Add fade-in and fade-out effects
     faded_audio = truncated_audio.fade_in(fade_duration).fade_out(fade_duration)
