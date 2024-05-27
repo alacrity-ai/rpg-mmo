@@ -8,7 +8,7 @@ import MusicManager from '../../audio/MusicManager.js';
 import Debug from '../../interface/Debug.js';
 import { addBackgroundImage } from '../../graphics/BackgroundManager.js';
 
-export default class BaseScene extends Phaser.Scene {
+export default class BaseTownScene extends Phaser.Scene {
     constructor(key, backgroundKey, musicKey = 'background-music') {
         super({ key });
         this.backgroundKey = backgroundKey;
@@ -16,7 +16,7 @@ export default class BaseScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image(this.backgroundKey, `assets/images/zones/town-1/${this.backgroundKey}.png`);
+        this.load.image(this.backgroundKey, `assets/images/zone/town/${this.backgroundKey}.png`);
     }
 
     create() {

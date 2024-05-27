@@ -1,9 +1,9 @@
-import BaseScene from './BaseScene.js';
-import PointLightManager from '../../graphics/PointLight.js';
+import BaseTownScene from '../BaseTownScene.js';
+import PointLightManager from '../../../graphics/PointLight.js';
 
-export default class MarketScene extends BaseScene {
+export default class MarketScene extends BaseTownScene {
     constructor() {
-        super('MarketScene', 'market');
+        super('MarketScene', 'eldergrove/market');
     }
 
     preload() {

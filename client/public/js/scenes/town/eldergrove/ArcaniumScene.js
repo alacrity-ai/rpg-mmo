@@ -1,9 +1,9 @@
-import BaseScene from './BaseScene.js';
-import PointLightManager from '../../graphics/PointLight.js';
+import BaseTownScene from '../BaseTownScene.js';
+import PointLightManager from '../../../graphics/PointLight.js';
 
-export default class ArcaniumScene extends BaseScene {
+export default class ArcaniumScene extends BaseTownScene {
     constructor() {
-        super('ArcaniumScene', 'arcanium');
+        super('ArcaniumScene', 'eldergrove/arcanium');
     }
 
     preload() {

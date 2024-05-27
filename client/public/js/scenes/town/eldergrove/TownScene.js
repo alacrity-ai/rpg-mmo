@@ -1,14 +1,14 @@
 import Phaser from 'phaser';
-import { createHotbar } from '../../interface/MenuHotbar.js';
-import IconHelper from '../../interface/IconHelper.js';
-import SoundFXManager from '../../audio/SoundFXManager.js';
-import MusicManager from '../../audio/MusicManager.js';
-import Debug from '../../interface/Debug.js';
-import InteractiveZoneManager from '../../interface/InteractiveZoneManager.js';
-import CustomCursor from '../../interface/CustomCursor.js';
-import PointLightManager from '../../graphics/PointLight.js';
-import PartyDisplayManager from '../../interface/PartyDisplayManager.js';
-import { addBackgroundImage } from '../../graphics/BackgroundManager.js';
+import { createHotbar } from '../../../interface/MenuHotbar.js';
+import IconHelper from '../../../interface/IconHelper.js';
+import SoundFXManager from '../../../audio/SoundFXManager.js';
+import MusicManager from '../../../audio/MusicManager.js';
+import Debug from '../../../interface/Debug.js';
+import InteractiveZoneManager from '../../../interface/InteractiveZoneManager.js';
+import CustomCursor from '../../../interface/CustomCursor.js';
+import PointLightManager from '../../../graphics/PointLight.js';
+import PartyDisplayManager from '../../../interface/PartyDisplayManager.js';
+import { addBackgroundImage } from '../../../graphics/BackgroundManager.js';
 
 export default class TownScene extends Phaser.Scene {
     constructor() {
@@ -16,7 +16,7 @@ export default class TownScene extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image('background-town', 'assets/images/zones/town-1/town.png');
+        this.load.image('background-town', 'assets/images/zone/town/eldergrove/exterior-1.png');
 
         // Initialize the Music Manager
         this.load.audio('background-music', 'assets/music/forest-1.mp3');

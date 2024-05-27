@@ -1,9 +1,9 @@
-import BaseScene from './BaseScene.js';
-import PointLightManager from '../../graphics/PointLight.js';
+import BaseTownScene from '../BaseTownScene.js';
+import PointLightManager from '../../../graphics/PointLight.js';
 
-export default class GuildhallScene extends BaseScene {
+export default class GuildhallScene extends BaseTownScene {
     constructor() {
-        super('GuildhallScene', 'guildhall');
+        super('GuildhallScene', 'eldergrove/guildhall');
     }
 
     preload() {

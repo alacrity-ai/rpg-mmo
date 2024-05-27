@@ -1,9 +1,9 @@
-import BaseScene from './BaseScene.js';
-import PointLightManager from '../../graphics/PointLight.js';
+import BaseTownScene from '../BaseTownScene.js';
+import PointLightManager from '../../../graphics/PointLight.js';
 
-export default class BlacksmithScene extends BaseScene {
+export default class BlacksmithScene extends BaseTownScene {
     constructor() {
-        super('BlacksmithScene', 'blacksmith');
+        super('BlacksmithScene', 'eldergrove/blacksmith');
     }
 
     preload() {
