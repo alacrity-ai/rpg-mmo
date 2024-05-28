@@ -52,6 +52,8 @@ export default class LoginMenu extends BaseMenu {
                 console.log('User logged in successfully');
                 // Store user ID in the Phaser registry
                 this.scene.registry.set('userId', data.id);
+                // Log the scene.registry userId:
+                
 
                 // Switch to CharacterSelectMenu
                 const characterSelectMenu = new CharacterSelectMenu(this.scene);

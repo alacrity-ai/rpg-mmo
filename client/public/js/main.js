@@ -11,6 +11,7 @@ import LoginScene from './scenes/LoginScene.js';
 import PreloaderScene from './scenes/PreloaderScene.js';
 import MenuTestScene from './scenes/dev_scenes/MenuTestScene.js';
 
+// Handles loading all other scenes dynamically
 import { loadScenes } from './scenes/utils/LoadScenes.js';
 
 // Configuration for the Phaser game
