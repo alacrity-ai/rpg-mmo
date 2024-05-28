@@ -35,6 +35,12 @@ export default class LoginMenu extends BaseMenu {
         // Add clickable text for user registration
         const registerTextY = buttonY + 30;
         this.addClickableText(this.x + 80, registerTextY, 'New Account', () => this.showUserRegistrationMenu(), { fontSize: '16px', fill: '#fff' });
+    
+        // Add text to button left of screen
+        // White is #fff
+        // light grey is #ccc
+        // red is #f00
+        this.addTextArea(40, 530, 200, 200, 'F11 - Fullscreen', { fontSize: '18px' }, 0, '#ccc');
     }
 
     handleLogin() {
