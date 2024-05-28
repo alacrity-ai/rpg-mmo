@@ -16,6 +16,7 @@ export function createHotbar(scene, iconHelper) {
     icons.forEach((icon, index) => {
         let iconContainer = iconHelper.getIcon(icon.name); // Get icon container by name
         iconContainer.setPosition(75 + index * 50, 530);
+        iconContainer.setDepth(1);
 
         // Set up interactivity on the container
         iconContainer.setInteractive();

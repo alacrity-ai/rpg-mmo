@@ -29,12 +29,14 @@ export default class PreloaderScene extends Phaser.Scene {
             'assets/sounds/menu/ui_5.wav',
             'assets/sounds/menu/ui_6.wav',
             'assets/sounds/door_open.wav',
+            'assets/sounds/door_open_2.wav',
             'assets/sounds/door_close.wav',
             'assets/sounds/menu/menu_highlight.wav',
             'assets/sounds/menu/book_open.wav',
             'assets/sounds/menu/bag_open.wav',
             'assets/sounds/menu/chat_menu.wav',
             'assets/sounds/menu/tent_open.wav',
+            'assets/sounds/footstep_chain.wav'
         ]);
     }
 

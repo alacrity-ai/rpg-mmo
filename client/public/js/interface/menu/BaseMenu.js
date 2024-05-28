@@ -451,7 +451,7 @@ class BaseMenu {
         this.tabs[this.currentTab].push(tooltip); // Tooltips are associated with the current tab
     }    
 
-    addButton(x, y, width, height, text, callback, tooltip = null, tab = 0, backgroundColor = 0x555555, textColor = '#fff', borderRadius = 10, fontSize = '16px', locked = false) {
+    addButton(x, y, width, height, text, callback, tooltip = null, tab = 0, backgroundColor = 0x555555, textColor = '#fff', borderRadius = 10, fontSize = '16px', locked = false, soundOnClick = null) {
         // Create a container for the button
         const buttonContainer = this.scene.add.container(x, y);
     
@@ -477,7 +477,11 @@ class BaseMenu {
             // Set interactivity on the container using the full dimensions of the button
             buttonContainer.setSize(width, height);
             buttonContainer.setInteractive({ useHandCursor: false }).on('pointerdown', () => {
-                SoundFXManager.playSound('assets/sounds/menu/ui_5.wav');
+                if (soundOnClick) {
+                    SoundFXManager.playSound(soundOnClick);
+                } else {
+                    SoundFXManager.playSound('assets/sounds/menu/ui_5.wav');
+                }
                 callback(); 
             });
     

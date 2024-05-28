@@ -1,5 +1,6 @@
 import { BaseMenu } from './BaseMenu.js';
 import { fadeTransition } from '../../scenes/utils/SceneTransitions.js';
+import SoundFXManager from '../../audio/SoundFXManager.js';
 
 export default class NavigationMenu extends BaseMenu {
     constructor(scene, x = null, y = null, scale = 1) {
@@ -59,6 +60,8 @@ export default class NavigationMenu extends BaseMenu {
         } else {
             this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', null, 'No Travel East', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }
+
+        this.tabs[this.currentTab].forEach(element => element.setDepth(1));
     }
 
     /* Sets up the navigation buttons for a town scene.
@@ -74,30 +77,31 @@ export default class NavigationMenu extends BaseMenu {
 
         // North
         if (up !== null) {
-            this.addButton(this.x, this.y - offset, buttonSize, buttonSize, '↑', () => fadeTransition(this.scene, up), 'Travel North', 0, 0x555555, '#fff', 10 * this.scale, labelSize);
+            this.addButton(this.x, this.y - offset, buttonSize, buttonSize, '↑', () => fadeTransition(this.scene, up), 'Travel North', 0, 0x555555, '#fff', 10 * this.scale, labelSize, false, 'assets/sounds/footstep_chain.wav');
         } else {
             this.addButton(this.x, this.y - offset, buttonSize, buttonSize, '↑', null, 'No Travel North', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }
 
         // South
         if (down !== null) {
-            this.addButton(this.x, this.y + offset, buttonSize, buttonSize, '↓', () => fadeTransition(this.scene, down), 'Travel South', 0, 0x555555, '#fff', 10 * this.scale, labelSize);
+            this.addButton(this.x, this.y + offset, buttonSize, buttonSize, '↓', () => fadeTransition(this.scene, down), 'Travel South', 0, 0x555555, '#fff', 10 * this.scale, labelSize, false, 'assets/sounds/footstep_chain.wav');
         } else {
             this.addButton(this.x, this.y + offset, buttonSize, buttonSize, '↓', null, 'No Travel South', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }
 
         // West
         if (left !== null) {
-            this.addButton(this.x - offset, this.y, buttonSize, buttonSize, '←', () => fadeTransition(this.scene, left), 'Travel West', 0, 0x555555, '#fff', 10 * this.scale, labelSize);
+            this.addButton(this.x - offset, this.y, buttonSize, buttonSize, '←', () => fadeTransition(this.scene, left), 'Travel West', 0, 0x555555, '#fff', 10 * this.scale, labelSize, false, 'assets/sounds/footstep_chain.wav');
         } else {
             this.addButton(this.x - offset, this.y, buttonSize, buttonSize, '←', null, 'No Travel West', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }
 
         // East
         if (right !== null) {
-            this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', () => fadeTransition(this.scene, right), 'Travel East', 0, 0x555555, '#fff', 10 * this.scale, labelSize);
+            this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', () => fadeTransition(this.scene, right), 'Travel East', 0, 0x555555, '#fff', 10 * this.scale, labelSize, false, 'assets/sounds/footstep_chain.wav');
         } else {
             this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', null, 'No Travel East', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }
+        this.tabs[this.currentTab].forEach(element => element.setDepth(1));
     }
 }

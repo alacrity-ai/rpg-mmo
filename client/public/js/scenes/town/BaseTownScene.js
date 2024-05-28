@@ -35,9 +35,9 @@ export default class BaseTownScene extends Phaser.Scene {
         // Example party data (Replace this with API call to get party data)
         this.party = [
             { frameCount: 20, prefix: 'priest', maxHealth: 80, maxMana: 100 },
-            { frameCount: 20, prefix: 'mage', maxHealth: 70, maxMana: 120 },
-            { frameCount: 20, prefix: 'knight', maxHealth: 120, maxMana: 40 },
-            { frameCount: 20, prefix: 'rogue', maxHealth: 90, maxMana: 60 }
+            // { frameCount: 20, prefix: 'mage', maxHealth: 70, maxMana: 120 },
+            // { frameCount: 20, prefix: 'knight', maxHealth: 120, maxMana: 40 },
+            // { frameCount: 20, prefix: 'rogue', maxHealth: 90, maxMana: 60 }
         ];
 
         this.load.image(this.backgroundImagePath, `assets/images/zone/town/${this.backgroundImagePath}`);
@@ -105,6 +105,11 @@ export default class BaseTownScene extends Phaser.Scene {
 
         // Update point lights with delta time
         this.pointLightManager.update(delta);
+
+        // Update fog effect if exists
+        if (this.fogEffect) {
+            this.fogEffect.update(time, delta);
+        }
 
         // Update debug coordinates
         this.debug.update(this.input.activePointer);
