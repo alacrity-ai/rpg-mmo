@@ -1,19 +1,28 @@
 import Phaser from 'phaser';
 import CircleMaskImagePlugin from 'phaser3-rex-plugins/plugins/circlemaskimage-plugin.js';
+import socketManager from './SocketManager.js';
 
-import TownScene from './scenes/town/eldergrove/TownScene.js';
-import MenuTestScene from './scenes/dev_scenes/MenuTestScene.js';
-import ArcaniumScene from './scenes/town/eldergrove/ArcaniumScene.js';
-import BlacksmithScene from './scenes/town/eldergrove/BlacksmithScene.js';
-import GuildhallScene from './scenes/town/eldergrove/GuildhallScene.js';
-import MapScene from './scenes/town/eldergrove/MapScene.js';
-import MarketScene from './scenes/town/eldergrove/MarketScene.js';
+// Eldergrove Town Scenes
+import EldergroveTownScene from './scenes/town/eldergrove/TownScene.js';
+import EldergroveArcaniumScene from './scenes/town/eldergrove/ArcaniumScene.js';
+import EldergroveBlacksmithScene from './scenes/town/eldergrove/BlacksmithScene.js';
+import EldergroveGuildhallScene from './scenes/town/eldergrove/GuildhallScene.js';
+import EldergroveMapScene from './scenes/town/eldergrove/MapScene.js';
+import EldergroveMarketScene from './scenes/town/eldergrove/MarketScene.js';
+
+// Tilford Town Scenes
+import TilfordExterior1Scene from './scenes/town/tilford/Exterior1Scene.js';
+import TilfordExterior2Scene from './scenes/town/tilford/Exterior2Scene.js';
+import TilfordExterior3Scene from './scenes/town/tilford/Exterior3Scene.js';
+
+// Game Scenes
 import ExpeditionScene from './scenes/ExpeditionScene.js';
 import CombatScene from './scenes/CombatScene.js';
+
+// System Scenes
 import LoginScene from './scenes/LoginScene.js';
 import PreloaderScene from './scenes/PreloaderScene.js';
-
-import socketManager from './SocketManager.js';
+import MenuTestScene from './scenes/dev_scenes/MenuTestScene.js';
 
 
 // Configuration for the Phaser game
@@ -28,15 +37,18 @@ const config = {
     },
     scene: [
         PreloaderScene,
-        TownScene,
         MenuTestScene,
         ExpeditionScene,
         CombatScene,
-        ArcaniumScene,
-        BlacksmithScene,
-        GuildhallScene,
-        MarketScene,
-        MapScene,
+        EldergroveTownScene,
+        EldergroveArcaniumScene,
+        EldergroveBlacksmithScene,
+        EldergroveGuildhallScene,
+        EldergroveMarketScene,
+        EldergroveMapScene,
+        TilfordExterior1Scene,
+        TilfordExterior2Scene,
+        TilfordExterior3Scene,
         LoginScene
     ],
     plugins: {
@@ -60,6 +72,8 @@ socketManager.connect(url).then(() => {
     console.log('Socket connected, starting Phaser game...');
     // Create a new Phaser game instance after the socket connection is established
     const game = new Phaser.Game(config);
+
+
   }).catch((err) => {
     console.error('Failed to connect to the server, cannot start the game.', err);
   });

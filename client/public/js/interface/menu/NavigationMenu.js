@@ -1,9 +1,13 @@
 import { BaseMenu } from './BaseMenu.js';
 
 export default class NavigationMenu extends BaseMenu {
-    constructor(scene, x, y, scale = 1) {
+    constructor(scene, x = null, y = null, scale = 1) {
         const width = 112 * scale;
         const height = 112 * scale;
+        // If x is null, use this.sys.game.config.width / 14
+        x = x || scene.sys.game.config.width / 14 + 5;
+        // If y is null, use this.sys.game.config.height / 1.4
+        y = y || scene.sys.game.config.height / 1.4 + 30;
         super(scene, x, y, width, height, 0x000000, 0.8, 24 * scale, null, null, false);
         this.scale = scale;
     }
@@ -17,7 +21,7 @@ export default class NavigationMenu extends BaseMenu {
      * @param {number|null} navigationData.west - The area to the west, or null if there is no area.
      * @param {string} navigationData.type - The type of the current area (e.g., 'entrance', 'area').
      */
-    setupNavigationButtons(navigationData) {
+    setupNavigationButtons(navigationData, directionalCallbacks = {}) {
         const buttonSize = 30 * this.scale;
         const labelSize = `${24 * this.scale}px`;
         const offset = buttonSize / 2 + 16 * this.scale;
@@ -51,6 +55,46 @@ export default class NavigationMenu extends BaseMenu {
         // East
         if (navigationData.east !== null) {
             this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', rightCallback, 'Travel East', 0, 0x555555, '#fff', 10 * this.scale, labelSize);
+        } else {
+            this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', null, 'No Travel East', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
+        }
+    }
+
+    /* Sets up the navigation buttons for a town scene.
+     * @param {string|null} up - The scene to the north, or null if there is no scene.
+     * @param {string|null} down - The scene to the south, or null if there is no scene.
+     * @param {string|null} left - The scene to the west, or null if there is no scene.
+     * @param {string|null} right - The scene to the east, or null if there is no scene.
+     * */
+    setupTownNavigationButtons(up = null, down = null, left = null, right = null) {
+        const buttonSize = 30 * this.scale;
+        const labelSize = `${24 * this.scale}px`;
+        const offset = buttonSize / 2 + 16 * this.scale;
+
+        // North
+        if (up !== null) {
+            this.addButton(this.x, this.y - offset, buttonSize, buttonSize, '↑', () => this.scene.scene.start(up), 'Travel North', 0, 0x555555, '#fff', 10 * this.scale, labelSize);
+        } else {
+            this.addButton(this.x, this.y - offset, buttonSize, buttonSize, '↑', null, 'No Travel North', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
+        }
+
+        // South
+        if (down !== null) {
+            this.addButton(this.x, this.y + offset, buttonSize, buttonSize, '↓', () => this.scene.scene.start(down), 'Travel South', 0, 0x555555, '#fff', 10 * this.scale, labelSize);
+        } else {
+            this.addButton(this.x, this.y + offset, buttonSize, buttonSize, '↓', null, 'No Travel South', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
+        }
+
+        // West
+        if (left !== null) {
+            this.addButton(this.x - offset, this.y, buttonSize, buttonSize, '←', () => this.scene.scene.start(left), 'Travel West', 0, 0x555555, '#fff', 10 * this.scale, labelSize);
+        } else {
+            this.addButton(this.x - offset, this.y, buttonSize, buttonSize, '←', null, 'No Travel West', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
+        }
+
+        // East
+        if (right !== null) {
+            this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', () => this.scene.scene.start(right), 'Travel East', 0, 0x555555, '#fff', 10 * this.scale, labelSize);
         } else {
             this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', null, 'No Travel East', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }

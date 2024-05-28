@@ -1,9 +1,8 @@
 import BaseTownScene from '../BaseTownScene.js';
-import PointLightManager from '../../../graphics/PointLight.js';
 
-export default class GuildhallScene extends BaseTownScene {
+export default class EldergroveGuildhallScene extends BaseTownScene {
     constructor() {
-        super('GuildhallScene', 'eldergrove/guildhall');
+        super('EldergroveGuildhallScene', 'eldergrove/guildhall.png', null, 'guildhall.wav', 'EldergroveTownScene');
     }
 
     preload() {
@@ -15,9 +14,6 @@ export default class GuildhallScene extends BaseTownScene {
     create() {
         super.create();
         
-        // Initialize PointLightManager
-        this.pointLightManager = new PointLightManager(this);
-
         // Add point lights
         this.pointLightManager.addPointLight(35, 150, 0xffaa00, 45, 0.02, true, 0.02, 0.18, 0.004);
         this.pointLightManager.addPointLight(172, 298, 0xffaa00, 55, 0.02, true, 0.02, 0.18, 0.003);
@@ -28,7 +24,5 @@ export default class GuildhallScene extends BaseTownScene {
 
     update(time, delta) {
         super.update(time, delta);
-        // Update point lights with delta time
-        this.pointLightManager.update(delta);
     }
 }

@@ -82,7 +82,7 @@ export default class CharacterSelectMenu extends BaseMenu {
             .then(data => {
                 console.log('Character logged in successfully:', data);
                 this.scene.scene.get('LoginScene').cleanup();
-                this.scene.scene.start('TownScene');
+                this.scene.scene.start('EldergroveTownScene');
                 this.hide()
             })
             .catch(error => {

@@ -1,9 +1,8 @@
 import BaseTownScene from '../BaseTownScene.js';
-import PointLightManager from '../../../graphics/PointLight.js';
 
-export default class BlacksmithScene extends BaseTownScene {
+export default class EldergroveBlacksmithScene extends BaseTownScene {
     constructor() {
-        super('BlacksmithScene', 'eldergrove/blacksmith');
+        super('EldergroveBlacksmithScene', 'eldergrove/blacksmith.png', null, 'blacksmith.wav', 'EldergroveTownScene');
     }
 
     preload() {
@@ -13,9 +12,6 @@ export default class BlacksmithScene extends BaseTownScene {
 
     create() {
         super.create();
-
-        // Initialize PointLightManager
-        this.pointLightManager = new PointLightManager(this);
 
         // Add pulsating point lights
         this.pointLightManager.addPointLight(236, 207, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.004);
@@ -27,8 +23,5 @@ export default class BlacksmithScene extends BaseTownScene {
 
     update(time, delta) {
         super.update(time, delta);
-
-        // Update point lights with delta time
-        this.pointLightManager.update(delta);
     }
 }
