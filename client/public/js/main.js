@@ -73,7 +73,6 @@ socketManager.connect(url).then(() => {
     // Create a new Phaser game instance after the socket connection is established
     const game = new Phaser.Game(config);
 
-
   }).catch((err) => {
     console.error('Failed to connect to the server, cannot start the game.', err);
   });

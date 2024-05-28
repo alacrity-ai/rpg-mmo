@@ -19,7 +19,7 @@ export default class EldergroveTownScene extends BaseTownScene {
         this.interactiveZoneManager.createInteractiveArea(150, 360, 200, 150, 'Market', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
             // this.scene.start('EldergroveMarketScene');
-            fadeTransition(this, 'EldergroveMarketScene', 2000);
+            fadeTransition(this, 'EldergroveMarketScene', 500);
         });
 
         this.interactiveZoneManager.createInteractiveArea(400, 330, 80, 100, 'Arcanium', () => {

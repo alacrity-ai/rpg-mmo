@@ -10,6 +10,7 @@ import MusicManager from '../../audio/MusicManager.js';
 import NavigationMenu from '../../interface/menu/NavigationMenu.js'
 import Debug from '../../interface/Debug.js';
 import { addBackgroundImage } from '../../graphics/BackgroundManager.js';
+import { fadeTransition } from '../utils/SceneTransitions.js';
 
 /* BaseTownScene.js
  * Base class for town scenes
@@ -121,7 +122,7 @@ export default class BaseTownScene extends Phaser.Scene {
         arrowDownRedIcon.on('pointerdown', () => {
             SoundFXManager.playSound('assets/sounds/door_close.wav');
             if (this.ambientSoundPath !== null) MusicManager.stopAmbient();
-            this.scene.start(this.returnSceneKey);
+            fadeTransition(this, this.returnSceneKey, 500);
         });
     }
 }

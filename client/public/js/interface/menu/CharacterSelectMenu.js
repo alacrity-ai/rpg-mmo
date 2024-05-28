@@ -1,6 +1,7 @@
 import { BaseMenu } from './BaseMenu.js';
 import CharacterCreateMenu from './CharacterCreateMenu.js';
 import { capitalizeFirstLetter } from '../../utils/stringUtils.js';
+import { fadeTransition } from '../../scenes/utils/SceneTransitions.js';
 import api from '../../api';
 
 export default class CharacterSelectMenu extends BaseMenu {
@@ -29,7 +30,7 @@ export default class CharacterSelectMenu extends BaseMenu {
             const errorMessage = 'Failed to load character list';
             const errorMenu = new ErrorMenu(this.scene, errorMessage);
             errorMenu.onClose = () => {
-                this.scene.scene.start('LoginScene'); // Go back to the login menu on error
+                fadeTransition(this.scene, 'LoginScene', 500);
             };
             this.hideNoOnclose();
             errorMenu.show();
@@ -82,7 +83,7 @@ export default class CharacterSelectMenu extends BaseMenu {
             .then(data => {
                 console.log('Character logged in successfully:', data);
                 this.scene.scene.get('LoginScene').cleanup();
-                this.scene.scene.start('EldergroveTownScene');
+                fadeTransition(this.scene, 'EldergroveTownScene', 500);
                 this.hide()
             })
             .catch(error => {
