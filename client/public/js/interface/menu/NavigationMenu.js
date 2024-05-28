@@ -1,6 +1,5 @@
 import { BaseMenu } from './BaseMenu.js';
 import { fadeTransition } from '../../scenes/utils/SceneTransitions.js';
-import SoundFXManager from '../../audio/SoundFXManager.js';
 
 export default class NavigationMenu extends BaseMenu {
     constructor(scene, x = null, y = null, scale = 1) {
@@ -10,7 +9,10 @@ export default class NavigationMenu extends BaseMenu {
         x = x || scene.sys.game.config.width / 14 + 5;
         // If y is null, use this.sys.game.config.height / 1.4
         y = y || scene.sys.game.config.height / 1.4 + 30;
-        super(scene, x, y, width, height, 0x000000, 0.8, 24 * scale, null, null, false);
+        super(scene, x, y, width, height, 0x000000, 0.8, 24 * scale, null, null, false, false);
+        // Add a window manually
+        const window = this.addWindow(x, y, width, height, 0x000000, 0.8, 24 * scale);
+        window.setDepth(90);
         this.scale = scale;
     }
     /**
@@ -60,8 +62,6 @@ export default class NavigationMenu extends BaseMenu {
         } else {
             this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', null, 'No Travel East', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }
-
-        this.tabs[this.currentTab].forEach(element => element.setDepth(1));
     }
 
     /* Sets up the navigation buttons for a town scene.
@@ -102,6 +102,5 @@ export default class NavigationMenu extends BaseMenu {
         } else {
             this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', null, 'No Travel East', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }
-        this.tabs[this.currentTab].forEach(element => element.setDepth(1));
     }
 }

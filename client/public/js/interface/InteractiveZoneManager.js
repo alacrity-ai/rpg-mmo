@@ -3,6 +3,8 @@ export default class InteractiveZoneManager {
         this.scene = scene;
         this.hoverTextBackground = this.scene.add.graphics();
         this.hoverText = this.scene.add.text(this.scene.sys.game.config.width / 2, 30, '', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5, 0.5).setVisible(false);
+        this.hoverTextBackground.setDepth(101);
+        this.hoverText.setDepth(101);
     }
 
     createInteractiveArea(x, y, width, height, text, callback) {

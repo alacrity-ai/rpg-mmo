@@ -4,7 +4,7 @@ import { atlasToSprite } from '../../graphics/AtlasTools.js';
 
 
 class BaseMenu {
-    constructor(scene, x, y, width, height, backgroundColor = 0x000000, backgroundAlpha = 0.8, borderRadius = 10, spriteSheetKey = null, onClose = null, hasCloseButton = false) {
+    constructor(scene, x, y, width, height, backgroundColor = 0x000000, backgroundAlpha = 0.8, borderRadius = 10, spriteSheetKey = null, onClose = null, hasCloseButton = false, hasWindow = true) {
         this.initParams = { scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius, spriteSheetKey, onClose, hasCloseButton };
 
         this.scene = scene;
@@ -23,7 +23,9 @@ class BaseMenu {
         this.hasCloseButton = hasCloseButton;
         this.textInputs = {}; // Store references to text inputs
 
-        this.addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
+        if (hasWindow) {
+            this.addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
+        }
         if (hasCloseButton) this.addCloseButton();
 
         // Initialize table properties
@@ -244,6 +246,7 @@ class BaseMenu {
         window.fillStyle(backgroundColor, backgroundAlpha);
         window.fillRoundedRect(x - width / 2, y - height / 2, width, height, borderRadius);
         this.tabs[0].push(window); // Add window to the default tab
+        return window;
     }
 
     addTab(name, callback, tooltip = null) {
@@ -441,7 +444,8 @@ class BaseMenu {
         target.on('pointerover', () => {
             tooltip.setPosition(target.x, target.y - target.height / 2);
             tooltip.setVisible(true);
-            this.scene.children.bringToTop(tooltip); // Ensure the tooltip is on top
+            // this.scene.children.bringToTop(tooltip); // Ensure the tooltip is on top
+            tooltip.setDepth(1000);
         });
     
         target.on('pointerout', () => {
@@ -459,6 +463,7 @@ class BaseMenu {
         const buttonBackground = this.scene.add.graphics();
         buttonBackground.fillStyle(backgroundColor, 1);
         buttonBackground.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
+        buttonBackground.setDepth(100);  // Set depth for the background
     
         if (!locked) {
             buttonBackground.lineStyle(2, 0xffffff, 1); // White border initially
@@ -467,7 +472,8 @@ class BaseMenu {
     
         // Create the text
         const buttonText = this.scene.add.text(0, 0, text, { fontSize: fontSize, fill: textColor })
-            .setOrigin(0.5, 0.5);
+            .setOrigin(0.5, 0.5)
+            .setDepth(100);  // Set depth for the text
     
         // Add background and text to the container
         buttonContainer.add(buttonBackground);
@@ -482,7 +488,7 @@ class BaseMenu {
                 } else {
                     SoundFXManager.playSound('assets/sounds/menu/ui_5.wav');
                 }
-                callback(); 
+                callback();
             });
     
             // Set up hover events for highlighting the border (if desired)
@@ -493,6 +499,7 @@ class BaseMenu {
                 buttonBackground.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
                 buttonBackground.lineStyle(2, 0xffff00, 1); // Yellow border on hover
                 buttonBackground.strokeRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
+                buttonBackground.setDepth(100);  // Ensure depth is maintained on hover
             });
     
             buttonContainer.on('pointerout', () => {
@@ -501,8 +508,12 @@ class BaseMenu {
                 buttonBackground.fillRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
                 buttonBackground.lineStyle(2, 0xffffff, 1); // White border
                 buttonBackground.strokeRoundedRect(-width / 2, -height / 2, width, height, borderRadius);
+                buttonBackground.setDepth(100);  // Ensure depth is maintained on hover out
             });
         }
+    
+        // Set the depth for the button container (if needed)
+        buttonContainer.setDepth(100);
     
         // Add the button container to the specified tab
         this.addElementToTab(tab, buttonContainer);
@@ -510,6 +521,7 @@ class BaseMenu {
         // Add tooltip if provided
         if (tooltip) this.addTooltip(buttonContainer, tooltip);
     }
+    
     
     addClickableText(x, y, text, callback, style, tooltip = null, tab = 0) {
         const originalColor = style.fill || '#fff'; // Default to white if no color is specified

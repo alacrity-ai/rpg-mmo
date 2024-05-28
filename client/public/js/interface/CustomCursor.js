@@ -16,6 +16,7 @@ export default class CustomCursor {
         // Add custom cursors
         this.customCursor = this.scene.add.image(this.scene.input.activePointer.x, this.scene.input.activePointer.y, 'cursor').setDepth(1000).setOrigin(0, 0);
         this.cursorClicked = this.scene.add.image(this.scene.input.activePointer.x, this.scene.input.activePointer.y, 'cursor_clicked').setDepth(1000).setOrigin(0, 0).setVisible(false);
+        this.cursorEnter = this.scene.add.image(this.scene.input.activePointer.x, this.scene.input.activePointer.y, 'cursor_enter').setDepth(1000).setOrigin(0, 0).setVisible(false);
 
         // Update cursor position on pointer move
         this.scene.input.on('pointermove', this.updateCursorPosition, this);
