@@ -28,6 +28,7 @@ export default class WorldmapScene extends Phaser.Scene {
         this.load.image('mapmarker_green', 'assets/images/ui/worldmap/mapmarker_green.png');
         this.load.image('mapmarker_blue', 'assets/images/ui/worldmap/mapmarker_blue.png');
         this.load.image('mapmarker_red', 'assets/images/ui/worldmap/mapmarker_red.png');
+        this.load.image('mapmarker_gold', 'assets/images/ui/worldmap/mapmarker_gold.png');
     }
 
     create() {
@@ -44,7 +45,11 @@ export default class WorldmapScene extends Phaser.Scene {
 
         // Render map markers
         this.markers = mapMarkers.map(markerData => {
-            return new MapMarker(this, markerData.x, markerData.y, markerData.type, markerData.text, markerData.sceneKey);
+            if (markerData.sceneKey === this.registry.get('currentSceneKey')) {
+                return new MapMarker(this, markerData.x, markerData.y, 'gold', markerData.text, markerData.sceneKey);
+            } else {
+                return new MapMarker(this, markerData.x, markerData.y, markerData.type, markerData.text, markerData.sceneKey);
+            }
         });
 
         // Enable dragging for scrolling around the map

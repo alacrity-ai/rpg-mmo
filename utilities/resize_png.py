@@ -122,8 +122,11 @@ if __name__ == "__main__":
     parser.add_argument('folder_path', type=str, help='Path to the folder containing PNG images.')
     parser.add_argument('--size', type=int, default=128, help='Size to resize images to (default: 128).')
     parser.add_argument('--colorpalette', type=int, default=16, help='Max colors in the final output (default: 16).')
-    parser.add_argument('--removebackground', type=bool, default=True, help='Whether to remove the background (default: True).')
+    parser.add_argument('--removebackground', type=str, default=True, help='Whether to remove the background (default: True).')
 
     args = parser.parse_args()
-    remove_background = bool(args.removebackground)
+    if args.removebackground.lower() in ['false', 'f', '0']:
+        remove_background = False
+    else:
+        remove_background = True
     process_png_images_in_folder(args.folder_path, args.size, args.colorpalette, remove_background)
