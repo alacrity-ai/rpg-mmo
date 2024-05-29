@@ -1,6 +1,6 @@
 // interface/worldmap/MapMarker.js
 
-import { fadeTransition } from '../../scenes/utils/SceneTransitions.js'
+import { fadeTransition } from '../../scenes/utils/SceneTransitions.js';
 
 export default class MapMarker {
     constructor(scene, x, y, type, text, sceneKey) {
@@ -23,12 +23,27 @@ export default class MapMarker {
         this.marker.on('pointerover', () => {
             // Display hover text
             this.hoverText = scene.add.text(this.marker.x, this.textY, text, { font: '16px Arial', fill: '#ffffff' }).setOrigin(0.5);
+            
+            // Start looping animation
+            this.hoverTween = this.scene.tweens.add({
+                targets: this.marker,
+                y: this.marker.y + 5,
+                yoyo: true,
+                repeat: -1,
+                duration: 500,
+                ease: 'Sine.easeInOut'
+            });
         });
 
         this.marker.on('pointerout', () => {
             // Remove hover text
             if (this.hoverText) {
                 this.hoverText.destroy();
+            }
+            // Stop looping animation
+            if (this.hoverTween) {
+                this.hoverTween.stop();
+                this.marker.y = this.originalY * this.scene.zoomLevel + this.scene.worldmap.y; // Reset marker position
             }
         });
 
