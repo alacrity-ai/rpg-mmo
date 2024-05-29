@@ -33,6 +33,8 @@ export default class WorldmapScene extends Phaser.Scene {
     }
 
     create() {
+        this.currentState = 'zoomed'; // Default state
+
         // Render the world map as background
         this.worldmap = this.add.image(0, 0, 'worldmap').setOrigin(0).setInteractive();
         this.textures.get('worldmap').setFilter(Phaser.Textures.FilterMode.NEAREST);

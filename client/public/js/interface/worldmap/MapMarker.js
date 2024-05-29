@@ -1,6 +1,7 @@
 // interface/worldmap/MapMarker.js
 
 import { fadeTransition } from '../../scenes/utils/SceneTransitions.js';
+import SoundFXManager from '../../audio/SoundFXManager.js'
 
 export default class MapMarker {
     constructor(scene, x, y, type, text, sceneKey) {
@@ -21,6 +22,9 @@ export default class MapMarker {
 
         // Set up pointer events
         this.marker.on('pointerover', () => {
+            // Play hover sound effect
+            SoundFXManager.playSound('assets/sounds/menu/ui_1.wav');
+
             // Display hover text
             this.hoverText = scene.add.text(this.marker.x, this.textY, text, { font: '16px Arial', fill: '#ffffff' }).setOrigin(0.5);
             
@@ -48,6 +52,8 @@ export default class MapMarker {
         });
 
         this.marker.on('pointerdown', () => {
+            // Play hover sound effect
+            SoundFXManager.playSound('assets/sounds/footstep_chain.wav');
             // Transition to the specified scene
             fadeTransition(this.scene, sceneKey);
         });
