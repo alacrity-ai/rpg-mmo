@@ -18,15 +18,23 @@ The client is responsible for rendering the game's graphical interface. It handl
 
 ### Server
 
-The server manages game logic and communication between clients. It handles authentication, command processing, message handling, and database interactions. The server ensures the game state is synchronized across all clients.
+The server manages game logic and communication between clients. It handles authentication, command processing, message handling, and database interactions. The server ensures the game state is synchronized across all clients.  The server puts tasks in the Redis cache for Workers to perform, this allows for infinite scalability of service processes.
+
+### Worker
+
+The worker handles tasks which appear in the Redis cache.  Any number of workers can be instantiated to allow for elastic scaling of the backend tasks.
 
 ### Database
 
 The database stores all game data, including player information, NPCs, items, and more. It uses Docker for easy setup and management. Initial data population scripts are provided to populate the database with necessary data.
 
+### Redis Cache
+
+The redis cache is used by the server to queue tasks, which are then picked up by the workers.
+
 ## Conclusion
 
-This project combines a graphical client, server, and database to create a fully functional MMO game. Follow the instructions above to set up the database, run the server, and start the client to begin development or testing.
+This project combines a graphical client, server, and database to create a fully functional MMO game. Follow the instructions above to set up the database, run the server, and at least one worker, bootup the redis service, and start the client to begin development or testing.
 
 ## Developer Guide
 
@@ -43,6 +51,36 @@ This project combines a graphical client, server, and database to create a fully
     
 
 **Note**: Ensure you have Docker installed on your system.
+
+### Starting the Redis service
+
+1. Navigate to the `redis` folder: `cd redis`
+2. Build the Docker container:
+    
+    `make build`
+    
+3. Start the redis service:
+    
+    `make start`
+    
+
+**Note**: Ensure you have Docker installed on your system.
+
+### Running the worker service
+
+At least one instance of the worker service must be running in order for any backend jobs to get done.
+
+1. Navigate to the 'server' folder:
+
+   `cd server`
+
+2. Install the necessary dependencies:
+
+   `npm install`
+
+3. Start the worker.
+
+   `npm run worker`
 
 ### Running the Server
 
