@@ -27,7 +27,7 @@ export default class MapMarker {
             // Start looping animation
             this.hoverTween = this.scene.tweens.add({
                 targets: this.marker,
-                y: this.marker.y + 5,
+                y: this.marker.y + 6,
                 yoyo: true,
                 repeat: -1,
                 duration: 500,

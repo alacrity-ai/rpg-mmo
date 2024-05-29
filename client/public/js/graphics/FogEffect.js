@@ -9,6 +9,7 @@ export default class FogEffect {
         this.speedX = speedX;
         this.speedY = speedY;
         this.brightness = brightness;
+        this.ready = false;
 
         // Load the fog image
         this.scene.load.image(this.texturePath, this.texturePath);
@@ -31,12 +32,35 @@ export default class FogEffect {
 
         // Set the depth of the fog to be above the background but below other elements
         this.fog.setDepth(0);
+
+        // Mark the fog as ready
+        this.ready = true;
+
+        // Hide the fog if it should be hidden initially
+        if (this.hideInitially) {
+            this.hide();
+        }
     }
 
     update(time, delta) {
         if (this.fog) {
             // Move the fog texture horizontally
             this.fog.tilePositionX += this.speedX * delta * 0.01;
+        }
+    }
+
+    hide() {
+        if (this.fog) {
+            this.fog.setVisible(false);
+        } else {
+            // Set a flag to hide the fog once it's ready
+            this.hideInitially = true;
+        }
+    }
+
+    show() {
+        if (this.fog) {
+            this.fog.setVisible(true);
         }
     }
 }

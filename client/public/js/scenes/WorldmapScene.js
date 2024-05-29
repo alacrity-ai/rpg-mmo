@@ -5,6 +5,7 @@ import MapMarker from '../interface/worldmap/MapMarker.js';
 import CustomCursor from '../interface/CustomCursor.js';
 import WorldmapZoomMenu from '../interface/menu/WorldmapZoomMenu.js';
 import Debug from '../interface/Debug.js';
+import FogEffect from '../graphics/FogEffect.js';
 
 export default class WorldmapScene extends Phaser.Scene {
     constructor() {
@@ -35,6 +36,9 @@ export default class WorldmapScene extends Phaser.Scene {
         // Render the world map as background
         this.worldmap = this.add.image(0, 0, 'worldmap').setOrigin(0).setInteractive();
         this.textures.get('worldmap').setFilter(Phaser.Textures.FilterMode.NEAREST);
+
+        // Add the fog effect
+        this.fogEffect = new FogEffect(this, 1, 0.5, 0.8);
 
         // Initialize markers array
         this.markers = [];
@@ -75,6 +79,11 @@ export default class WorldmapScene extends Phaser.Scene {
 
         // Get CustomCursor instance
         CustomCursor.getInstance(this);
+
+        // Hide the fog if zoomed in
+        if (this.currentState === 'zoomed') {
+            this.fogEffect.hide();
+        }
     }
 
     handleDrag(pointer) {
@@ -143,6 +152,9 @@ export default class WorldmapScene extends Phaser.Scene {
         this.zoomLevel = 1; // Adjust zoom level for entire map view
         this.worldmap.setScale(this.zoomLevel);
 
+        // Show the fog
+        this.fogEffect.show();
+
         // Center the map
         let centerX = (this.cameras.main.width - this.worldmap.displayWidth) / 2;
         let centerY = (this.cameras.main.height - this.worldmap.displayHeight) / 2;
@@ -155,6 +167,9 @@ export default class WorldmapScene extends Phaser.Scene {
     viewZoomedMap() {
         this.currentState = 'zoomed';
 
+        // Hide the fog
+        this.fogEffect.hide();
+
         // Zoom in on the user's current location
         const marker = mapMarkers[this.currentLocationIndex];
         this.zoomToLocation(marker.x, marker.y);
@@ -163,6 +178,9 @@ export default class WorldmapScene extends Phaser.Scene {
     update(time, delta) {
         // Update custom cursor position
         CustomCursor.getInstance(this).update();
+
+        // Update fog effect
+        this.fogEffect.update(time, delta);
 
         // Update debug coordinates
         this.debug.update(this.input.activePointer);
