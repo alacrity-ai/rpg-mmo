@@ -16,9 +16,6 @@ export default class GreenhavenExterior4Scene extends BaseTownScene {
     create() {
         super.create();
 
-        // Register Scene on the Map
-        this.registry.set('currentSceneKey', this.sceneKey);
-
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(577, 211, 200, 100, 'Temple', () => {
             SoundFXManager.playSound('assets/sounds/footstep_chain.wav');
