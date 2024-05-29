@@ -24,6 +24,7 @@ import { fadeTransition } from '../utils/SceneTransitions.js';
 export default class BaseTownScene extends Phaser.Scene {
     constructor(key, backgroundImagePath, backgroundMusicPath = null, ambientSoundPath = null, returnSceneKey = null, navigationMenuScenes = {}) {
         super({ key });
+        this.sceneKey = key;
         this.backgroundImagePath = backgroundImagePath;
         this.backgroundMusicPath = backgroundMusicPath;
         this.ambientSoundPath = ambientSoundPath;

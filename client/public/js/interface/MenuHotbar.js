@@ -1,4 +1,5 @@
 import SoundFXManager from '../audio/SoundFXManager.js';
+import { fadeTransition } from '../scenes/utils/SceneTransitions.js';
 
 export function createHotbar(scene, iconHelper) {
     // Define a list of icon names to be used in the hotbar with corresponding sound paths
@@ -7,7 +8,7 @@ export function createHotbar(scene, iconHelper) {
         { name: 'book-open', sound: 'assets/sounds/menu/book_open.wav' },
         { name: 'backpack', sound: 'assets/sounds/menu/bag_open.wav' },
         { name: 'speech-bubbles', sound: 'assets/sounds/menu/chat_menu.wav' },
-        { name: 'tent', sound: 'assets/sounds/menu/tent_open.wav' }
+        { name: 'map', sound: 'assets/sounds/menu/book_open.wav', sceneKey: 'WorldmapScene' } // Added sceneKey for map icon
     ];
 
     const hoverSound = 'assets/sounds/menu/highlight.wav';
@@ -22,7 +23,13 @@ export function createHotbar(scene, iconHelper) {
         iconContainer.setInteractive();
         iconContainer.on('pointerdown', () => {
             SoundFXManager.playSound(icon.sound); // Play the associated sound effect
-            // Implement submenu logic here
+
+            // Check if the icon has a sceneKey and start the scene if it does
+            if (icon.sceneKey) {
+                fadeTransition(scene, icon.sceneKey);
+            }
+
+            // Implement additional submenu logic here
         });
 
         iconContainer.on('pointerover', () => {

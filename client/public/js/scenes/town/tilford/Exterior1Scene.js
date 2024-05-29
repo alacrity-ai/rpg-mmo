@@ -16,6 +16,9 @@ export default class TilfordExterior1Scene extends BaseTownScene {
     create() {
         super.create();
 
+        // Register Scene on the Map
+        this.registry.set('currentSceneKey', this.sceneKey);
+
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(170, 350, 200, 150, 'Market', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');

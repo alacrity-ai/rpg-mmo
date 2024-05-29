@@ -1,3 +1,5 @@
+// interface/menu/DialogueMenu.js
+
 import { BaseMenu } from './BaseMenu.js';
 
 export default class DialogueMenu extends BaseMenu {

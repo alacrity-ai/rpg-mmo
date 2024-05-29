@@ -125,5 +125,5 @@ if __name__ == "__main__":
     parser.add_argument('--removebackground', type=bool, default=True, help='Whether to remove the background (default: True).')
 
     args = parser.parse_args()
-
-    process_png_images_in_folder(args.folder_path, args.size, args.colorpalette, args.removebackground)
+    remove_background = bool(args.removebackground)
+    process_png_images_in_folder(args.folder_path, args.size, args.colorpalette, remove_background)

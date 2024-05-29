@@ -5,6 +5,7 @@ import socketManager from './SocketManager.js';
 // Game Scenes
 import ExpeditionScene from './scenes/ExpeditionScene.js';
 import CombatScene from './scenes/CombatScene.js';
+import WorldmapScene from './scenes/WorldmapScene.js';
 
 // System Scenes
 import LoginScene from './scenes/LoginScene.js';
@@ -27,6 +28,7 @@ const config = {
     scene: [
         PreloaderScene,
         MenuTestScene,
+        WorldmapScene,
         ExpeditionScene,
         CombatScene,
         LoginScene

@@ -15,6 +15,9 @@ export default class HarborviewExterior1Scene extends BaseTownScene {
 
     create() {
         super.create();
+        
+        // Register Scene on the Map
+        this.registry.set('currentSceneKey', this.sceneKey);
 
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(50, 200, 180, 140, 'Blacksmith', () => {

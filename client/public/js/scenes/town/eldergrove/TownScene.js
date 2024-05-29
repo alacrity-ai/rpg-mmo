@@ -14,6 +14,9 @@ export default class EldergroveTownScene extends BaseTownScene {
 
     create() {
         super.create();
+        
+        // Register Scene on the Map
+        this.registry.set('currentSceneKey', this.sceneKey);
 
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(150, 360, 200, 150, 'Market', () => {

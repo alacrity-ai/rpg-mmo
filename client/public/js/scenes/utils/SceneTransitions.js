@@ -18,7 +18,6 @@ export function fadeTransition(currentScene, newSceneKey, speed = 500, color = 0
 
             // When the fade out is complete, start the new scene
             currentScene.scene.start(newSceneKey);
-
             // Add the fade-in effect to the new scene
             currentScene.scene.get(newSceneKey).events.once('create', (newScene) => {
                 // Create a fade-in rectangle in the new scene with the same color
