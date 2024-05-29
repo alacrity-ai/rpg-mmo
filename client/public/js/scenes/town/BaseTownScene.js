@@ -126,8 +126,11 @@ export default class BaseTownScene extends Phaser.Scene {
 
         arrowDownRedIcon.on('pointerdown', () => {
             SoundFXManager.playSound('assets/sounds/door_close.wav');
-            if (this.ambientSoundPath !== null) MusicManager.stopAmbient();
             fadeTransition(this, this.returnSceneKey, 500);
         });
+    }
+
+    cleanup() {
+        if (this.ambientSoundPath !== null) MusicManager.stopAmbient();
     }
 }

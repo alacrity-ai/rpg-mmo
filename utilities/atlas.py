@@ -1,6 +1,7 @@
 import os
 import json
 from PIL import Image
+import argparse
 
 MAX_IMAGES_PER_ROW = 8
 MAX_ATLAS_WIDTH = 4096
@@ -102,17 +103,10 @@ def process_all_subfolders(input_folder):
             create_texture_atlas_in_folder(root)
 
 if __name__ == "__main__":
-    input_folders = ['../gui-client/public/assets/images/characters/mage', 
-                     '../gui-client/public/assets/images/characters/knight',
-                     '../gui-client/public/assets/images/characters/priest',
-                     '../gui-client/public/assets/images/characters/rogue',]
-    print("Creating texture atlases...")
-    for folder in input_folders:
-        process_all_subfolders(folder)
+    # Add getting the folder path from the command line
+    parser = argparse.ArgumentParser(description="Create texture atlases for all subfolders in the given input folder.")
+    parser.add_argument("input_folder", help="Path to the input folder containing subfolders with images.")
+    args = parser.parse_args()
+
+    process_all_subfolders(args.input_folder)
     print('All texture atlases created.')
-    # input_folder = input("Enter the path to the input folder: ")
-    
-    # if os.path.isdir(input_folder):
-    #     create_texture_atlas(input_folder)
-    # else:
-    #     print("Invalid input folder path.")

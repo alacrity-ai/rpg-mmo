@@ -2,7 +2,7 @@ export default class InteractiveZoneManager {
     constructor(scene) {
         this.scene = scene;
         this.hoverTextBackground = this.scene.add.graphics();
-        this.hoverText = this.scene.add.text(this.scene.sys.game.config.width / 2, 30, '', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5, 0.5).setVisible(false);
+        this.hoverText = this.scene.add.text(this.scene.sys.game.config.width / 2, 45, '', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5, 0.5).setVisible(false);
         this.hoverTextBackground.setDepth(101);
         this.hoverText.setDepth(101);
     }
@@ -20,7 +20,8 @@ export default class InteractiveZoneManager {
             const textWidth = this.hoverText.width + 20;
             const textHeight = this.hoverText.height + 10;
             const radius = 10;
-            this.hoverTextBackground.fillRoundedRect((this.scene.sys.game.config.width - textWidth) / 2, 10, textWidth, textHeight, radius);
+            this.hoverTextBackground.fillRoundedRect((this.scene.sys.game.config.width - textWidth) / 2, 25, textWidth, textHeight, radius);
+            this.hoverTextBackground.setDepth(99);
         });
 
         // Hide the text and background when the pointer is out of the zone

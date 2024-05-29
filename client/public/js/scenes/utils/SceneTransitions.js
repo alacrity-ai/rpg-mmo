@@ -13,6 +13,9 @@ export function fadeTransition(currentScene, newSceneKey, speed = 500, color = 0
         alpha: 1,
         duration: speed,
         onComplete: () => {
+            // Run the previous scene cleanup logic
+            currentScene.cleanup();
+
             // When the fade out is complete, start the new scene
             currentScene.scene.start(newSceneKey);
 

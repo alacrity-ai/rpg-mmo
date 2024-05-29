@@ -513,7 +513,7 @@ class BaseMenu {
         }
     
         // Set the depth for the button container (if needed)
-        buttonContainer.setDepth(100);
+        buttonContainer.setDepth(101);
     
         // Add the button container to the specified tab
         this.addElementToTab(tab, buttonContainer);

@@ -51,7 +51,7 @@ export default class PreloaderScene extends Phaser.Scene {
         MusicManager.initialize(this);
 
         // Set the first scene of the game after login
-        this.registry.set('firstSceneKey', 'TilfordExterior1Scene');
+        this.registry.set('firstSceneKey', 'HarborviewExterior1Scene');
 
         // Start the Login scene
         this.scene.start('LoginScene'); 
