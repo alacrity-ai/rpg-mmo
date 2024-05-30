@@ -1,3 +1,4 @@
+// db/queries/npcInstancesQueries.js
 const { query } = require('../database');
 const NpcInstance = require('../../models/NpcInstance');
 

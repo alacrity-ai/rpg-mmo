@@ -4,7 +4,7 @@ import { atlasToSprite } from '../../graphics/AtlasTools.js';
 
 
 class BaseMenu {
-    constructor(scene, x, y, width, height, backgroundColor = 0x000000, backgroundAlpha = 0.8, borderRadius = 10, spriteSheetKey = null, onClose = null, hasCloseButton = false, hasWindow = true) {
+    constructor(scene, x, y, width, height, backgroundColor = 0x000000, backgroundAlpha = 0.8, borderRadius = 10, spriteSheetKey = null, onClose = null, hasCloseButton = false, hasWindow = true, hasWindowBorder = false) {
         this.initParams = { scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius, spriteSheetKey, onClose, hasCloseButton };
 
         this.scene = scene;
@@ -24,7 +24,7 @@ class BaseMenu {
         this.textInputs = {}; // Store references to text inputs
 
         if (hasWindow) {
-            this.addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
+            this.addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius, hasWindowBorder);
         }
         if (hasCloseButton) this.addCloseButton();
 
@@ -241,13 +241,20 @@ class BaseMenu {
         return null;
     }
 
-    addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius) {
+    addWindow(x, y, width, height, backgroundColor, backgroundAlpha, borderRadius, hasBorder = false) {
         const window = this.scene.add.graphics();
         window.fillStyle(backgroundColor, backgroundAlpha);
         window.fillRoundedRect(x - width / 2, y - height / 2, width, height, borderRadius);
+    
+        if (hasBorder) {
+            window.lineStyle(2, 0xffffff, 1); // White border with 2px width
+            window.strokeRoundedRect(x - width / 2, y - height / 2, width, height, borderRadius);
+        }
+    
         this.tabs[0].push(window); // Add window to the default tab
         return window;
     }
+    
 
     addTab(name, callback, tooltip = null) {
         const tab = this.scene.add.text(this.x, this.y, name, { fontSize: '16px', fill: '#fff' })
@@ -424,6 +431,54 @@ class BaseMenu {
         }
         return null;
     }    
+
+    addStatBar(x, y, width, height, barColor, tooltip = null) {
+        // Create a container to hold the bar and border
+        const barContainer = this.scene.add.container(x, y);
+    
+        // Create the background of the bar (with a border)
+        const border = this.scene.add.graphics();
+        border.fillStyle(0x000000, 1);
+        border.fillRoundedRect(-width / 2, -height / 2, width, height, 5); // Background with border radius
+        border.lineStyle(2, 0xffffff, 1); // White border
+        border.strokeRoundedRect(-width / 2, -height / 2, width, height, 5); // Draw border
+    
+        // Create the stat bar itself
+        const statBar = this.scene.add.graphics();
+        statBar.fillStyle(barColor, 1);
+        statBar.fillRoundedRect(-width / 2, -height / 2 + 2, width - 4, height - 4, 5); // Inner bar with reduced size for border
+    
+        // Add both the border and the bar to the container
+        barContainer.add(border);
+        barContainer.add(statBar);
+    
+        // Store the stat bar graphics object in the container for easy access
+        barContainer.statBar = statBar;
+        barContainer.statBar.fillColor = barColor; // Ensure fillColor is set
+        barContainer.maxWidth = width - 4; // Store max width for updates
+        barContainer.height = height;
+    
+        // Add the bar container to the current tab
+        this.addElementToTab(this.currentTab, barContainer);
+    
+        // Add tooltip if provided
+        if (tooltip) {
+            this.addTooltip(barContainer, tooltip);
+        }
+    
+        // Return the bar container (which contains the stat bar)
+        return barContainer;
+    }
+    
+    updateStatBar(barContainer, currentStat, maxStat) {
+        // Calculate the new width of the stat bar based on current and max stat
+        const newWidth = (currentStat / maxStat) * barContainer.maxWidth;
+    
+        // Clear the previous bar and redraw it with the new width
+        barContainer.statBar.clear();
+        barContainer.statBar.fillStyle(barContainer.statBar.fillColor, 1);
+        barContainer.statBar.fillRoundedRect(-barContainer.maxWidth / 2, -barContainer.height / 2 + 2, newWidth, barContainer.height - 4, 5);
+    }
 
     addGraphic(x, y, key, tooltip = null, tab = 0, isAnimation = false) {
         let graphic;

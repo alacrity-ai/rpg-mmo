@@ -221,6 +221,28 @@ async function initTables() {
       effect_type ENUM('buff', 'debuff') NOT NULL,
       effect_details JSON NOT NULL
     )`,
+    `CREATE TABLE IF NOT EXISTS battler_instances (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      character_id INT,
+      npc_template_id INT,
+      base_stats JSON NOT NULL,
+      current_stats JSON NOT NULL,
+      abilities JSON,
+      script_path VARCHAR(255),
+      sprite_path VARCHAR(255),
+      grid_position VARCHAR(5),
+      last_action_time TIMESTAMP,
+      time_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      status_effects JSON,
+      team ENUM('player', 'enemy') NOT NULL,
+      FOREIGN KEY (character_id) REFERENCES characters(id),
+      FOREIGN KEY (npc_template_id) REFERENCES npc_templates(id)
+    )`,
+    `CREATE TABLE IF NOT EXISTS battle_instances (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      battler_ids JSON NOT NULL,
+      time_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    )`,
     `CREATE TABLE IF NOT EXISTS shop_templates (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,

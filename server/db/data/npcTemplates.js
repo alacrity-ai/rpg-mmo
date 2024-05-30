@@ -15,7 +15,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_1.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_1.png'
   },
   {
     name: 'Werebear',
@@ -31,7 +31,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_2.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_2.png'
   },
   {
     name: 'Sneering Imp',
@@ -47,7 +47,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_3.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_3.png'
   },
   {
     name: 'Owlbear Horror',
@@ -63,7 +63,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_4.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_4.png'
   },
   {
     name: 'Forest Wight',
@@ -79,7 +79,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_5.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_5.png'
   },
   {
     name: 'Dire Wolf',
@@ -95,7 +95,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_6.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_6.png'
   },
   {
     name: 'Minor Horror',
@@ -111,7 +111,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_7.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_7.png'
   },
   {
     name: 'Shadow Sprite',
@@ -127,7 +127,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_8.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_8.png'
   },
   {
     name: 'Dire Porcupine',
@@ -143,7 +143,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_9.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_9.png'
   },
   {
     name: 'Lumbering Centipede',
@@ -159,7 +159,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_10.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_10.png'
   },
   {
     name: 'Fiendish Shrub',
@@ -175,7 +175,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_11.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_11.png'
   },
   {
     name: 'Infested Treant',
@@ -191,7 +191,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_12.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_12.png'
   },
   {
     name: 'Deepforest Rat',
@@ -207,7 +207,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_13.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_13.png'
   },
   {
     name: 'Treant Youth',
@@ -223,7 +223,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_14.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_14.png'
   },
   {
     name: 'Orcish Hunter',
@@ -239,7 +239,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_15.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_15.png'
   },
   {
     name: 'Orcish Mystic',
@@ -255,7 +255,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_16.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_16.png'
   },
   {
     name: 'Demonic Howler',
@@ -271,7 +271,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_17.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_17.png'
   },
   {
     name: 'Lumbering Wolf',
@@ -287,7 +287,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_18.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_18.png'
   },
   {
     name: 'Winged Garrotter',
@@ -303,7 +303,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_19.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_19.png'
   },
   {
     name: 'Ogre Mystic',
@@ -319,7 +319,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_20.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_20.png'
   },
   {
     name: 'Orcish Runt',
@@ -335,7 +335,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_21.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_21.png'
   },
   {
     name: 'Banished Hunter',
@@ -351,7 +351,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_22.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_22.png'
   },
   {
     name: 'Orcish Mage',
@@ -367,7 +367,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_23.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_23.png'
   },
   {
     name: 'Giant Spider',
@@ -383,7 +383,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_24.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_24.png'
   },
   {
     name: 'Demonic Serpent',
@@ -399,7 +399,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_25.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_25.png'
   },
   {
     name: 'Flying Millipede',
@@ -415,7 +415,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_26.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_26.png'
   },
   {
     name: 'Orcish Warrior',
@@ -431,7 +431,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_27.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_27.png'
   },
   {
     name: 'Giant Wasp',
@@ -447,7 +447,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_28.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_28.png'
   },
   {
     name: 'Giant Beetle',
@@ -463,7 +463,7 @@ const npcTemplates = [
     }),
     loot_table: JSON.stringify([]),
     npc_dialogue_template_id: null,
-    battler_sprite_path: 'assets/images/battlers/sprite_29.png'
+    battler_sprite_path: 'assets/images/battle/battlers/sprite_29.png'
   }
 ];
 

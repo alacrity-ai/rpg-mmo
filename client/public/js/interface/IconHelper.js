@@ -29,6 +29,9 @@ export default class IconHelper {
             // Add the border to the container
             container.add(border);
 
+            // Store a reference to the border for later use
+            container.border = border;
+
             // Set up hover events for highlighting the border
             container.on('pointerover', () => {
                 border.clear();
@@ -46,10 +49,66 @@ export default class IconHelper {
         // Add the icon to the container
         container.add(icon);
 
+        // Store a reference to the icon for tinting and spinner
+        container.iconImage = icon;
+        container.spinnerMask = null;
+
         // Set the container to be interactive
         container.setSize(icon.width, icon.height);
         container.setInteractive(new Phaser.Geom.Rectangle(0, 0, icon.width, icon.height), Phaser.Geom.Rectangle.Contains);
 
         return container;
+    }
+
+    setTint(container, color) {
+        if (container.iconImage) {
+            container.iconImage.setTint(color);
+        }
+    }
+
+    clearTint(container) {
+        if (container.iconImage) {
+            container.iconImage.clearTint();
+        }
+    }
+
+    resetBorderColor(container) {
+        if (container.border) {
+            container.border.clear();
+            container.border.lineStyle(2, 0xffffff, 1); // Reset to white border
+            container.border.strokeRoundedRect(-container.iconImage.width / 2, -container.iconImage.height / 2, container.iconImage.width, container.iconImage.height, 8);
+        }
+    }
+
+    addCooldownTimer(container, duration) {
+        const mask = this.scene.add.graphics().setVisible(false);
+        mask.x = container.x;
+        mask.y = container.y;
+        container.iconImage.mask = new Phaser.Display.Masks.BitmapMask(this.scene, mask);
+
+        this.scene.tweens.add({
+            targets: { hiddenPercent: 0 },
+            hiddenPercent: 1,
+            ease: 'Linear',
+            duration: duration,
+            onUpdate: tween => {
+                const hiddenPercent = tween.targets[0].hiddenPercent;
+                mask.clear();
+                mask.fillStyle(0x808080, 0.9); // Semi-transparent grey
+                mask.beginPath();
+                mask.slice(
+                    0, 0, 
+                    container.iconImage.width / 2, 
+                    -Math.PI / 2, 
+                    (2 * Math.PI * hiddenPercent) - Math.PI / 2, 
+                    false
+                );
+                mask.fillPath();
+            },
+            onComplete: () => {
+                mask.destroy();
+                container.iconImage.clearMask();
+            }
+        });
     }
 }

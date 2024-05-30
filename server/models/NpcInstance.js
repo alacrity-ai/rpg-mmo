@@ -1,3 +1,4 @@
+// models/NpcInstance.js
 /**
  * Class representing an NPC instance.
  */

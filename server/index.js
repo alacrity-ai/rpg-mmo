@@ -7,7 +7,9 @@ const { initTables } = require('./db/database');
 const { populateTables } = require('./db/populateTables');
 const authHandler = require('./handlers/api/authHandler');
 const characterHandler = require('./handlers/api/characterHandler');
-const shopHandler  = require('./handlers/api/shopHandler');
+const shopHandler = require('./handlers/api/shopHandler');
+const battleHandler = require('./handlers/api/battleHandler');
+const battlerHandler = require('./handlers/api/battlerHandler'); 
 const logger = require('./utilities/logger');
 
 const app = express();
@@ -39,6 +41,8 @@ io.on('connection', (socket) => {
   authHandler(socket);
   characterHandler(socket);
   shopHandler(socket);
+  battleHandler(socket);
+  battlerHandler(socket);
 
   socket.on('disconnect', () => {
     logger.info('A user disconnected');

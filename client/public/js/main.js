@@ -4,7 +4,7 @@ import socketManager from './SocketManager.js';
 
 // Game Scenes
 import ExpeditionScene from './scenes/ExpeditionScene.js';
-import CombatScene from './scenes/CombatScene.js';
+import BattleScene from './scenes/BattleScene.js';
 import WorldmapScene from './scenes/WorldmapScene.js';
 
 // System Scenes
@@ -30,7 +30,7 @@ const config = {
         MenuTestScene,
         WorldmapScene,
         ExpeditionScene,
-        CombatScene,
+        BattleScene,
         LoginScene
     ],
     plugins: {
