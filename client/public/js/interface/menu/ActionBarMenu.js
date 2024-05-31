@@ -93,17 +93,17 @@ export default class ActionBarMenu extends BaseMenu {
         return iconButton;
     }
 
-    triggerGlobalCooldown() {
-        this.disableIcons();
-        this.scene.time.delayedCall(3000, this.enableIcons, [], this); // 3000 milliseconds = 3 seconds
+    triggerGlobalCooldown(delayAmount = 3000) {
+        this.disableIcons(delayAmount);
+        this.scene.time.delayedCall(delayAmount, this.enableIcons, [], this); // 3000 milliseconds = 3 seconds
     }
 
-    disableIcons() {
+    disableIcons(delayAmount = 3000) {
         this.iconButtons.forEach(container => {
             container.disableInteractive(); // Disable interactivity
             this.iconHelper.setTint(container, 0x888888); // Apply tint to the icon image
             this.iconHelper.resetBorderColor(container); // Reset border color to white
-            this.iconHelper.addCooldownTimer(container, 3000); // Add spinner effect for 3 seconds
+            this.iconHelper.addCooldownTimer(container, delayAmount); // Add spinner effect for delayAmount
         });
     }
 

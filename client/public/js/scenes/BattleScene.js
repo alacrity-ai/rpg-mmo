@@ -130,7 +130,7 @@ export default class BattleScene extends Phaser.Scene {
 
     handleCompletedBattlerAction(data) {
         if (data.actionType === 'move') {
-            this.actionBarMenu.triggerGlobalCooldown();
+            this.actionBarMenu.triggerGlobalCooldown(1500);
             const battlerInstance = this.battleGrid.getBattlerInstance(data.battlerId);
             battlerInstance.moveToTile(data.actionData.newPosition, this.battleGrid);
         }
