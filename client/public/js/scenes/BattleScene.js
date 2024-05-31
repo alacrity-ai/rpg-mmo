@@ -68,7 +68,11 @@ export default class BattleScene extends Phaser.Scene {
 
         // Add mock battlers to the grid
         for (const battlerData of battlersData) {
-            await this.battleGrid.addBattler(battlerData, battlerData.gridPosition);
+            let isThisPlayer = false;
+            if (battlerData.characterId === this.registry.get('characterId')) {
+                isThisPlayer = true;
+            } 
+            await this.battleGrid.addBattler(battlerData, battlerData.gridPosition, isThisPlayer);
         }
 
         // Initialize the CustomCursor
@@ -79,40 +83,42 @@ export default class BattleScene extends Phaser.Scene {
 
         // Get the battlerId for the current character
         this.battlerId = battlersData.find(battler => battler.characterId === this.registry.get('characterId')).id;
-        console.log('Current battlerId:', this.battlerId)
-        console.log('Grid ', JSON.stringify(this.battleGrid.grid))
-
 
         // Initialize the ActionBarMenu
         this.actionBarMenu = new ActionBarMenu(this, this.battleInstanceId, this.BattlerId, this.battleGrid);
         this.actionBarMenu.show();
 
         // Listen for navigation button clicks
-        this.events.on('navigationButtonClicked', this.handleNavigationButtonClicked, this);
+        this.events.on('moveButtonClicked', this.handleMoveButtonClicked, this);
 
         // Initialize the StatsMenu with mock data
         this.statsMenu = new StatsMenu(this, battlersData[0].currentStats.health, battlersData[0].baseStats.health, battlersData[0].currentStats.mana, battlersData[0].baseStats.mana);
         this.statsMenu.show();
 
-        console.log('Battler Positions ', this.battleGrid.battlerPositions);
-
         // Listen for completed battler actions
         SocketManager.getSocket().on('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));
     }
 
-    handleNavigationButtonClicked(direction) {
-
+    handleMoveButtonClicked(direction) {
+        // Get the current position
         const currentPosition = this.battleGrid.getBattlerPosition(this.battlerId);
+        const [currentBattlerX, currentBattlerY] = currentPosition;
         if (!currentPosition) {
             console.error(`Battler position not found for battlerId: ${this.battlerId}`);
             return;
         }
-        const [currentBattlerX, currentBattlerY] = currentPosition;
-
+        
+        // Get the current position, and the new position
         const newPosition = [currentBattlerX + direction[0], currentBattlerY + direction[1]];
-        const actionData = { newPosition: newPosition };
 
-        // battleInstanceId, battlerId, actionType, actionData
+        // Verify that the new position is in bounds
+        if (!this.battleGrid.positionInBounds(newPosition, 'player')) {
+            console.log('New position is out of bounds:', newPosition);
+            return;
+        }
+        
+        // Send movement request to server
+        const actionData = { newPosition: newPosition, currentPosition: currentPosition, team: 'player' };
         api.battlerAction.addBattlerAction(this.battleInstanceId, this.battlerId, 'move', actionData)
             .then(response => {
                 console.log('Action added successfully:', response);
@@ -123,11 +129,9 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     handleCompletedBattlerAction(data) {
-        console.log('Completed battler action:', data);
         if (data.actionType === 'move') {
-            console.log(`Moving battler ${data.battlerId} to position ${data.actionData.newPosition}`);
+            this.actionBarMenu.triggerGlobalCooldown();
             const battlerInstance = this.battleGrid.getBattlerInstance(data.battlerId);
-            console.log(battlerInstance);
             battlerInstance.moveToTile(data.actionData.newPosition, this.battleGrid);
         }
         // Handle other action types as needed

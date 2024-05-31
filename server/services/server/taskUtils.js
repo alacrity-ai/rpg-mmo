@@ -18,11 +18,12 @@ async function enqueueTask(taskType, taskData, callback, io) {
         if (response.taskId === taskId) {
           logger.info(`Task result received: ${JSON.stringify(response.result)}`);
           callback(response.result);
-
-          // Broadcast to all clients in the battle
-          const battleInstanceId = response.result.data.battleInstanceId;
+          if (response.result.error) {
+            logger.error(`Task failed: ${response.result.error}`);
+            throw new Error(response.result.error);
+          }
+          const battleInstanceId = response.result.data.battleInstanceId || false;
           if (battleInstanceId) {
-            console.log('Broadcasting to battle room: ', `battle-${battleInstanceId}`);
             io.to(`battle-${battleInstanceId}`).emit('completedBattlerAction', response.result.data.actionResult);
           }
 
@@ -30,7 +31,6 @@ async function enqueueTask(taskType, taskData, callback, io) {
           redis.off('message', onTaskResult);
         }
       } catch (error) {
-        logger.error(`Error processing task result for ${taskId}: ${error.message}`);
         callback({ error: 'Failed to process task result. ' + error.message });
 
         // Ensure to unsubscribe and remove the listener to avoid memory leaks

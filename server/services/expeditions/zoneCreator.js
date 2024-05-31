@@ -1,11 +1,11 @@
-const { getZoneTemplateById } = require('../db/queries/zoneTemplatesQueries');
-const { createZoneInstance } = require('../db/queries/zoneInstancesQueries');
-const { createAreaInstance } = require('../db/queries/areaInstancesQueries');
-const { createAreaEventInstance } = require('../db/queries/areaEventInstancesQueries');
-const { getEncounterTemplateById } = require('../db/queries/encounterTemplatesQueries');
-const { getRandomInt, getRandomFloat } = require('../utilities/helpers');
+const { getZoneTemplateById } = require('../../db/queries/zoneTemplatesQueries');
+const { createZoneInstance } = require('../../db/queries/zoneInstancesQueries');
+const { createAreaInstance } = require('../../db/queries/areaInstancesQueries');
+const { createAreaEventInstance } = require('../../db/queries/areaEventInstancesQueries');
+const { getEncounterTemplateById } = require('../../db/queries/encounterTemplatesQueries');
+const { getRandomInt, getRandomFloat } = require('../../utilities/helpers');
 const { generateGrid, mapCoordinatesToAreas } = require('./areas/mapFunctions');
-const logger = require('../utilities/logger');
+const logger = require('../../utilities/logger');
 
 async function createZoneInstanceFromTemplate(templateId, params = {}) {
     try {
@@ -26,18 +26,30 @@ async function createZoneInstanceFromTemplate(templateId, params = {}) {
       let bossEncounterUsed = false;
   
       for (let i = 0; i < numAreas; i++) {
+        // Create encounter and event instances for each area
+        // If the first area, do not create encounters, or events
+        if (i === 0) {
+          const areaInstance = await createAreaInstance({
+            background_image: `${zoneTemplate.imageFolderPath}/area_${i}.png`,
+            encounter: null,
+            encounter_cleared: false,
+            friendlyNpcs: generateNpcs(zoneTemplate.friendlyNpcs),
+            event_instance_id: null
+          });
+          areaInstances.push(areaInstance);
+          continue;
+        }
         const encounterId = await generateEncounter(zoneTemplate.encounters, bossEncounterUsed);
         const encounterTemplate = encounterId ? await getEncounterTemplateById(encounterId) : null;
-  
         if (encounterTemplate && encounterTemplate.isBoss) {
           bossEncounterUsed = true;
         }
-  
         const eventInstanceId = await maybeCreateAreaEventInstance(zoneTemplate.areaEvents, usedAreaEvents);
   
         const areaInstance = await createAreaInstance({
           background_image: `${zoneTemplate.imageFolderPath}/area_${i}.png`,
           encounter: encounterId,
+          encounter_cleared: false,
           friendlyNpcs: generateNpcs(zoneTemplate.friendlyNpcs),
           event_instance_id: eventInstanceId
         });

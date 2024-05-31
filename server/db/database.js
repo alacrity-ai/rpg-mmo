@@ -68,6 +68,7 @@ async function initTables() {
       id INT AUTO_INCREMENT PRIMARY KEY,
       background_image VARCHAR(255),
       encounter INT DEFAULT NULL,
+      encounter_cleared BOOLEAN DEFAULT 0,
       friendly_npcs JSON,
       explored BOOLEAN DEFAULT FALSE,
       event_instance_id INT DEFAULT NULL,

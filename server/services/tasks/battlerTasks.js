@@ -1,11 +1,8 @@
 const Redis = require('ioredis');
 const {
     createBattlerInstancesFromCharacterIds,
-    createBattlerInstancesFromNPCTemplateIds,
     getBattlerInstanceById,
     updateBattlerInstance,
-    deleteBattlerInstance,
-    instanceCanAct
 } = require('../../db/queries/battlerInstancesQueries');
 const taskRegistry = require('../server/taskRegistry');
 const logger = require('../../utilities/logger');
@@ -28,22 +25,7 @@ async function processCreateBattlerFromCharacterTask(task) {
     }
 }
 
-async function processCreateBattlerFromNPCTask(task) {
-    const { taskId, data } = task.taskData;
-    const { npcTemplateIds } = data;
 
-    try {
-        const battlerInstanceIds = await createBattlerInstancesFromNPCTemplateIds(npcTemplateIds);
-
-        const result = { success: true, data: battlerInstanceIds };
-        logger.info(`Battler creation from NPC successful for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
-        const result = { error: 'Failed to create battler from NPC. ' + error.message };
-        logger.error(`Battler creation from NPC failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
-}
 
 async function processGetBattlerTask(task) {
     const { taskId, data } = task.taskData;
@@ -86,53 +68,14 @@ async function processUpdateBattlerTask(task) {
     }
 }
 
-async function processDeleteBattlerTask(task) {
-    const { taskId, data } = task.taskData;
-    const { battlerId } = data;
-
-    try {
-        await deleteBattlerInstance(battlerId);
-
-        const result = { success: true };
-        logger.info(`Battler deletion successful for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
-        const result = { error: 'Failed to delete battler. ' + error.message };
-        logger.error(`Battler deletion failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
-}
-
-async function processCanBattlerActTask(task) {
-    const { taskId, data } = task.taskData;
-    const { battlerId } = data;
-
-    try {
-        const canAct = await instanceCanAct(battlerId);
-
-        const result = { success: true, data: { canAct } };
-        logger.info(`Battler action check successful for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
-        const result = { error: 'Failed to check if battler can act. ' + error.message };
-        logger.error(`Battler action check failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
-}
 
 // Register task handlers
 taskRegistry.register('createBattlerFromCharacter', processCreateBattlerFromCharacterTask);
-taskRegistry.register('createBattlerFromNPC', processCreateBattlerFromNPCTask);
 taskRegistry.register('getBattler', processGetBattlerTask);
 taskRegistry.register('updateBattler', processUpdateBattlerTask);
-taskRegistry.register('deleteBattler', processDeleteBattlerTask);
-taskRegistry.register('canBattlerAct', processCanBattlerActTask);
 
 module.exports = {
     processCreateBattlerFromCharacterTask,
-    processCreateBattlerFromNPCTask,
     processGetBattlerTask,
     processUpdateBattlerTask,
-    processDeleteBattlerTask,
-    processCanBattlerActTask,
 };

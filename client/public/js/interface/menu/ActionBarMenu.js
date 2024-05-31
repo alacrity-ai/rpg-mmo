@@ -70,10 +70,9 @@ export default class ActionBarMenu extends BaseMenu {
         navIcons.forEach(icon => {
             const iconButton = this.addIconButton(icon.x, icon.y, icon.name, () => {
                 console.log(`${icon.name} icon clicked`);
-                this.triggerGlobalCooldown();
 
                 // Emit the event with direction data
-                this.scene.events.emit('navigationButtonClicked', icon.direction);
+                this.scene.events.emit('moveButtonClicked', icon.direction);
             });
 
             this.iconButtons.push(iconButton);

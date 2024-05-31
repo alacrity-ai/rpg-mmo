@@ -17,6 +17,7 @@ async function getAreaInstanceById(id) {
       id: rows[0].id,
       background_image: rows[0].background_image,
       encounter: rows[0].encounter,
+      encounter_cleared: rows[0].encounter_cleared === 1,  // Convert to boolean
       friendlyNpcs: rows[0].friendly_npcs,
       explored: rows[0].explored === 1,  // Convert to boolean
       event_instance_id: rows[0].event_instance_id,
@@ -37,6 +38,7 @@ async function getAllAreaInstances() {
     id: row.id,
     background_image: row.background_image,
     encounter: row.encounter,
+    encounter_cleared: row.encounter_cleared === 1,  // Convert to boolean
     friendlyNpcs: row.friendly_npcs,
     explored: row.explored === 1,  // Convert to boolean
     event_instance_id: row.event_instance_id,
@@ -49,17 +51,19 @@ async function getAllAreaInstances() {
  * @param {Object} params - The parameters for creating a new area instance.
  * @param {string} params.background_image - The background image for the area instance.
  * @param {number} [params.encounter] - The ID of the encounter associated with the area.
+ * @param {boolean} [params.encounter_cleared] - Whether the encounter has been cleared.
  * @param {Object} params.friendlyNpcs - A map of friendly NPC template IDs to their quantities.
  * @param {boolean} [params.explored] - Whether the area has been explored.
  * @param {number} [params.event_instance_id] - The ID of the event instance associated with the area.
  * @returns {Promise<AreaInstance>} The newly created area instance.
  */
 async function createAreaInstance(params) {
-  const sql = 'INSERT INTO area_instances (background_image, encounter, friendly_npcs, explored, event_instance_id, created_at) VALUES (?, ?, ?, ?, ?, ?)';
+  const sql = 'INSERT INTO area_instances (background_image, encounter, encounter_cleared, friendly_npcs, explored, event_instance_id, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)';
   const friendlyNpcs = JSON.stringify(params.friendlyNpcs);
   const queryParams = [
     params.background_image,
     params.encounter,
+    params.encounter_cleared ? 1 : 0,
     friendlyNpcs,
     params.explored ? 1 : 0,
     params.event_instance_id !== undefined ? params.event_instance_id : null,
@@ -70,6 +74,7 @@ async function createAreaInstance(params) {
     id: result.insertId,
     background_image: params.background_image,
     encounter: params.encounter,
+    encounter_cleared: params.encounter_cleared,
     friendlyNpcs: params.friendlyNpcs,
     explored: params.explored,
     event_instance_id: params.event_instance_id !== undefined ? params.event_instance_id : null,
@@ -84,15 +89,25 @@ async function createAreaInstance(params) {
  * @param {Object} params - The parameters for updating the area instance.
  * @param {string} [params.background_image] - The background image for the area instance.
  * @param {number} [params.encounter] - The ID of the encounter associated with the area.
+ * @param {boolean} [params.encounter_cleared] - Whether the encounter has been cleared.
  * @param {Object} [params.friendlyNpcs] - A map of friendly NPC template IDs to their quantities.
  * @param {boolean} [params.explored] - Whether the area has been explored.
  * @param {number} [params.event_instance_id] - The ID of the event instance associated with the area.
  * @returns {Promise<AreaInstance|null>} The updated area instance or null if not found.
  */
 async function updateAreaInstance(id, params) {
-  const sql = 'UPDATE area_instances SET background_image = ?, encounter = ?, friendly_npcs = ?, explored = ?, event_instance_id = ? WHERE id = ?';
+  const sql = 'UPDATE area_instances SET background_image = ?, encounter = ?, encounter_cleared = ?, friendly_npcs = ?, explored = ?, event_instance_id = ? WHERE id = ?';
   const friendlyNpcs = JSON.stringify(params.friendlyNpcs);
-  const result = await query(sql, [params.background_image, params.encounter, friendlyNpcs, params.explored ? 1 : 0, params.event_instance_id, id]);
+  const queryParams = [
+    params.background_image,
+    params.encounter,
+    params.encounter_cleared ? 1 : 0,
+    friendlyNpcs,
+    params.explored ? 1 : 0,
+    params.event_instance_id,
+    id
+  ];
+  const result = await query(sql, queryParams);
   if (result.affectedRows > 0) {
     return getAreaInstanceById(id);
   }
@@ -110,6 +125,11 @@ async function deleteAreaInstance(id) {
   return result.affectedRows > 0;
 }
 
+/**
+ * Get the encounter associated with an area instance by its ID.
+ * @param {number} id - The ID of the area instance.
+ * @returns {Promise<number|null>} The encounter ID or null if not found.
+ */
 async function getEncounterByAreaInstanceId(id) {
   const sql = 'SELECT encounter FROM area_instances WHERE id = ?';
   const params = [id];
@@ -117,6 +137,11 @@ async function getEncounterByAreaInstanceId(id) {
   return rows.length > 0 ? rows[0].encounter : null;
 }
 
+/**
+ * Get the friendly NPCs associated with an area instance by its ID.
+ * @param {number} id - The ID of the area instance.
+ * @returns {Promise<Object|null>} The friendly NPCs or null if not found.
+ */
 async function getFriendlyNPCsByAreaInstanceId(id) {
   const sql = 'SELECT friendly_npcs FROM area_instances WHERE id = ?';
   const params = [id];
@@ -127,6 +152,7 @@ async function getFriendlyNPCsByAreaInstanceId(id) {
 module.exports = {
   deleteAreaInstance,
   createAreaInstance,
+  updateAreaInstance,
   getAreaInstanceById,
   getAllAreaInstances,
   getEncounterByAreaInstanceId,

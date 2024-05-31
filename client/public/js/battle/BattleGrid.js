@@ -63,8 +63,8 @@ class BattleGrid {
         }
     }
 
-    async addBattler(battlerData, initialTile) {
-        const battler = new Battler(this.scene, battlerData, initialTile);
+    async addBattler(battlerData, initialTile, isThisPlayer = false) {
+        const battler = new Battler(this.scene, battlerData, initialTile, isThisPlayer);
         await battler.initialize();
         battler.create(this);
         this.battlerInstanceMap.set(battlerData.id, battler);
@@ -77,6 +77,15 @@ class BattleGrid {
 
     getBattlerPosition(battlerId) {
         return this.battlerPositions.get(battlerId);
+    }
+
+    positionInBounds(position, team) {
+        if (team === 'player') {
+            return position[0] >= 0 && position[0] < 3 && position[1] >= 0 && position[1] < 3;
+        } else if (team === 'enemy') {
+            return position[0] >= 3 && position[0] < 6 && position[1] >= 0 && position[1] < 3;
+        }
+        return false;
     }
 
     moveBattler(battlerId, newTile) {
@@ -97,6 +106,19 @@ class BattleGrid {
         }
         // Add the battlerId to the battlerPositions map, e.g. {... 'battlerId': [x, y] ...}
         this.battlerPositions.set(battlerId, tile);
+        
+        // If there are other battlers on the same tile, render the current battler above them
+        const battlerInstance = this.getBattlerInstance(battlerId);
+        if (this.grid[y][x].battlers.length > 1) {
+            
+            if (battlerInstance && battlerInstance.renderAboveOthers) {
+                battlerInstance.sprite.setDepth(y + 1);
+            }
+        } else {
+            if (battlerInstance) {
+                battlerInstance.sprite.setDepth(y);
+            }
+        }
     }
 
     removeBattlerFromTile(battlerId, tile) {

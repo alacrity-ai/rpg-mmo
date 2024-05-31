@@ -38,7 +38,7 @@
 // console.log(mapAreasToCoordinates(inputAreas));
 
 // testCreateExpeditionZone.js
-const { createExpeditionZone } = require('../services/zoneCreator');
+const { createExpeditionZone } = require('../services/expeditions/zoneCreator');
 
 // Replace with a valid templateId from your database
 const templateId = 3;

@@ -1,11 +1,12 @@
 import BattlerSpriteManager from './BattlerSpriteManager.js';
 
 class Battler {
-    constructor(scene, battlerData, initialTile) {
+    constructor(scene, battlerData, initialTile, isThisPlayer = false) {
         this.scene = scene;
         this.battlerData = battlerData;
         this.initialTile = initialTile;
         this.sprite = null;
+        this.renderAboveOthers = isThisPlayer;
         if (battlerData.team === 'player') {
             this.yOffset = -20;
         } else {
@@ -28,6 +29,7 @@ class Battler {
             y: tile.tile.y + this.yOffset
         };
         this.sprite = BattlerSpriteManager.createSprite(this.scene, this.battlerData, position, this.spriteConfig);
+        // If renderAboveOthers is true, set the depth to a higher value
         battleGrid.addBattlerToTile(this.battlerData.id, this.initialTile);
     }
 

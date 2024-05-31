@@ -42,10 +42,31 @@ class BattleActionProcessor {
    * @returns {Object} The result of processing the move action.
    */
   static async processMoveAction(action) {
-    // Update the battler position
-    console.log('Updating battler position:', action.actionData.newPosition);
-    await updateBattlerPosition(action.battlerId, action.actionData.newPosition);
+    const team = action.actionData.team || 'enemy';
 
+    // If the team is the player, check if the new position is valid
+    if (team === 'player') {
+        if (action.actionData.newPosition[0] < 0 || action.actionData.newPosition[0] > 2 || action.actionData.newPosition[1] < 0 || action.actionData.newPosition[1] > 2) {
+            return {
+                success: false,
+                message: 'Invalid move action',
+                battlerId: action.battlerId,
+                actionType: action.actionType,
+                actionData: action.actionData
+            };
+        }
+    } else {
+        if (action.actionData.newPosition[0] < 3 || action.actionData.newPosition[0] > 5 || action.actionData.newPosition[1] < 0 || action.actionData.newPosition[1] > 2) {
+            return {
+                success: false,
+                message: 'Invalid move action',
+                battlerId: action.battlerId,
+                actionType: action.actionType,
+                actionData: action.actionData
+            };
+        }
+    }
+    await updateBattlerPosition(action.battlerId, action.actionData.newPosition);
     return {
       success: true,
       message: 'Move action processed successfully',
