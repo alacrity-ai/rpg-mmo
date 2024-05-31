@@ -42,6 +42,15 @@ class SocketManager {
       this.socket = null;
     }
   }
+
+  joinBattle(battleInstanceId) {
+    this.getSocket().emit('joinBattle', battleInstanceId);
+    console.log('Joined battle room: ', `battle-${battleInstanceId}`);
+  }
+
+  leaveBattle(battleInstanceId) {
+    this.getSocket().emit('leaveBattle', battleInstanceId);
+  }
 }
 
 const socketManager = new SocketManager();

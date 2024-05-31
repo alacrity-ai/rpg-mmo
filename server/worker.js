@@ -4,12 +4,13 @@ const { getTask } = require('./services/server/taskQueue');
 const taskRegistry = require('./services/server/taskRegistry');
 const logger = require('./utilities/logger');
 
-const POLL_INTERVAL_MS = 1000;
+const POLL_INTERVAL_MS = 250;
 
 // Import task modules to ensure they are registered
 require('./services/tasks/userTasks');
 require('./services/tasks/shopTasks');
 require('./services/tasks/characterTasks');
+require('./services/tasks/battlerActionTasks');
 
 const redis = new Redis();
 

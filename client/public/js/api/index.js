@@ -8,11 +8,11 @@ import shopApi from './shop';
 import chatApi from './chat';
 import itemApi from './item';
 import battleApi from './battle';
-import battlerApi from './battler';
+import battlerActionApi from './battlerAction';
 
 export default {
+  battlerAction: battlerActionApi,
   battle: battleApi,
-  battler: battlerApi,
   character: characterApi,
   party: partyApi,
   zone: zoneApi,

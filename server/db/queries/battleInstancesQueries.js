@@ -69,10 +69,14 @@ async function updateBattlerInstance(id, updates) {
     await query(sql, params);
 }
 
-async function updateBattlerPosition(battlerId, newPosition) {
-    const sql = 'UPDATE battler_instances SET grid_position = ? WHERE id = ?';
-    const params = [JSON.stringify(newPosition), battlerId];
-    await query(sql, params);
+async function updateBattlerPositions(battlerPositions) {
+    const updates = battlerPositions.map(bp => `(${bp.battlerId}, '${JSON.stringify(bp.newPosition)}')`).join(',');
+    const sql = `
+        INSERT INTO battler_instances (id, grid_position)
+        VALUES ${updates}
+        ON DUPLICATE KEY UPDATE grid_position = VALUES(grid_position)
+    `;
+    await query(sql);
 }
 
 async function deleteBattlerInstance(id) {
@@ -150,9 +154,9 @@ module.exports = {
     createBattlerInstance,
     getBattlerInstanceById,
     updateBattlerInstance,
+    updateBattlerPositions,
     deleteBattlerInstance,
     instanceCanAct,
     createBattlerInstancesFromCharacterIds,
-    createBattlerInstancesFromNPCTemplateIds,
-    updateBattlerPosition
+    createBattlerInstancesFromNPCTemplateIds
 };

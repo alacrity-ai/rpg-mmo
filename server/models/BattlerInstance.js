@@ -13,7 +13,7 @@ class BattlerInstance {
      * @param {Array<number>} [params.abilities] - The list of ability IDs for the battler.
      * @param {string} [params.script_path] - The path to the battle script, if applicable.
      * @param {string} params.sprite_path - The path to the battler's sprite.
-     * @param {string} params.grid_position - The grid position of the battler.
+     * @param {JSON} params.grid_position - The grid position of the battler.
      * @param {Date} params.last_action_time - The timestamp of the last action.
      * @param {Date} params.time_created - The timestamp when the battler instance was created.
      * @param {Array<number>} [params.status_effects] - The status effects applied to the battler.
@@ -64,7 +64,7 @@ module.exports = BattlerInstance;
  *   abilities: [1, 2, 3, 4],
  *   script_path: null,
  *   sprite_path: 'assets/battle/battlers/sprite_1.png',
- *   grid_position: 'B2',
+ *   grid_position: [1, 1],
  *   last_action_time: new Date(),
  *   time_created: new Date(),
  *   status_effects: [1, 2],

@@ -9,7 +9,8 @@ const authHandler = require('./handlers/api/authHandler');
 const characterHandler = require('./handlers/api/characterHandler');
 const shopHandler = require('./handlers/api/shopHandler');
 const battleHandler = require('./handlers/api/battleHandler');
-const battlerHandler = require('./handlers/api/battlerHandler'); 
+const battlerHandler = require('./handlers/api/battlerHandler');
+const battlerActionHandler = require('./handlers/api/battlerActionHandler');
 const logger = require('./utilities/logger');
 
 const app = express();
@@ -38,11 +39,24 @@ io.on('connection', (socket) => {
   logger.info(`A user connected`);
 
   // Use imported event handlers
-  authHandler(socket);
-  characterHandler(socket);
-  shopHandler(socket);
-  battleHandler(socket);
-  battlerHandler(socket);
+  authHandler(socket, io);
+  characterHandler(socket, io);
+  shopHandler(socket, io);
+  battleHandler(socket, io);
+  battlerHandler(socket, io);
+  battlerActionHandler(socket, io);
+
+  // Handle joining a battle room
+  socket.on('joinBattle', (battleInstanceId) => {
+    socket.join(`battle-${battleInstanceId}`);
+    logger.info(`User joined battle ${battleInstanceId}`);
+  });
+
+  // Handle leaving a battle room
+  socket.on('leaveBattle', (battleInstanceId) => {
+    socket.leave(`battle-${battleInstanceId}`);
+    logger.info(`User left battle ${battleInstanceId}`);
+  });
 
   socket.on('disconnect', () => {
     logger.info('A user disconnected');

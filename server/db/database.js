@@ -230,7 +230,7 @@ async function initTables() {
       abilities JSON,
       script_path VARCHAR(255),
       sprite_path VARCHAR(255),
-      grid_position VARCHAR(5),
+      grid_position JSON,
       last_action_time TIMESTAMP,
       time_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       status_effects JSON,

@@ -2,8 +2,9 @@ const Redis = require('ioredis');
 const redis = new Redis();
 const { addTask } = require('./taskQueue');
 const logger = require('../../utilities/logger');
+const crypto = require('crypto');
 
-async function enqueueTask(taskType, taskData, callback) {
+async function enqueueTask(taskType, taskData, callback, io) {
   try {
     const taskId = crypto.randomUUID(); // Generate a unique task ID
     const fullTaskData = { taskId, data: taskData };
@@ -11,11 +12,28 @@ async function enqueueTask(taskType, taskData, callback) {
     // Subscribe to a Redis channel for the task result
     const taskChannel = `task-result:${taskId}`;
     const onTaskResult = (channel, message) => {
-      logger.info(`Message received on channel ${channel}: ${message}`);
-      const response = JSON.parse(message);
-      if (response.taskId === taskId) {
-        logger.info(`Task result received: ${JSON.stringify(response.result)}`);
-        callback(response.result);
+      try {
+        logger.info(`Message received on channel ${channel}: ${message}`);
+        const response = JSON.parse(message);
+        if (response.taskId === taskId) {
+          logger.info(`Task result received: ${JSON.stringify(response.result)}`);
+          callback(response.result);
+
+          // Broadcast to all clients in the battle
+          const battleInstanceId = response.result.data.battleInstanceId;
+          if (battleInstanceId) {
+            console.log('Broadcasting to battle room: ', `battle-${battleInstanceId}`);
+            io.to(`battle-${battleInstanceId}`).emit('completedBattlerAction', response.result.data.actionResult);
+          }
+
+          redis.unsubscribe(taskChannel);
+          redis.off('message', onTaskResult);
+        }
+      } catch (error) {
+        logger.error(`Error processing task result for ${taskId}: ${error.message}`);
+        callback({ error: 'Failed to process task result. ' + error.message });
+
+        // Ensure to unsubscribe and remove the listener to avoid memory leaks
         redis.unsubscribe(taskChannel);
         redis.off('message', onTaskResult);
       }
@@ -31,14 +49,19 @@ async function enqueueTask(taskType, taskData, callback) {
 
         // Enqueue the task
         addTask(taskType, fullTaskData).then(() => {
-        // No log message needed here for now
+          // No log message needed here for now
         }).catch((err) => {
           logger.info(`Failed to add task to queue: ${err}`);
           callback({ error: 'Task enqueue failed. ' + err.message });
+
+          // Ensure to unsubscribe and remove the listener to avoid memory leaks
+          redis.unsubscribe(taskChannel);
+          redis.off('message', onTaskResult);
         });
       }
     });
   } catch (error) {
+    logger.error(`Error enqueuing task: ${error.message}`);
     callback({ error: 'Task processing failed. ' + error.message });
   }
 }

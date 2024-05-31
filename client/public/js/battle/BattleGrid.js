@@ -6,6 +6,7 @@ class BattleGrid {
         this.battleTileImagePath = battleTileImagePath;
         this.grid = [];
         this.battlerPositions = new Map(); // To track battler positions
+        this.battlerInstanceMap = new Map(); // To track battler instances
     }
 
     initialize() {
@@ -66,7 +67,16 @@ class BattleGrid {
         const battler = new Battler(this.scene, battlerData, initialTile);
         await battler.initialize();
         battler.create(this);
-        this.moveBattler(battlerData.id, initialTile); // Add the battler to the initial tile
+        this.battlerInstanceMap.set(battlerData.id, battler);
+        this.addBattlerToTile(battlerData.id, initialTile); // Directly add the battler to the initial tile
+    }
+
+    getBattlerInstance(battlerId) {
+        return this.battlerInstanceMap.get(battlerId);
+    }
+
+    getBattlerPosition(battlerId) {
+        return this.battlerPositions.get(battlerId);
     }
 
     moveBattler(battlerId, newTile) {
@@ -82,7 +92,11 @@ class BattleGrid {
     addBattlerToTile(battlerId, tile) {
         // Add battler to the specified tile
         const [x, y] = tile;
-        this.grid[y][x].battlers.push(battlerId);
+        if (!this.grid[y][x].battlers.includes(battlerId)) {
+            this.grid[y][x].battlers.push(battlerId);
+        }
+        // Add the battlerId to the battlerPositions map, e.g. {... 'battlerId': [x, y] ...}
+        this.battlerPositions.set(battlerId, tile);
     }
 
     removeBattlerFromTile(battlerId, tile) {
@@ -92,6 +106,8 @@ class BattleGrid {
         if (index > -1) {
             this.grid[y][x].battlers.splice(index, 1);
         }
+        // Remove the battlerId from the battlerPositions map
+        this.battlerPositions.delete(battlerId);
     }
 }
 

@@ -82,6 +82,7 @@ export default class CharacterSelectMenu extends BaseMenu {
         api.character.loginCharacter(characterName)
             .then(data => {
                 console.log('Character logged in successfully:', data);
+                this.scene.registry.set('characterId', data.id);
                 this.scene.scene.get('LoginScene').cleanup();
                 fadeTransition(this.scene, this.scene.registry.get('firstSceneKey'), 500);
                 this.hide()
