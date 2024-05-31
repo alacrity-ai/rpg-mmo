@@ -1,4 +1,6 @@
 const { updateBattlerPosition } = require('../../../db/queries/battlerInstanceQueries');
+const Redis = require('ioredis');
+const redis = new Redis();
 
 class BattleActionProcessor {
   /**
@@ -43,6 +45,21 @@ class BattleActionProcessor {
    */
   static async processMoveAction(action) {
     const team = action.actionData.team || 'enemy';
+    const cooldownKey = `cooldown:${action.battlerId}`;
+    const currentTime = Date.now();
+    
+    // Check cooldown from Redis
+    const cooldownEndTime = await redis.get(cooldownKey);
+
+    if (cooldownEndTime && currentTime < cooldownEndTime) {
+      return {
+        success: false,
+        message: 'Battler is currently on cooldown',
+        battlerId: action.battlerId,
+        actionType: action.actionType,
+        actionData: action.actionData
+      };
+    }
 
     // If the team is the player, check if the new position is valid
     if (team === 'player') {
@@ -66,7 +83,13 @@ class BattleActionProcessor {
             };
         }
     }
+
     await updateBattlerPosition(action.battlerId, action.actionData.newPosition);
+    
+    // Set cooldown in Redis
+    const cooldownDuration = 1500; // 1500 ms
+    await redis.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
+
     return {
       success: true,
       message: 'Move action processed successfully',
