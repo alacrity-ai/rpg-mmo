@@ -7,7 +7,7 @@ import InteractiveZoneManager from '../../interface/InteractiveZoneManager.js';
 import PointLightManager from '../../graphics/PointLight.js';
 import CustomCursor from '../../interface/CustomCursor.js';
 import MusicManager from '../../audio/MusicManager.js';
-import NavigationMenu from '../../interface/menu/NavigationMenu.js'
+import TownNavigationMenu from '../../interface/menu/TownNavigationMenu.js';
 import Debug from '../../interface/Debug.js';
 import { addBackgroundImage } from '../../graphics/BackgroundManager.js';
 import { fadeTransition } from '../utils/SceneTransitions.js';
@@ -77,7 +77,7 @@ export default class BaseTownScene extends Phaser.Scene {
         // Initialize the Navigation Menu
         // Correct the below if statement because This condition will always return 'true' since JavaScript compares objects by reference, not value
         if (Object.keys(this.navigationMenuScenes).length > 0) {
-            this.navigationMenu = new NavigationMenu(this);
+            this.navigationMenu = new TownNavigationMenu(this);
             this.navigationMenu.setupTownNavigationButtons(this.navigationMenuScenes.up, this.navigationMenuScenes.down, this.navigationMenuScenes.left, this.navigationMenuScenes.right);
             this.navigationMenu.show();
         }

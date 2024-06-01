@@ -7,7 +7,7 @@ import DialogueMenu from '../../interface/menu/DialogueMenu.js';
 import LoginMenu from '../../interface/menu/LoginMenu.js';
 import ShopMenu from '../../interface/menu/ShopMenu.js';
 import ErrorMenu from '../../interface/menu/ErrorMenu.js';
-import NavigationMenu from '../../interface/menu/NavigationMenu.js';
+import TownNavigationMenu from '../../interface/menu/TownNavigationMenu.js';
 import AreaMapMenu from '../../interface/menu/AreaMapMenu.js';
 import api from '../../api'
 
@@ -59,7 +59,7 @@ export default class MenuTestScene extends Phaser.Scene {
 
         // Create and show the navigation menu
         const navigationData = areaData['1'];
-        this.navigationMenu = new NavigationMenu(this, this.sys.game.config.width / 14, this.sys.game.config.height / 1.4);
+        this.navigationMenu = new TownNavigationMenu(this, this.sys.game.config.width / 14, this.sys.game.config.height / 1.4);
         this.navigationMenu.setupNavigationButtons(navigationData);
         this.navigationMenu.show();
 

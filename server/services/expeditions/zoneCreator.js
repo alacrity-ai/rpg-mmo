@@ -36,6 +36,7 @@ async function createZoneInstanceFromTemplate(zoneTemplate) {
         encounter_cleared: false,
         friendly_npcs: {},
         explored: false,
+        environment_effects: zoneTemplate.environmentEffects || null,
         event_instance_id: null
       };
       
@@ -51,6 +52,7 @@ async function createZoneInstanceFromTemplate(zoneTemplate) {
         areaInstanceData.friendly_npcs = generateNpcs(zoneTemplate.friendlyNpcs);
       }
       
+      // creaetAreaInstance will return the insert ID of the new area instance
       const areaInstance = await createAreaInstance(areaInstanceData);
       areaInstances.push(areaInstance);
     }

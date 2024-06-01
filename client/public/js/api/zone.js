@@ -24,7 +24,20 @@ const requestZone = (sceneKey) => {
   });
 };
 
+const requestArea = (currentAreaId, targetAreaId) => {
+  return new Promise((resolve, reject) => {
+    socketManager.getSocket().emit('requestArea', { currentAreaId, targetAreaId }, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
 export default {
   requestZone,
+  requestArea,
   getCurrentZone,
 };

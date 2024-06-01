@@ -9,14 +9,17 @@ import MusicManager from '../audio/MusicManager.js';
 import Debug from '../interface/Debug.js';
 import { addBackgroundImage } from '../graphics/BackgroundManager.js';
 import FogEffect from '../graphics/FogEffect.js';
+import AreaNavigationMenu from '../interface/menu/AreaNavigationMenu.js';
+import AreaMapMenu from '../interface/menu/AreaMapMenu.js';
 
 /* ExpeditionScene.js
  * Base class for all Expedition Area Scenes
  * @param {object} areaData - data for the current area, see models/AreaInstance.js in server code
  */
 export default class AreaScene extends Phaser.Scene {
-    constructor(areaInstanceData) {
-        super({ key: 'AreaScene' });
+    constructor(key, areaInstanceData, debugMode = false) {
+        super({ key });
+        this.key = key;
         this.areaInstanceData = areaInstanceData;
         this.zoneName = areaInstanceData['zoneName'];
         this.zoneInstanceId = areaInstanceData['zoneInstanceId'];
@@ -25,6 +28,7 @@ export default class AreaScene extends Phaser.Scene {
         this.musicPath = areaInstanceData['musicPath'];
         this.ambientSoundPath = areaInstanceData['ambientSoundPath'];
         this.areaConnections = areaInstanceData['areaConnections'];
+        this.debugMode = debugMode;
     }
 
     preload() {
@@ -46,16 +50,16 @@ export default class AreaScene extends Phaser.Scene {
     }
 
     create() {
-        console.log('Running create event for ExpeditionScene')
+        console.log('Running create event for ExpeditionScene');
         // Play Background Music
         if (this.musicPath) {
             MusicManager.playMusic(this.musicPath);
-        };
+        }
 
         // Play Ambient Sound
         if (this.ambientSoundPath) {
             MusicManager.playAmbient(this.ambientSoundPath);
-        };
+        }
 
         // Initialize SoundFXManager
         SoundFXManager.initialize(this);
@@ -66,14 +70,6 @@ export default class AreaScene extends Phaser.Scene {
         // Initialize the IconHelper
         this.iconHelper = new IconHelper(this, 'icons');
         createHotbar(this, this.iconHelper);
-
-        // // Initialize the Navigation Menu
-        // // Correct the below if statement because This condition will always return 'true' since JavaScript compares objects by reference, not value
-        // if (Object.keys(this.navigationMenuScenes).length > 0) {
-        //     this.navigationMenu = new NavigationMenu(this);
-        //     this.navigationMenu.setupTownNavigationButtons(this.navigationMenuScenes.up, this.navigationMenuScenes.down, this.navigationMenuScenes.left, this.navigationMenuScenes.right);
-        //     this.navigationMenu.show();
-        // }
 
         // Initialize the InteractiveZoneManager
         this.interactiveZoneManager = new InteractiveZoneManager(this);
@@ -90,15 +86,23 @@ export default class AreaScene extends Phaser.Scene {
         // Initialize PointLightManager
         this.pointLightManager = new PointLightManager(this);
 
-        // // Initialize the Debug class
-        // this.debug = new Debug(this);
+        // Initialize the AreaNavigationMenu
+        this.areaNavigationMenu = new AreaNavigationMenu(this, this.areaInstanceData.id);
+        this.areaNavigationMenu.setupAreaNavigationButtons(this.areaConnections);
+
+        // Initialize the AreaMapMenu
+        this.areaMapMenu = new AreaMapMenu(this, 920, 80, 0.5); // Adjust the position as needed
+        this.updateRegistryWithAreaConnections();
+        const areaConnections = this.registry.get('areaConnections');
+        this.areaMapMenu.setupAreaMap(areaConnections, this.areaInstanceData.id);
+
+        // Initialize the Debug class
+        if (this.debugMode) {
+            this.debug = new Debug(this);
+        }
     }
 
     update(time, delta) {
-        // // Update custom cursor position
-        // TODO : Why is this not needed?
-        // CustomCursor.getInstance(this).update();
-
         // Update point lights with delta time
         this.pointLightManager.update(delta);
 
@@ -107,14 +111,30 @@ export default class AreaScene extends Phaser.Scene {
             this.fogEffect.update(time, delta);
         }
 
-        // // Update debug coordinates
-        // this.debug.update(this.input.activePointer);
+        // Update debug coordinates
+        if (this.debugMode) {
+            this.debug.update(this.input.activePointer);
+        }
+    }
+
+    updateRegistryWithAreaConnections() {
+        const areaId = this.areaInstanceData.id;
+        const areaConnections = this.areaInstanceData.areaConnections;
+
+        // Get the current registry data or initialize if it doesn't exist
+        let currentConnections = this.registry.get('areaConnections') || {};
+
+        // Update the registry with the new area connections
+        currentConnections[areaId] = areaConnections;
+        this.registry.set('areaConnections', currentConnections);
+
+        console.log('Updated registry with area connections:', currentConnections);
     }
 
     cleanup() {
         if (this.ambientSoundPath !== null) MusicManager.stopAmbient();
         // Delete this scene key from the phaser game
-        console.log('Removing scene key:', 'AreaScene')
-        this.scene.remove('AreaScene');
+        console.log('Removing scene key:', this.key);
+        this.scene.remove(this.key);
     }
 }

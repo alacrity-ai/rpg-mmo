@@ -71,39 +71,43 @@ async function createAreaInstance(areaInstanceData) {
 }
 
 async function updateAreaInstance(id, areaInstanceData) {
+  const fields = [
+    'zone_name',
+    'zone_instance_id',
+    'zone_template_id',
+    'music_path',
+    'ambient_sound_path',
+    'background_image',
+    'area_connections',
+    'encounter',
+    'encounter_cleared',
+    'friendly_npcs',
+    'explored',
+    'event_instance_id',
+    'environment_effects'
+  ];
+
+  const updates = [];
+  const params = [];
+
+  fields.forEach(field => {
+    if (areaInstanceData[field] !== undefined) {
+      updates.push(`${field} = ?`);
+      if (field === 'area_connections' || field === 'friendly_npcs' || field === 'environment_effects') {
+        params.push(JSON.stringify(areaInstanceData[field]));
+      } else {
+        params.push(areaInstanceData[field]);
+      }
+    }
+  });
+
   const sql = `
     UPDATE area_instances SET
-      zone_name = ?,
-      zone_instance_id = ?,
-      zone_template_id = ?,
-      music_path = ?,
-      ambient_sound_path = ?,
-      background_image = ?,
-      area_connections = ?,
-      encounter = ?,
-      encounter_cleared = ?,
-      friendly_npcs = ?,
-      explored = ?,
-      event_instance_id = ?,
-      environment_effects = ?
+      ${updates.join(', ')}
     WHERE id = ?
   `;
-  const params = [
-    areaInstanceData.zone_name,
-    areaInstanceData.zone_instance_id,
-    areaInstanceData.zone_template_id,
-    areaInstanceData.music_path,
-    areaInstanceData.ambient_sound_path,
-    areaInstanceData.background_image,
-    JSON.stringify(areaInstanceData.area_connections),
-    areaInstanceData.encounter,
-    areaInstanceData.encounter_cleared,
-    JSON.stringify(areaInstanceData.friendly_npcs),
-    areaInstanceData.explored,
-    areaInstanceData.event_instance_id,
-    JSON.stringify(areaInstanceData.environment_effects),
-    id
-  ];
+  params.push(id);
+
   await query(sql, params);
 }
 
@@ -114,22 +118,18 @@ async function updateAreaInstancesWithZoneInstanceData(areaInstanceIds, zoneInst
   }
 
   const areaConnections = zoneInstance.areas;
-  const environmentEffects = zoneInstance.environment_effects; // Assuming zoneInstance has this field
 
   for (const areaInstanceId of areaInstanceIds) {
     const connections = areaConnections[areaInstanceId] || {};
-    const effects = environmentEffects ? environmentEffects[areaInstanceId] || null : null;
     const sql = `
       UPDATE area_instances SET
         zone_instance_id = ?,
-        area_connections = ?,
-        environment_effects = ?
+        area_connections = ?
       WHERE id = ?
     `;
     const params = [
       zoneInstanceId,
       JSON.stringify(connections),
-      JSON.stringify(effects),
       areaInstanceId
     ];
     await query(sql, params);

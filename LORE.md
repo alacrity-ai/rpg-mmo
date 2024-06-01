@@ -1,21 +1,23 @@
 ### World Name and Regions
 
-**World Name**: **Aldara** **Regions**:
+### Working Game Title: Mysteries of Aldera (MOA)
+
+**World Name**: **Aldera** **Regions**:
 
 1. **The Southlands**: Includes Eldergrove, Tilford, and Harborview. Known for its fertile lands and thriving trade.
 2. **The Midlands**: Contains Blackwood Village and Greenhaven. A region of mixed terrains and rich history.
 3. **The Coldlands**: Comprising Frostholm and Glacier's Edge Encampment. A harsh, frigid environment.
 4. **The Northern Wastes**: Home to Eagle's Hollow and the Citadel. A desolate and dangerous land.
 
-### History of Aldara
+### History of Aldera
 
 #### The Ancient Times (Prehistoric Era)
 
-In the distant past, Aldara was a land of untamed wilderness and primal forces. Little is known about this era, as written history was virtually non-existent. The world was dominated by vast forests, towering mountains, and sprawling deserts. The Southlands were a dense jungle, the Midlands a combination of grasslands and highlands, and the Coldlands a perpetually frozen wasteland. Nomadic tribes roamed the land, worshipping nature spirits and ancient deities.
+In the distant past, Aldera was a land of untamed wilderness and primal forces. Little is known about this era, as written history was virtually non-existent. The world was dominated by vast forests, towering mountains, and sprawling deserts. The Southlands were a dense jungle, the Midlands a combination of grasslands and highlands, and the Coldlands a perpetually frozen wasteland. Nomadic tribes roamed the land, worshipping nature spirits and ancient deities.
 
 #### The Age of Harmony (The Modern Era)
 
-Over a thousand years ago, the world of Aldara entered a period of relative stability and prosperity, known as the Age of Harmony. Kingdoms and cities began to form, trade routes were established, and cultures flourished. This era saw the rise of prominent towns and cities, including Eldergrove, Tilford, Frostholm, and Eagle's Hollow.
+Over a thousand years ago, the world of Aldera entered a period of relative stability and prosperity, known as the Age of Harmony. Kingdoms and cities began to form, trade routes were established, and cultures flourished. This era saw the rise of prominent towns and cities, including Eldergrove, Tilford, Frostholm, and Eagle's Hollow.
 
 ##### Key Historical Figures:
 
@@ -34,7 +36,7 @@ The Age of Shadows began a century ago, with the sudden and catastrophic rise of
 
 ##### Archmage Malakar
 
-Archmage Malakar was a brilliant and ambitious mage who lived during the latter part of the Age of Harmony. He was obsessed with unlocking the secrets of immortality and ultimate power, believing that he could use such knowledge to protect Aldara from any future threats. Malakar's research led him to ancient texts that spoke of a powerful artifact buried deep beneath the northern mountains, an artifact that could grant unimaginable power but at a great cost.
+Archmage Malakar was a brilliant and ambitious mage who lived during the latter part of the Age of Harmony. He was obsessed with unlocking the secrets of immortality and ultimate power, believing that he could use such knowledge to protect Aldera from any future threats. Malakar's research led him to ancient texts that spoke of a powerful artifact buried deep beneath the northern mountains, an artifact that could grant unimaginable power but at a great cost.
 
 Ignoring the warnings and omens, Malakar embarked on an expedition to find this artifact, accompanied by his loyal followers. After years of searching, they finally unearthed the **Heart of Xal'gorath**, an artifact of immense power and corruption. Unbeknownst to Malakar, the artifact was a prison for the malevolent spirit of Xal'gorath, a once-powerful sorcerer who had been sealed away by the ancient titans.
 
@@ -42,11 +44,11 @@ Ignoring the warnings and omens, Malakar embarked on an expedition to find this 
 
 In his hubris, Malakar attempted to harness the power of the Heart of Xal'gorath. The artifact's dark magic began to corrupt him and his followers, twisting their minds and bodies. As Malakar's control over the artifact weakened, the spirit of Xal'gorath began to break free. The ground shook, and the mountains split open as The Citadel rose from the earth, a dark and foreboding fortress that marked the beginning of the Age of Shadows.
 
-The release of Xal'gorath's spirit unleashed a wave of corruption that spread rapidly across Aldara. The land itself began to wither, and the once-thriving regions fell into darkness and despair. The Southlands, Midlands, and Coldlands were all affected, but the Northern Wastes bore the brunt of the corruption, becoming a desolate and dangerous place.
+The release of Xal'gorath's spirit unleashed a wave of corruption that spread rapidly across Aldera. The land itself began to wither, and the once-thriving regions fell into darkness and despair. The Southlands, Midlands, and Coldlands were all affected, but the Northern Wastes bore the brunt of the corruption, becoming a desolate and dangerous place.
 
 ##### Aftermath
 
-In the century that followed, Aldara was plunged into chaos. The once-thriving trade routes were disrupted, and the towns and cities that had flourished during the Age of Harmony struggled to survive. The people of Aldara faced new horrors as the corruption twisted creatures and landscapes into nightmarish versions of their former selves.
+In the century that followed, Aldera was plunged into chaos. The once-thriving trade routes were disrupted, and the towns and cities that had flourished during the Age of Harmony struggled to survive. The people of Aldera faced new horrors as the corruption twisted creatures and landscapes into nightmarish versions of their former selves.
 
 ##### Key Historical Events:
 
@@ -90,7 +92,7 @@ In the century that followed, Aldara was plunged into chaos. The once-thriving t
 - **Explorer Calum**:
     
     - **Description**: Calum was a legendary adventurer and explorer, known for his bravery and curiosity. He had an unquenchable thirst for discovery and a knack for uncovering hidden treasures.
-    - **Achievements**: Calum discovered Calum's Cave, a rich source of rare minerals and treasures. His findings fueled the prosperity of Harborview, turning the coastal town into a hub of trade and exploration. Calum's expeditions brought back wealth and knowledge that benefited all of Aldara.
+    - **Achievements**: Calum discovered Calum's Cave, a rich source of rare minerals and treasures. His findings fueled the prosperity of Harborview, turning the coastal town into a hub of trade and exploration. Calum's expeditions brought back wealth and knowledge that benefited all of Aldera.
     - **Legacy**: Calum's legacy is celebrated in the adventurous spirit and economic success of Harborview. His discoveries continue to enrich the region.
 - **King Valerius of Eagle's Hollow**:
     
@@ -101,7 +103,7 @@ In the century that followed, Aldara was plunged into chaos. The once-thriving t
     
     - **Description**: Archmage Malakar was a brilliant and ambitious mage, driven by a desire to unlock the secrets of immortality and ultimate power. His intelligence was matched only by his hubris.
     - **Achievements**: Malakar was initially celebrated for his groundbreaking work in arcane studies. He pushed the boundaries of magic, achieving feats previously thought impossible. His pursuit of the Heart of Xal'gorath, however, led to his downfall.
-    - **Legacy**: Malakar's legacy is a tragic one, marked by his transformation into the harbinger of the Age of Shadows. His actions inadvertently released Xal'gorath's spirit and caused the rise of The Citadel, plunging Aldara into darkness. His story serves as a cautionary tale about the dangers of unchecked ambition.
+    - **Legacy**: Malakar's legacy is a tragic one, marked by his transformation into the harbinger of the Age of Shadows. His actions inadvertently released Xal'gorath's spirit and caused the rise of The Citadel, plunging Aldera into darkness. His story serves as a cautionary tale about the dangers of unchecked ambition.
 - **High Priestess Alara of Greenhaven**:
     
     - **Description**: High Priestess Alara was a spiritual leader and protector of Greenhaven, known for her wisdom and deep connection to the ancient magic of the forest.

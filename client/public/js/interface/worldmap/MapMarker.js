@@ -65,18 +65,22 @@ export default class MapMarker {
                         console.log('Zone request response:', response);
                         // Extract the areaInstance data from the response
                         const areaInstanceData = response.areaInstance;
+                        // Clear the area connections registry key
+                        this.scene.registry.set('areaConnections', {});
+                        // Generate a unique key for the new AreaScene
+                        const areaKey = `AreaScene_${areaInstanceData.zoneInstanceId}_${areaInstanceData.id}`;
                         // Add the new scene with the area instance data
-                        const areaScene = new AreaScene(areaInstanceData);
+                        const areaScene = new AreaScene(areaKey, areaInstanceData);
                         // Add the scene to the Phaser game instance and start it
-                        this.scene.scene.add('AreaScene', areaScene, false);
+                        this.scene.scene.add(areaKey, areaScene, false);
                         // Use the fadeTransition to go to the new scene
-                        fadeTransition(this.scene, 'AreaScene');
+                        fadeTransition(this.scene, areaKey);
                     })
                     .catch((error) => {
                         console.error('Error requesting zone:', error);
                     });
             }
-        });
+        });        
 
         this.updatePosition(scene.worldmap.x, scene.worldmap.y, scene.zoomLevel);
         this.textY = this.marker.y - 40;

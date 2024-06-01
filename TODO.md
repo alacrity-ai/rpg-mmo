@@ -22,26 +22,23 @@ We just added binding the characterId to the socket on character login (We shoul
         Update: We have achieved up to this point, with some caveats:
         1) Flag checking has been added in the processRequestZoneTask but is commented out
         2) Custom cursor behaving strangely, resolved by removing custom cursor updating from the update method.
-        3) Leaving the Expedition scene, and returning, results in a duplicate key error.  
-            - How should I add the scene correctly
-            - And how to remove the key correctly
-        4) Research the proper way to switch scenes, should we be stopping scenes that we transition
-            away from?
 
         THEN:
-        We will work on rendering the partial map, and the navigation controls.
+        - [x] We will work on rendering the partial map, and the navigation controls.
         We will make sure that navigating to the next zone does the following:
-            new client api call: requestAreaInstance(current_area_instance_id, area_instance_id_wearegoing_to).
+            new client api call: requestAreaInstance(current_area_instance_id, area_instance_id we are going to).
             we'll need in the zoneHandler (or areaHandler) a requisite handler
             we'll need a zoneTasks task for processRequestAreaInstanceTask
                 This will check that the current_area_instance is `cleared` and that the `encounter_cleared` is true, if there is an encounter, if it is, it will give the client the request area_instance data.
-            The client, upon receiving this data, will instantiate a new expeditionscene from the data.
-            If the area has an encounter, the client will immediately register the current scene to some key, and then start the combat encounter.
+            The client, upon receiving this data, will instantiate a new areascene from the data.
+        
+        THEN HANDLE ENCOUNTERS:
+            - [ ] If the area has an encounter, the client will immediately register the current scene to some key, and then start the combat encounter.
             Upon completion of the combat encounter, we will return to the scene that we registered.
 
-        THEN:
-        We will figure out how to determine when an encounter is finished.
-        Probably some API call from the client saying that they killed all the enemies in the encounter, then the server will verify, and update the area_instance to show the encounter is cleared, and that they can return to the area_instance scene.
+                THEN:
+                    - [ ] We will figure out how to determine when an encounter is finished.
+                    Probably some API call from the client saying that they killed all the enemies in the encounter, then the server will verify, and update the area_instance to show the encounter is cleared, and that they can return to the area_instance scene.
 
 
 
