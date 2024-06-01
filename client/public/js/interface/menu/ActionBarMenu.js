@@ -93,7 +93,7 @@ export default class ActionBarMenu extends BaseMenu {
         return iconButton;
     }
 
-    triggerGlobalCooldown(delayAmount = 3000) {
+    triggerGlobalCooldown(delayAmount = this.scene.registry.get('settings').cooldowns.normal) {
         this.disableIcons(delayAmount);
         this.scene.time.delayedCall(delayAmount, this.enableIcons, [], this); // 3000 milliseconds = 3 seconds
     }

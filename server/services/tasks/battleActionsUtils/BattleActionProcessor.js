@@ -2,6 +2,12 @@ const { updateBattlerPosition } = require('../../../db/queries/battlerInstanceQu
 const Redis = require('ioredis');
 const redis = new Redis();
 
+// Load cooldown values from environment variables
+const COOLDOWN_MINIMUM = parseInt(process.env.COOLDOWN_MINIMUM, 10) || 500;
+const COOLDOWN_SHORT = parseInt(process.env.COOLDOWN_SHORT, 10) || 1500;
+const COOLDOWN_NORMAL = parseInt(process.env.COOLDOWN_NORMAL, 10) || 3000;
+const COOLDOWN_LONG = parseInt(process.env.COOLDOWN_LONG, 10) || 5000;
+
 class BattleActionProcessor {
   /**
    * Process a single battler action.
@@ -87,7 +93,7 @@ class BattleActionProcessor {
     await updateBattlerPosition(action.battlerId, action.actionData.newPosition);
     
     // Set cooldown in Redis
-    const cooldownDuration = 1500; // 1500 ms
+    const cooldownDuration = COOLDOWN_SHORT; // 1500 ms default
     await redis.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
 
     return {

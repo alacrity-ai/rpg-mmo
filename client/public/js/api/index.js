@@ -9,6 +9,7 @@ import chatApi from './chat';
 import itemApi from './item';
 import battleApi from './battle';
 import battlerActionApi from './battlerAction';
+import settingsApi from './settings';
 
 export default {
   battlerAction: battlerActionApi,
@@ -22,4 +23,5 @@ export default {
   shop: shopApi,
   chat: chatApi,
   item: itemApi,
+  settings: settingsApi,
 };

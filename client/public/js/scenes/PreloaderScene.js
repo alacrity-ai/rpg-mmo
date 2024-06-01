@@ -3,6 +3,7 @@ import Phaser from 'phaser';
 import SoundFXManager from '../audio/SoundFXManager.js';
 import MusicManager from '../audio/MusicManager.js';
 import CustomCursor from '../interface/CustomCursor.js';
+import api from '../api';
 
 export default class PreloaderScene extends Phaser.Scene {
     constructor() {
@@ -38,6 +39,15 @@ export default class PreloaderScene extends Phaser.Scene {
             'assets/sounds/menu/tent_open.wav',
             'assets/sounds/footstep_chain.wav'
         ]);
+
+        // Load server settings
+        api.settings.getServerSettings()
+            .then((settings) => {
+                this.registry.set('settings', settings);
+            })
+            .catch((error) => {
+                console.error('Error getting server settings:', error);
+            });
     }
 
     create() {
@@ -53,6 +63,9 @@ export default class PreloaderScene extends Phaser.Scene {
         // Set the first scene of the game after login
         this.registry.set('firstSceneKey', 'BattleScene');
         this.registry.set('currentSceneKey', 'WorldmapScene');
+
+        // Console log the server settings
+        console.log(this.registry.get('settings'));
 
         // Start the Login scene
         this.scene.start('LoginScene'); 

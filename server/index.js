@@ -11,6 +11,7 @@ const shopHandler = require('./handlers/api/shopHandler');
 const battleHandler = require('./handlers/api/battleHandler');
 const battlerHandler = require('./handlers/api/battlerHandler');
 const battlerActionHandler = require('./handlers/api/battlerActionHandler');
+const settingsHandler = require('./handlers/api/settingsHandler');
 const logger = require('./utilities/logger');
 
 const app = express();
@@ -45,6 +46,7 @@ io.on('connection', (socket) => {
   battleHandler(socket, io);
   battlerHandler(socket, io);
   battlerActionHandler(socket, io);
+  settingsHandler(socket, io);
 
   // Handle joining a battle room
   socket.on('joinBattle', (battleInstanceId) => {
