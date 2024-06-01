@@ -29,7 +29,7 @@ const config = {
         PreloaderScene,
         MenuTestScene,
         WorldmapScene,
-        ExpeditionScene,
+        // ExpeditionScene,
         BattleScene,
         LoginScene
     ],

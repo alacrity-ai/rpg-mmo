@@ -89,17 +89,17 @@ function mapAreasToCoordinates(areas) {
 /**
  * Generates a grid of connected areas within the specified grid size.
  *
- * @param {number} minAreas - The minimum number of areas.
- * @param {number} maxAreas - The maximum number of areas.
+ * @param {Array} areaInstances - An array of area instance ids
  * @param {number} [gridSize=10] - The size of the grid (default is 10).
  * @returns {Object} An object representing the grid of areas with their coordinates and types.
  */
-function generateGrid(minAreas, maxAreas, gridSize = 10) {
-    if (minAreas < 1 || maxAreas > gridSize * gridSize || minAreas > maxAreas) {
+function generateGrid(areaInstances, gridSize = 10) {
+    console.log('Generating grid with areaInstances: ', areaInstances);
+    const maxAreas = areaInstances.length;
+
+    if (maxAreas < 1 || maxAreas > gridSize * gridSize) {
         throw new Error('Invalid input parameters');
     }
-
-    const numAreas = Math.floor(Math.random() * (maxAreas - minAreas + 1)) + minAreas;
 
     const directions = [
         { dx: 1, dy: 0 },
@@ -122,7 +122,7 @@ function generateGrid(minAreas, maxAreas, gridSize = 10) {
         visited[x][y] = true;
         areas[count] = { x, y, type: 'area', explored: false };
 
-        if (count === numAreas) return true;
+        if (count === maxAreas) return true;
 
         const shuffledDirections = directions.sort(() => Math.random() - 0.5);
         for (const { dx, dy } of shuffledDirections) {
@@ -139,6 +139,7 @@ function generateGrid(minAreas, maxAreas, gridSize = 10) {
     }
 
     while (true) {
+        console.log('Generating grid...');
         startX = Math.floor(gridSize / 2);
         startY = Math.floor(gridSize / 2);
 
@@ -150,8 +151,18 @@ function generateGrid(minAreas, maxAreas, gridSize = 10) {
     areas[keys[0]].type = 'entrance';
     areas[keys[keys.length - 1]].type = 'exit';
 
-    return areas;
+    // Replace keys with areaInstanceIds in the areaInstances array
+    const mappedAreas = {};
+    for (let i = 0; i < keys.length; i++) {
+        const areaKey = keys[i];
+        const areaInstanceId = areaInstances[i];
+        mappedAreas[areaInstanceId] = areas[areaKey];
+    }
+
+    console.log('Generate Grid return: ', mappedAreas);
+    return mappedAreas;
 }
+
 
 // Export the functions
 module.exports = {

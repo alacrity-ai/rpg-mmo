@@ -21,7 +21,12 @@ module.exports = (socket) => {
       return;
     }
     const taskData = { userId: socket.user.id, ...data };
-    enqueueTask('loginCharacter', taskData, callback);
+    enqueueTask('loginCharacter', taskData, (response) => {
+      if (response.success) {
+        socket.character = { id: data.character }; // Attach user ID to the socket
+      }
+      callback(response);
+    });
   });
 
   socket.on('classList', async (data, callback) => {

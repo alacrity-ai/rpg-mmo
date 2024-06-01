@@ -8,7 +8,6 @@ const shopTemplates = require('./data/shopTemplates');
 const statusTemplates = require('./data/statusTemplates')
 const zoneTemplates = require('./data/zoneTemplates');
 const encounterTemplates = require('./data/encounterTemplates');
-const characterFlagTemplates = require('./data/characterFlagTemplates');
 const npcDialogueTemplates = require('./data/npcDialogueTemplates');
 const logger = require('../utilities/logger');
 
@@ -36,34 +35,6 @@ async function populateNpcDialogueTemplates() {
     logger.info('NPC dialogue templates populated.');
   } catch (err) {
     logger.error('Error populating NPC dialogue templates', err);
-  } finally {
-    connection.release();
-  }
-}
-
-async function populateCharacterFlagTemplates() {
-  const connection = await pool.getConnection();
-  try {
-    for (const flag of characterFlagTemplates) {
-      const [rows] = await connection.query(
-        `SELECT * FROM character_flag_templates WHERE name = ?`,
-        [flag.name]
-      );
-
-      if (rows.length === 0) {
-        await connection.query(
-          `INSERT INTO character_flag_templates (name, description)
-          VALUES (?, ?)`,
-          [
-            flag.name,
-            flag.description
-          ]
-        );
-      }
-    }
-    logger.info('Character flag templates populated.');
-  } catch (err) {
-    logger.error('Error populating character flag templates', err);
   } finally {
     connection.release();
   }
@@ -109,18 +80,21 @@ async function populateZoneTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO zone_templates (name, description, encounters, friendly_npcs, image_folder_path, min_areas, max_areas, area_events, music_key)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO zone_templates (name, scene_key, description, type, encounters, friendly_npcs, image_folder_path, min_areas, max_areas, area_events, music_path, ambient_sound_path)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             zone.name,
+            zone.scene_key,
             zone.description,
-            zone.encounters,
-            zone.friendly_npcs,
+            zone.type,
+            JSON.stringify(zone.encounters),
+            JSON.stringify(zone.friendly_npcs),
             zone.image_folder_path,
             zone.min_areas,
             zone.max_areas,
-            zone.area_events,
-            zone.music_key
+            JSON.stringify(zone.area_events),
+            zone.music_path,
+            zone.ambient_sound_path
           ]
         );
       }
@@ -323,7 +297,6 @@ async function populateAreaEventTemplates() {
 async function populateTables() {
   await populateAreaEventTemplates();
   await populateNpcDialogueTemplates();
-  await populateCharacterFlagTemplates();
   await populateEncounterTemplates();
   await populateItemTemplates();
   await populateNpcTemplates();

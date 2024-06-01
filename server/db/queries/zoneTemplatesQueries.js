@@ -1,5 +1,3 @@
-// db/queries/zoneTemplatesQueries.js
-
 const { query } = require('../database');
 const ZoneTemplate = require('../../models/ZoneTemplate');
 
@@ -11,8 +9,8 @@ async function getZoneTemplateById(id) {
     const zoneTemplate = new ZoneTemplate({
       ...rows[0],
       encounters: rows[0].encounters,
-      friendly_npcs: rows[0].friendly_npcs,
-      area_events: rows[0].area_events
+      friendlyNpcs: rows[0].friendly_npcs,
+      areaEvents: rows[0].area_events
     });
     return zoneTemplate;
   }
@@ -27,9 +25,26 @@ async function getZoneTemplateByName(name) {
     const zoneTemplate = new ZoneTemplate({
       ...rows[0],
       encounters: rows[0].encounters,
-      friendly_npcs: rows[0].friendly_npcs,
-      area_events: rows[0].area_events
+      friendlyNpcs: rows[0].friendly_npcs,
+      areaEvents: rows[0].area_events
     });
+    return zoneTemplate;
+  }
+  return null;
+}
+
+async function getZoneTemplateBySceneKey(sceneKey) {
+  const sql = 'SELECT * FROM zone_templates WHERE scene_key = ?';
+  const params = [sceneKey];
+  const rows = await query(sql, params);
+  if (rows.length > 0) {
+    const zoneTemplate = new ZoneTemplate({
+      ...rows[0],
+      encounters: rows[0].encounters,
+      friendlyNpcs: rows[0].friendly_npcs,
+      areaEvents: rows[0].area_events
+    });
+    console.log('Created zoneTemplate: ', zoneTemplate);
     return zoneTemplate;
   }
   return null;
@@ -41,8 +56,8 @@ async function getAllZoneTemplates() {
   return rows.map(row => new ZoneTemplate({
     ...row,
     encounters: row.encounters,
-    friendly_npcs: row.friendly_npcs,
-    area_events: row.area_events
+    friendlyNpcs: row.friendly_npcs,
+    areaEvents: row.area_events
   }));
 }
 
@@ -73,6 +88,6 @@ module.exports = {
   getAllZoneTemplates, 
   getEncountersByZoneTemplateId, 
   getFriendlyNPCsByZoneTemplateId,
-  getAreaEventsByZoneTemplateId
+  getAreaEventsByZoneTemplateId,
+  getZoneTemplateBySceneKey
 };
-

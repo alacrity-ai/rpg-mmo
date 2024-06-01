@@ -1,36 +1,28 @@
-// db/queries/characterQueries.js
-
 const { query } = require('../database');
 const Character = require('../../models/Character');
 const { getClassTemplateByName } = require('./classTemplatesQueries');
-const { getCharacterFlagTemplateByName } = require('./characterFlagTemplatesQueries');
 
 async function createCharacter(userId, characterName, characterClass) {
-  // Convert characterName and characterClass to lowercase
   const lowerCaseCharacterName = characterName.toLowerCase();
   const lowerCaseCharacterClass = characterClass.toLowerCase();
 
-  // Check if characterName has a minimum of 2 letters and contains only letters
   if (!/^[a-zA-Z]{2,}$/.test(lowerCaseCharacterName)) {
     throw new Error('Character name must be at least 2 letters long and contain only letters.');
   }
 
-  // Check if a character with the same name already exists for the user
   const existingCharacter = await getCharacter(userId, lowerCaseCharacterName);
   if (existingCharacter) {
     throw new Error(`Character with name ${lowerCaseCharacterName} already exists for user ID: ${userId}`);
   }
 
-  // Get base stats from the class template
   const classTemplate = await getClassTemplateByName(lowerCaseCharacterClass);
   if (!classTemplate) {
     throw new Error(`Class template not found for class: ${lowerCaseCharacterClass}`);
   }
 
   const baseStats = JSON.stringify(classTemplate.baseStats);
-
   const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats, flags) VALUES (?, ?, ?, ?, ?, ?)';
-  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats, JSON.stringify([])];
+  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats, JSON.stringify({})];
   const result = await query(sql, params);
   return result.insertId;
 }
@@ -74,9 +66,7 @@ async function getCharacterByName(name) {
 }
 
 async function getCharacter(userId, characterName) {
-  // Convert characterName to lowercase
   const lowerCaseCharacterName = characterName.toLowerCase();
-
   const sql = 'SELECT * FROM characters WHERE user_id = ? AND name = ?';
   const params = [userId, lowerCaseCharacterName];
   const rows = await query(sql, params);
@@ -101,7 +91,6 @@ async function getCharactersByUser(userId) {
   const rows = await query(sql, params);
   return rows.map(row => {
     try {
-      console.log(typeof(row.base_stats), typeof(row.current_stats));
       return new Character({
         id: row.id,
         user_id: row.user_id,
@@ -146,7 +135,6 @@ async function updateCharacterStats(characterId, currentStats) {
 }
 
 async function getCharactersByIds(characterIds) {
-  // Convert the array of character IDs to a comma-separated string
   const idsString = characterIds.join(',');
   const sql = `SELECT * FROM characters WHERE id IN (${idsString})`;
   const rows = await query(sql);
@@ -168,49 +156,38 @@ async function updateCharacterFlags(characterId, flags) {
   await query(sql, params);
 }
 
-async function addCharacterFlag(characterId, flag) {
-  let flagId;
-  if (typeof flag === 'number') {
-    flagId = flag;
-  } else if (typeof flag === 'string') {
-    const flagTemplate = await getCharacterFlagTemplateByName(flag);
-    if (!flagTemplate) throw new Error(`Flag with name ${flag} not found`);
-    flagId = flagTemplate.id;
-  } else {
-    throw new Error('Invalid flag type');
-  }
-
+async function updateCharacterFlag(characterId, flag, value) {
   const character = await getCharacterById(characterId);
   if (!character) throw new Error(`Character with ID ${characterId} not found`);
 
-  const flags = character.flags ? character.flags : [];
-  if (!flags.includes(flagId)) {
-    flags.push(flagId);
-    await updateCharacterFlags(characterId, flags);
-  }
+  const flags = character.flags ? character.flags : {};
+  flags[flag] = value;
+  await updateCharacterFlags(characterId, flags);
+}
+
+async function addCharacterFlag(characterId, flag, value) {
+  const character = await getCharacterById(characterId);
+  if (!character) throw new Error(`Character with ID ${characterId} not found`);
+
+  const flags = character.flags ? character.flags : {};
+  flags[flag] = value;
+  await updateCharacterFlags(characterId, flags);
 }
 
 async function removeCharacterFlag(characterId, flag) {
-  let flagId;
-  if (typeof flag === 'number') {
-    flagId = flag;
-  } else if (typeof flag === 'string') {
-    const flagTemplate = await getCharacterFlagTemplateByName(flag);
-    if (!flagTemplate) throw new Error(`Flag with name ${flag} not found`);
-    flagId = flagTemplate.id;
-  } else {
-    throw new Error('Invalid flag type');
-  }
-
   const character = await getCharacterById(characterId);
   if (!character) throw new Error(`Character with ID ${characterId} not found`);
 
-  const flags = character.flags ? character.flags : [];
-  const index = flags.indexOf(flagId);
-  if (index > -1) {
-    flags.splice(index, 1);
-    await updateCharacterFlags(characterId, flags);
-  }
+  const flags = character.flags ? character.flags : {};
+  delete flags[flag];
+  await updateCharacterFlags(characterId, flags);
+}
+
+async function getCharacterFlags(characterId) {
+  const sql = 'SELECT flags FROM characters WHERE id = ?';
+  const params = [characterId];
+  const rows = await query(sql, params);
+  return rows.length > 0 ? rows[0].flags || {} : {};
 }
 
 module.exports = { 
@@ -224,5 +201,7 @@ module.exports = {
   updateCharacterStats,
   getCharactersByIds,
   addCharacterFlag,
-  removeCharacterFlag
+  removeCharacterFlag,
+  updateCharacterFlag,
+  getCharacterFlags
 };

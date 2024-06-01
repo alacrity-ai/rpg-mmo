@@ -1,6 +1,40 @@
 # TODOS
 
 
+What We DID:
+We refactored the zone instance creation and all the requisite tables (area_instances, zone_instances, zone_templates).
+zone creator is now creating a properly linked zone_instance, and area_instances with all the information they need to instantiate ExpeditionScene.
+We just added binding the characterId to the socket on character login (We should validate that's working)
+Next we need to create the createParty call in:
+    client api
+    partyHandler (server)
+    partyTasks
+    and link it in the worker.js, and in the index.js
+    Then make sure the client creates a party immediately on login with the character.
+    Verify this is the case.
+
+    After that, we can then create a client endpoint on clicking a map location that is green, or red.
+    It will:
+        make a new client api request to the server called requestExpedition(party_id, zone template name)
+        request expedition will ask the server to create a zone_instance, and then the server will return the first area_instance to the client
+        The client will then instantiate the expeditionscene from the area_instance data.
+
+        THEN:
+        We will work on rendering the partial map, and the navigation controls.
+        We will make sure that navigating to the next zone does the following:
+            new client api call: requestAreaInstance(current_area_instance_id, area_instance_id_wearegoing_to).
+            we'll need in the zoneHandler (or areaHandler) a requisite handler
+            we'll need a zoneTasks task for processRequestAreaInstanceTask
+                This will check that the current_area_instance is `cleared` and that the `encounter_cleared` is true, if there is an encounter, if it is, it will give the client the request area_instance data.
+            The client, upon receiving this data, will instantiate a new expeditionscene from the data.
+            If the area has an encounter, the client will immediately register the current scene to some key, and then start the combat encounter.
+            Upon completion of the combat encounter, we will return to the scene that we registered.
+
+        THEN:
+        We will figure out how to determine when an encounter is finished.
+        Probably some API call from the client saying that they killed all the enemies in the encounter, then the server will verify, and update the area_instance to show the encounter is cleared, and that they can return to the area_instance scene.
+
+
 
 PREREQ: Add encounter_cleared BOOLEAN column to area_instances table.
 
@@ -20,7 +54,7 @@ NOTE: Server will have to send both the area_instance row for the area, as well 
 NOTE: If the player requests access to an area_instance that does not exist, the player will be transported back to their last Town visited.  If the player requests access to an area that they are not flagged for, they will receive an error message in console.
 
 - Add BaseAreaScene
-    - [ ] Refactor zonecreator so that there are never encounters in the first Area in a zone instance.
+    - [x] Refactor zonecreator so that there are never encounters in the first Area in a zone instance.
     - [ ] Takes ZoneTemplate as input most likely
     - [ ] Handle NavigationMenu and Automap.  Generate Areas and then load in client upon entering the Zone
     - [ ] For character to enter a new area screen, they must reach out to the server to get permission.  This allows for us to make sure the area they enter is in sync with what we see in the database.  For this reason, the client should probably only see the AreaInstance that they are currently in within a ZoneInstance, and not the ZoneInstance itself.  Areas are populated by querying the ZoneInstance/AreaInstances tables. 

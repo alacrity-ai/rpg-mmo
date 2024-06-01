@@ -18,11 +18,11 @@ Menus will be used all over the game from item shops, to loging in, to interacti
     - [x] Graphic - Able to place graphics like character portraits, animations, etc within the menu
     - Tooltips - When hovering over clickable elements, a tooltip appears above the element
     - [x] Clickable Buttons (Allowed to pass callback functions into this)
-    - [ ] Icon Buttons (Allowed to pass icons for a button)
-    - [ ] Clickable Text (Allowed to add callback functions into this)
+    - [x] Icon Buttons (Allowed to pass icons for a button)
+    - [x] Clickable Text (Allowed to add callback functions into this)
     - [ ] Scrollable Area (Area of the window that's scrollable with scroll bars, regular window elements can be placed in here and will scroll, e.g. text areas, buttons)
     - [ ] Grid of clickable icons (Different from buttons, in that they don't have borders. Items in grids can have tooltips, but the icons are primarily for example, items to purchase, etc)
-    - [ ] Confirmation windows (Windows that will popup over the window to confirm an action or cancel)
+    - [x] Confirmation windows (Windows that will popup over the window to confirm an action or cancel)
     - [x] Close Button on top right corner (closes the window)
     - [ ] Make all other non window elements not clickable when active
 

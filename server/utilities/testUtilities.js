@@ -41,11 +41,11 @@
 const { createExpeditionZone } = require('../services/expeditions/zoneCreator');
 
 // Replace with a valid templateId from your database
-const templateId = 3;
+const templateSceneKey = 'EldersWood';
 
 async function testCreateExpeditionZone() {
   try {
-    const zoneInstance = await createExpeditionZone(templateId);
+    const zoneInstance = await createExpeditionZone(templateSceneKey);
   } catch (error) {
     console.error('Error creating expedition zone:', error);
   }

@@ -32,14 +32,17 @@ async function initTables() {
     `CREATE TABLE IF NOT EXISTS zone_templates (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
+      scene_key VARCHAR(64),
       description TEXT,
+      type ENUM('normal', 'dungeon', 'raid', 'town'),
       encounters JSON,
       friendly_npcs JSON,
       image_folder_path VARCHAR(255),
       min_areas INT,
       max_areas INT,
       area_events JSON,
-      music_key VARCHAR(255)
+      music_path VARCHAR(255),
+      ambient_sound_path VARCHAR(255)
     )`,
     `CREATE TABLE IF NOT EXISTS zone_instances (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -66,7 +69,13 @@ async function initTables() {
     )`,
     `CREATE TABLE IF NOT EXISTS area_instances (
       id INT AUTO_INCREMENT PRIMARY KEY,
+      zone_name VARCHAR(255),
+      zone_instance_id INT,
+      zone_template_id INT,
+      music_path VARCHAR(255),
+      ambient_sound_path VARCHAR(255),
       background_image VARCHAR(255),
+      area_connections JSON,
       encounter INT DEFAULT NULL,
       encounter_cleared BOOLEAN DEFAULT 0,
       friendly_npcs JSON,
@@ -163,7 +172,7 @@ async function initTables() {
       base_stats JSON,
       current_stats JSON,
       current_area_id INT,
-      flags TEXT,
+      flags JSON,
       FOREIGN KEY (user_id) REFERENCES users(id),
       FOREIGN KEY (current_area_id) REFERENCES area_instances(id)
     )`,
@@ -174,11 +183,6 @@ async function initTables() {
       state INT DEFAULT 0,
       FOREIGN KEY (npc_dialogue_template_id) REFERENCES npc_dialogue_templates(id),
       FOREIGN KEY (character_id) REFERENCES characters(id)
-    )`,
-    `CREATE TABLE IF NOT EXISTS character_flag_templates (
-      id INT AUTO_INCREMENT PRIMARY KEY,
-      name VARCHAR(255) NOT NULL,
-      description TEXT
     )`,
     `CREATE TABLE IF NOT EXISTS character_parties (
       id INT AUTO_INCREMENT PRIMARY KEY,

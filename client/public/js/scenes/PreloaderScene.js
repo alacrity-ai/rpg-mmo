@@ -64,9 +64,6 @@ export default class PreloaderScene extends Phaser.Scene {
         this.registry.set('firstSceneKey', 'BattleScene');
         this.registry.set('currentSceneKey', 'WorldmapScene');
 
-        // Console log the server settings
-        console.log(this.registry.get('settings'));
-
         // Start the Login scene
         this.scene.start('LoginScene'); 
     }
