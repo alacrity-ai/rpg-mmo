@@ -12,6 +12,7 @@ async function getAreaInstanceById(id) {
       area_connections: rows[0].area_connections,
       friendly_npcs: rows[0].friendly_npcs,
       encounter_cleared: rows[0].encounter_cleared,
+      environment_effects: rows[0].environment_effects,
       created_at: rows[0].created_at
     });
     return areaInstance;
@@ -27,6 +28,7 @@ async function getAllAreaInstances() {
     area_connections: row.area_connections,
     friendly_npcs: row.friendly_npcs,
     encounter_cleared: row.encounter_cleared,
+    environment_effects: row.environment_effects,
     created_at: row.created_at
   }));
 }
@@ -45,8 +47,9 @@ async function createAreaInstance(areaInstanceData) {
       encounter_cleared,
       friendly_npcs,
       explored,
-      event_instance_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      event_instance_id,
+      environment_effects
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
   const params = [
     areaInstanceData.zone_name || null,
@@ -60,12 +63,12 @@ async function createAreaInstance(areaInstanceData) {
     areaInstanceData.encounter_cleared !== undefined ? areaInstanceData.encounter_cleared : false,
     JSON.stringify(areaInstanceData.friendly_npcs) || null,
     areaInstanceData.explored !== undefined ? areaInstanceData.explored : false,
-    areaInstanceData.event_instance_id || null
+    areaInstanceData.event_instance_id || null,
+    JSON.stringify(areaInstanceData.environment_effects) || null
   ];
   const result = await query(sql, params);
   return result.insertId;
 }
-
 
 async function updateAreaInstance(id, areaInstanceData) {
   const sql = `
@@ -81,7 +84,8 @@ async function updateAreaInstance(id, areaInstanceData) {
       encounter_cleared = ?,
       friendly_npcs = ?,
       explored = ?,
-      event_instance_id = ?
+      event_instance_id = ?,
+      environment_effects = ?
     WHERE id = ?
   `;
   const params = [
@@ -97,6 +101,7 @@ async function updateAreaInstance(id, areaInstanceData) {
     JSON.stringify(areaInstanceData.friendly_npcs),
     areaInstanceData.explored,
     areaInstanceData.event_instance_id,
+    JSON.stringify(areaInstanceData.environment_effects),
     id
   ];
   await query(sql, params);
@@ -109,18 +114,22 @@ async function updateAreaInstancesWithZoneInstanceData(areaInstanceIds, zoneInst
   }
 
   const areaConnections = zoneInstance.areas;
+  const environmentEffects = zoneInstance.environment_effects; // Assuming zoneInstance has this field
 
   for (const areaInstanceId of areaInstanceIds) {
     const connections = areaConnections[areaInstanceId] || {};
+    const effects = environmentEffects ? environmentEffects[areaInstanceId] || null : null;
     const sql = `
       UPDATE area_instances SET
         zone_instance_id = ?,
-        area_connections = ?
+        area_connections = ?,
+        environment_effects = ?
       WHERE id = ?
     `;
     const params = [
       zoneInstanceId,
       JSON.stringify(connections),
+      JSON.stringify(effects),
       areaInstanceId
     ];
     await query(sql, params);

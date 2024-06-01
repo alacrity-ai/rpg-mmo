@@ -1,4 +1,3 @@
-// graphics/FogEffect.js
 import Phaser from 'phaser';
 
 export default class FogEffect {
@@ -20,18 +19,29 @@ export default class FogEffect {
     onLoadComplete() {
         const { width, height } = this.scene.game.config;
 
-        // Create a tileSprite that is as wide as the game width and height as the game height
+        // Create the primary fog tileSprite
         this.fog = this.scene.add.tileSprite(0, 50, width, height, this.texturePath);
         this.fog.setOrigin(0, 0);
         this.fog.setScrollFactor(0);
         this.fog.setAlpha(this.thickness);
 
-        // Adjust the brightness using tint
+        // Create the secondary fog tileSprite
+        this.secondaryFog = this.scene.add.tileSprite(0, 50, width, height, this.texturePath);
+        this.secondaryFog.setOrigin(0, 0);
+        this.secondaryFog.setScrollFactor(0);
+        this.secondaryFog.setAlpha(this.thickness);
+
+        // Offset the initial tile position for the secondary fog to create a denser, non-symmetrical effect
+        this.secondaryFog.tilePositionX = width / 4;
+
+        // Adjust the brightness using tint for both fog layers
         const tint = Phaser.Display.Color.GetColor(255 * this.brightness, 255 * this.brightness, 255 * this.brightness);
         this.fog.setTint(tint);
+        this.secondaryFog.setTint(tint);
 
-        // Set the depth of the fog to be above the background but below other elements
+        // Set the depth of the fog layers to be above the background but below other elements
         this.fog.setDepth(0);
+        this.secondaryFog.setDepth(0);
 
         // Mark the fog as ready
         this.ready = true;
@@ -43,15 +53,21 @@ export default class FogEffect {
     }
 
     update(time, delta) {
-        if (this.fog) {
-            // Move the fog texture horizontally
+        if (this.fog && this.secondaryFog) {
+            // Move the primary fog texture
             this.fog.tilePositionX += this.speedX * delta * 0.01;
+            this.fog.tilePositionY += this.speedY * delta * 0.01;
+
+            // Move the secondary fog texture in the inverse direction
+            this.secondaryFog.tilePositionX -= this.speedX * delta * 0.01;
+            this.secondaryFog.tilePositionY -= this.speedY * delta * 0.01;
         }
     }
 
     hide() {
-        if (this.fog) {
+        if (this.fog && this.secondaryFog) {
             this.fog.setVisible(false);
+            this.secondaryFog.setVisible(false);
         } else {
             // Set a flag to hide the fog once it's ready
             this.hideInitially = true;
@@ -59,8 +75,9 @@ export default class FogEffect {
     }
 
     show() {
-        if (this.fog) {
+        if (this.fog && this.secondaryFog) {
             this.fog.setVisible(true);
+            this.secondaryFog.setVisible(true);
         }
     }
 }

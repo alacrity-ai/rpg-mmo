@@ -1,5 +1,3 @@
-// models/AreaInstance.js
-
 /**
  * Class representing an area instance.
  */
@@ -20,6 +18,7 @@ class AreaInstance {
    * @param {Object} params.friendly_npcs - A map of friendly NPC template IDs to their quantities.
    * @param {boolean} [params.explored] - Whether the area has been explored.
    * @param {number} [params.event_instance_id] - The ID of the event instance associated with the area.
+   * @param {Object} [params.environment_effects] - The environmental effects for the area.
    * @param {Date} params.created_at - The timestamp when the area instance was created.
    */
   constructor({
@@ -36,6 +35,7 @@ class AreaInstance {
     friendly_npcs,
     explored = false,
     event_instance_id = null,
+    environment_effects = null,
     created_at
   }) {
     this.id = id;
@@ -51,6 +51,7 @@ class AreaInstance {
     this.friendlyNpcs = friendly_npcs;
     this.explored = !!explored;  // Ensure boolean value
     this.eventInstanceId = event_instance_id;
+    this.environmentEffects = environment_effects;
     this.createdAt = created_at;
   }
 }
@@ -79,6 +80,12 @@ module.exports = AreaInstance;
  *   friendlyNpcs: { 201: 1 },
  *   explored: false,
  *   event_instance_id: 1,
+ *   environment_effects: {
+ *     fog: {
+ *       intensity: 0.8,
+ *       speed: 0.5
+ *     }
+ *   },
  *   created_at: new Date()
  * });
  */

@@ -34,9 +34,7 @@ async function getAllZoneInstances() {
 async function createZoneInstance(params) {
   const sql = 'INSERT INTO zone_instances (name, template_id, areas, created_at) VALUES (?, ?, ?, ?)';
   const areas = JSON.stringify(params.areas);
-  console.log(`Running SQL Query: ${sql} with params: ${params.name}, ${params.template_id}, ${areas}, ${new Date()}`); // Debugging
   const result = await query(sql, [params.name, params.template_id, areas, new Date()]);
-  console.log('Instantiating ZoneInstance: ', result.insertId); // Debugging
   const zoneInstance = new ZoneInstance({
     id: result.insertId,
     name: params.name,

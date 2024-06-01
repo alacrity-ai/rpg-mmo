@@ -1,7 +1,7 @@
 // interface/worldmap/MapMarker.js
 
 import { fadeTransition } from '../../scenes/utils/SceneTransitions.js';
-import ExpeditionScene from '../../scenes/ExpeditionScene.js';
+import AreaScene from '../../scenes/AreaScene.js';
 import SoundFXManager from '../../audio/SoundFXManager.js'
 import api from '../../api';
 
@@ -66,9 +66,11 @@ export default class MapMarker {
                         // Extract the areaInstance data from the response
                         const areaInstanceData = response.areaInstance;
                         // Add the new scene with the area instance data
-                        const expeditionScene = new ExpeditionScene(areaInstanceData);
+                        const areaScene = new AreaScene(areaInstanceData);
                         // Add the scene to the Phaser game instance and start it
-                        this.scene.scene.add('ExpeditionScene', expeditionScene, true);
+                        this.scene.scene.add('AreaScene', areaScene, false);
+                        // Use the fadeTransition to go to the new scene
+                        fadeTransition(this.scene, 'AreaScene');
                     })
                     .catch((error) => {
                         console.error('Error requesting zone:', error);

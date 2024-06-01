@@ -6,6 +6,7 @@ import CustomCursor from '../interface/CustomCursor.js';
 import WorldmapZoomMenu from '../interface/menu/WorldmapZoomMenu.js';
 import Debug from '../interface/Debug.js';
 import FogEffect from '../graphics/FogEffect.js';
+import SoundFXManager from '../audio/SoundFXManager.js';
 
 export default class WorldmapScene extends Phaser.Scene {
     constructor() {
@@ -34,6 +35,9 @@ export default class WorldmapScene extends Phaser.Scene {
 
     create() {
         this.currentState = 'zoomed'; // Default state
+
+        // Initialize the SoundFXManager
+        SoundFXManager.initialize(this);
 
         // Render the world map as background
         this.worldmap = this.add.image(0, 0, 'worldmap').setOrigin(0).setInteractive();

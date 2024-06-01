@@ -42,7 +42,8 @@ async function initTables() {
       max_areas INT,
       area_events JSON,
       music_path VARCHAR(255),
-      ambient_sound_path VARCHAR(255)
+      ambient_sound_path VARCHAR(255),
+      environment_effects JSON
     )`,
     `CREATE TABLE IF NOT EXISTS zone_instances (
       id INT AUTO_INCREMENT PRIMARY KEY,
@@ -81,6 +82,7 @@ async function initTables() {
       friendly_npcs JSON,
       explored BOOLEAN DEFAULT FALSE,
       event_instance_id INT DEFAULT NULL,
+      environment_effects JSON,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       FOREIGN KEY (encounter) REFERENCES encounter_templates(id),
       FOREIGN KEY (event_instance_id) REFERENCES area_event_instances(id)

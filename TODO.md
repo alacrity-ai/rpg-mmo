@@ -25,6 +25,8 @@ We just added binding the characterId to the socket on character login (We shoul
         3) Leaving the Expedition scene, and returning, results in a duplicate key error.  
             - How should I add the scene correctly
             - And how to remove the key correctly
+        4) Research the proper way to switch scenes, should we be stopping scenes that we transition
+            away from?
 
         THEN:
         We will work on rendering the partial map, and the navigation controls.

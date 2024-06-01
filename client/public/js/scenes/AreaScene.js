@@ -8,14 +8,15 @@ import CustomCursor from '../interface/CustomCursor.js';
 import MusicManager from '../audio/MusicManager.js';
 import Debug from '../interface/Debug.js';
 import { addBackgroundImage } from '../graphics/BackgroundManager.js';
+import FogEffect from '../graphics/FogEffect.js';
 
 /* ExpeditionScene.js
  * Base class for all Expedition Area Scenes
  * @param {object} areaData - data for the current area, see models/AreaInstance.js in server code
  */
-export default class ExpeditionScene extends Phaser.Scene {
+export default class AreaScene extends Phaser.Scene {
     constructor(areaInstanceData) {
-        super({ key: 'ExpeditionScene' });
+        super({ key: 'AreaScene' });
         this.areaInstanceData = areaInstanceData;
         this.zoneName = areaInstanceData['zoneName'];
         this.zoneInstanceId = areaInstanceData['zoneInstanceId'];
@@ -80,6 +81,12 @@ export default class ExpeditionScene extends Phaser.Scene {
         // Initialize the CustomCursor
         CustomCursor.getInstance(this);
 
+        // Add the fog effect
+        const fogData = this.areaInstanceData.environmentEffects?.fog;
+        if (fogData) {
+            this.fogEffect = new FogEffect(this, 1, fogData.intensity, fogData.speed, 0);
+        }
+
         // Initialize PointLightManager
         this.pointLightManager = new PointLightManager(this);
 
@@ -107,6 +114,7 @@ export default class ExpeditionScene extends Phaser.Scene {
     cleanup() {
         if (this.ambientSoundPath !== null) MusicManager.stopAmbient();
         // Delete this scene key from the phaser game
-        this.scene.remove(ExpeditionScene);
+        console.log('Removing scene key:', 'AreaScene')
+        this.scene.remove('AreaScene');
     }
 }

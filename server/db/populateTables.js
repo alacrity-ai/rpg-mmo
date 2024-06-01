@@ -80,8 +80,8 @@ async function populateZoneTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO zone_templates (name, scene_key, description, type, encounters, friendly_npcs, image_folder_path, min_areas, max_areas, area_events, music_path, ambient_sound_path)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO zone_templates (name, scene_key, description, type, encounters, friendly_npcs, image_folder_path, min_areas, max_areas, area_events, music_path, ambient_sound_path, environment_effects)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             zone.name,
             zone.scene_key,
@@ -94,7 +94,8 @@ async function populateZoneTemplates() {
             zone.max_areas,
             JSON.stringify(zone.area_events),
             zone.music_path,
-            zone.ambient_sound_path
+            zone.ambient_sound_path,
+            JSON.stringify(zone.environment_effects)
           ]
         );
       }

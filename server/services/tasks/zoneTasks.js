@@ -36,6 +36,7 @@ async function processRequestZoneTask(task) {
     const areaInstance = await getAreaInstanceById(firstAreaId);
     areaInstance.areaConnections = zoneInstance.areas[firstAreaId];
     areaInstance.zoneInstanceId = zoneInstance.id;
+    areaInstance.environmentEffects = zoneTemplate.environmentEffects;
 
     if (!areaInstance) {
       throw new Error(`Area instance with ID ${firstAreaId} not found.`);

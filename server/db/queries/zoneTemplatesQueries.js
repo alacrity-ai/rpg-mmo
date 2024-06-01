@@ -10,7 +10,8 @@ async function getZoneTemplateById(id) {
       ...rows[0],
       encounters: rows[0].encounters,
       friendlyNpcs: rows[0].friendly_npcs,
-      areaEvents: rows[0].area_events
+      areaEvents: rows[0].area_events,
+      environmentEffects: rows[0].environment_effects
     });
     return zoneTemplate;
   }
@@ -26,7 +27,8 @@ async function getZoneTemplateByName(name) {
       ...rows[0],
       encounters: rows[0].encounters,
       friendlyNpcs: rows[0].friendly_npcs,
-      areaEvents: rows[0].area_events
+      areaEvents: rows[0].area_events,
+      environmentEffects: rows[0].environment_effects
     });
     return zoneTemplate;
   }
@@ -42,7 +44,8 @@ async function getZoneTemplateBySceneKey(sceneKey) {
       ...rows[0],
       encounters: rows[0].encounters,
       friendlyNpcs: rows[0].friendly_npcs,
-      areaEvents: rows[0].area_events
+      areaEvents: rows[0].area_events,
+      environmentEffects: rows[0].environment_effects
     });
     return zoneTemplate;
   }
@@ -56,7 +59,8 @@ async function getAllZoneTemplates() {
     ...row,
     encounters: row.encounters,
     friendlyNpcs: row.friendly_npcs,
-    areaEvents: row.area_events
+    areaEvents: row.area_events,
+    environmentEffects: row.environment_effects
   }));
 }
 

@@ -1,5 +1,3 @@
-// models/ZoneTemplate.js
-
 /**
  * Class representing a zone template.
  */
@@ -20,6 +18,7 @@ class ZoneTemplate {
    * @param {Array<Object>} params.area_events - An array of possible area events in the zone.
    * @param {string} params.music_path - The path for the zone's background music.
    * @param {string} params.ambient_sound_path - The path for the zone's ambient sound.
+   * @param {Object} params.environment_effects - The environmental effects in the zone.
    */
   constructor({
     id,
@@ -34,7 +33,8 @@ class ZoneTemplate {
     max_areas,
     area_events,
     music_path,
-    ambient_sound_path
+    ambient_sound_path,
+    environment_effects
   }) {
     this.id = id;
     this.name = name;
@@ -49,6 +49,7 @@ class ZoneTemplate {
     this.areaEvents = area_events;
     this.musicPath = music_path;
     this.ambientSoundPath = ambient_sound_path;
+    this.environmentEffects = environment_effects;
   }
 }
 
@@ -78,6 +79,12 @@ module.exports = ZoneTemplate;
  *     { template_id: 2, probability: 0.1, max_instances: 1 }
  *   ],
  *   music_path: 'assets/music/forest_music1.mp3',
- *   ambient_sound_path: 'assets/sounds/forest_ambient1.mp3'
+ *   ambient_sound_path: 'assets/sounds/forest_ambient1.mp3',
+ *   environment_effects: {
+ *     fog: {
+ *       intensity: 0.8,
+ *       speed: 0.5
+ *     }
+ *   }
  * });
  */
