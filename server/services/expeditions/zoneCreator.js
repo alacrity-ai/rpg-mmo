@@ -7,18 +7,12 @@ const { getRandomInt, getRandomFloat } = require('../../utilities/helpers');
 const { generateGrid, mapCoordinatesToAreas } = require('./areas/mapFunctions');
 const logger = require('../../utilities/logger');
 
-async function createZoneInstanceFromTemplate(templateSceneKey, params = {}) {
+async function createZoneInstanceFromTemplate(zoneTemplate) {
   try {
-    // Fetch the zone template
-    const zoneTemplate = await getZoneTemplateBySceneKey(templateSceneKey);
     if (!zoneTemplate) {
       throw new Error('Zone template not found');
     }
     const templateId = zoneTemplate.id;
-    // Determine the number of areas to create
-    console.log(zoneTemplate.minAreas, zoneTemplate.maxAreas)
-    // Log all the zoneTemplate properties
-    console.log(zoneTemplate);
     const numAreas = getRandomInt(zoneTemplate.minAreas, zoneTemplate.maxAreas);
 
     // Track used area events
@@ -30,10 +24,9 @@ async function createZoneInstanceFromTemplate(templateSceneKey, params = {}) {
 
     for (let i = 0; i < numAreas; i++) {
       // Create encounter and event instances for each area
-      console.log('Generating area: ', i)
       const areaInstanceData = {
         zone_name: zoneTemplate.name,
-        zone_instance_id: params.zone_instance_id || null,
+        zone_instance_id: null,
         zone_template_id: templateId,
         music_path: zoneTemplate.musicPath || null,
         ambient_sound_path: zoneTemplate.ambientSoundPath || null,
@@ -47,7 +40,6 @@ async function createZoneInstanceFromTemplate(templateSceneKey, params = {}) {
       };
       
       if (i !== 0) {
-        console.log('Generating encounter');
         const encounterId = await generateEncounter(zoneTemplate.encounters, bossEncounterUsed);
         const encounterTemplate = encounterId ? await getEncounterTemplateById(encounterId) : null;
         if (encounterTemplate && encounterTemplate.isBoss) {
@@ -61,24 +53,18 @@ async function createZoneInstanceFromTemplate(templateSceneKey, params = {}) {
       
       const areaInstance = await createAreaInstance(areaInstanceData);
       areaInstances.push(areaInstance);
-      console.log('Created area instance');
     }
 
     // Create the zone instance
-    console.log('Creating area connections');
     const areaConnections = generateAreaConnections(areaInstances);
-    console.log('Generated area connections: ', areaConnections);
-    console.log('Creating zone instance');
     const zoneInstance = await createZoneInstance({
-      name: params.name || zoneTemplate.name,
+      name: zoneTemplate.name,
       template_id: templateId,
       areas: areaConnections
     });
 
     // Update each area instance with the zone instance ID
     updateAreaInstancesWithZoneInstanceData(areaInstances, zoneInstance.id);
-
-    console.log('Zone instance created:', zoneInstance);
     return zoneInstance;
   } catch (error) {
     logger.error('Error creating zone instance:', error);
@@ -143,7 +129,6 @@ function generateNpcs(npcTemplate) {
 
 function generateAreaConnections(areaInstances) {
   // Generate a grid of areas
-  console.log('Generating Area Connections for instances: ', areaInstances);
   const gridSize = 10; // Adjust grid size if needed
   const grid = generateGrid(areaInstances, gridSize);
 
@@ -152,9 +137,9 @@ function generateAreaConnections(areaInstances) {
   return areaConnections;
 }
 
-async function createExpeditionZone(templateId, params) {
+async function createExpeditionZone(zoneTemplate) {
   try {
-    const zoneInstance = await createZoneInstanceFromTemplate(templateId, params);
+    const zoneInstance = await createZoneInstanceFromTemplate(zoneTemplate);
     logger.info('Zone instance created:', zoneInstance);
     return zoneInstance;
   } catch (error) {

@@ -12,7 +12,10 @@ const battleHandler = require('./handlers/api/battleHandler');
 const battlerHandler = require('./handlers/api/battlerHandler');
 const battlerActionHandler = require('./handlers/api/battlerActionHandler');
 const settingsHandler = require('./handlers/api/settingsHandler');
+const partyHandler = require('./handlers/api/partyHandler');
+const zoneHandler = require('./handlers/api/zoneHandler');
 const logger = require('./utilities/logger');
+const { handleDisconnect } = require('./services/logoutCleanup');
 
 const app = express();
 const server = http.createServer(app);
@@ -47,6 +50,8 @@ io.on('connection', (socket) => {
   battlerHandler(socket, io);
   battlerActionHandler(socket, io);
   settingsHandler(socket, io);
+  partyHandler(socket, io);
+  zoneHandler(socket, io);
 
   // Handle joining a battle room
   socket.on('joinBattle', (battleInstanceId) => {
@@ -62,6 +67,7 @@ io.on('connection', (socket) => {
 
   socket.on('disconnect', () => {
     logger.info('A user disconnected');
+    handleDisconnect(socket);
   });
 });
 

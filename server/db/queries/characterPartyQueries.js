@@ -17,7 +17,7 @@ async function getCharacterParty(partyId) {
   if (rows.length > 0) {
     return new CharacterParty({
       id: rows[0].id,
-      members: JSON.parse(rows[0].party_members).members,
+      members: rows[0].party_members.members,
     });
   }
   return null;
@@ -43,11 +43,19 @@ async function removeMemberFromParty(partyId, characterId) {
   if (!party) {
     throw new Error(`Party with ID ${partyId} not found`);
   }
+  console.log('Got Party from database: ', party);
   party.members = party.members.filter(member => member.character_id !== characterId);
-  const updatedMembersJson = JSON.stringify({ members: party.members });
-  const sql = 'UPDATE character_parties SET party_members = ? WHERE id = ?';
-  const params = [updatedMembersJson, partyId];
-  await query(sql, params);
+
+  if (party.members.length === 0) {
+    // Delete the party row if no members are left
+    const deleteSql = 'DELETE FROM character_parties WHERE id = ?';
+    await query(deleteSql, [partyId]);
+  } else {
+    const updatedMembersJson = JSON.stringify({ members: party.members });
+    const updateSql = 'UPDATE character_parties SET party_members = ? WHERE id = ?';
+    const params = [updatedMembersJson, partyId];
+    await query(updateSql, params);
+  }
 }
 
 async function getCharactersInParty(partyId) {

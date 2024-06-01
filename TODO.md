@@ -5,7 +5,7 @@ What We DID:
 We refactored the zone instance creation and all the requisite tables (area_instances, zone_instances, zone_templates).
 zone creator is now creating a properly linked zone_instance, and area_instances with all the information they need to instantiate ExpeditionScene.
 We just added binding the characterId to the socket on character login (We should validate that's working)
-Next we need to create the createParty call in:
+- [x] Next we need to create the createParty call in:
     client api
     partyHandler (server)
     partyTasks
@@ -13,11 +13,18 @@ Next we need to create the createParty call in:
     Then make sure the client creates a party immediately on login with the character.
     Verify this is the case.
 
-    After that, we can then create a client endpoint on clicking a map location that is green, or red.
+    - [x] After that, we can then create a client endpoint on clicking a map location that is green, or red.
     It will:
         make a new client api request to the server called requestExpedition(party_id, zone template name)
         request expedition will ask the server to create a zone_instance, and then the server will return the first area_instance to the client
         The client will then instantiate the expeditionscene from the area_instance data.
+
+        Update: We have achieved up to this point, with some caveats:
+        1) Flag checking has been added in the processRequestZoneTask but is commented out
+        2) Custom cursor behaving strangely, resolved by removing custom cursor updating from the update method.
+        3) Leaving the Expedition scene, and returning, results in a duplicate key error.  
+            - How should I add the scene correctly
+            - And how to remove the key correctly
 
         THEN:
         We will work on rendering the partial map, and the navigation controls.

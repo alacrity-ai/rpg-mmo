@@ -56,36 +56,38 @@ async function processCreateCharacterTask(task) {
 }
 
 async function processLoginCharacterTask(task) {
-    const { taskId, data } = task.taskData;
-    const { userId, characterName } = data;
-  
-    try {
+  const { taskId, data } = task.taskData;
+  const { userId, characterName } = data;
+
+  try {
       // Get the character by name from the database
       const character = await getCharacterByName(characterName);
-  
+
       if (!character) {
-        const result = { error: 'Character not found.' };
-        logger.info(`Character not found for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-        return;
+          const result = { error: 'Character not found.' };
+          logger.info(`Character not found for task ${taskId}`);
+          await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+          return;
       }
-  
+
+      // TODO : If the character has any stale groups that they are in, remove them
+
       // Check if the character belongs to the user
       if (character.userId !== userId) {
-        const result = { error: 'Unauthorized access.' };
-        logger.info(`Unauthorized access for task ${taskId}: User ID ${userId} does not match character owner ID ${character.userId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-        return;
+          const result = { error: 'Unauthorized access.' };
+          logger.info(`Unauthorized access for task ${taskId}: User ID ${userId} does not match character owner ID ${character.userId}`);
+          await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+          return;
       }
-  
+
       const result = { success: true, data: character };
       logger.info(`Character login successful for task ${taskId}`);
       await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
+  } catch (error) {
       const result = { error: 'Failed to login character. ' + error.message };
       logger.error(`Character login failed for task ${taskId}:`, error.message);
       await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
+  }
 }
 
 

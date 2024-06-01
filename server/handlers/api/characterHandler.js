@@ -15,6 +15,7 @@ module.exports = (socket) => {
     enqueueTask('createCharacter', taskData, callback);
   });
 
+
   socket.on('loginCharacter', async (data, callback) => {
     if (!socket.user || !socket.user.id) {
       callback({ error: 'User not logged in.' });
@@ -23,7 +24,10 @@ module.exports = (socket) => {
     const taskData = { userId: socket.user.id, ...data };
     enqueueTask('loginCharacter', taskData, (response) => {
       if (response.success) {
-        socket.character = { id: data.character }; // Attach user ID to the socket
+        socket.character = {
+          id: response.data.id,
+          name: response.data.name
+        };
       }
       callback(response);
     });

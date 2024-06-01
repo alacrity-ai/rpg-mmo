@@ -1,7 +1,9 @@
 // interface/worldmap/MapMarker.js
 
 import { fadeTransition } from '../../scenes/utils/SceneTransitions.js';
+import ExpeditionScene from '../../scenes/ExpeditionScene.js';
 import SoundFXManager from '../../audio/SoundFXManager.js'
+import api from '../../api';
 
 export default class MapMarker {
     constructor(scene, x, y, type, text, sceneKey) {
@@ -52,10 +54,26 @@ export default class MapMarker {
         });
 
         this.marker.on('pointerdown', () => {
-            // Play hover sound effect
             SoundFXManager.playSound('assets/sounds/footstep_chain.wav');
-            // Transition to the specified scene
-            fadeTransition(this.scene, sceneKey);
+            if (this.type === 'blue') {
+                // Transition to the specified scene
+                fadeTransition(this.scene, sceneKey);
+            } else if (this.type === 'green') {
+                // Call the requestZone api endpoint
+                api.zone.requestZone(this.sceneKey)
+                    .then((response) => {
+                        console.log('Zone request response:', response);
+                        // Extract the areaInstance data from the response
+                        const areaInstanceData = response.areaInstance;
+                        // Add the new scene with the area instance data
+                        const expeditionScene = new ExpeditionScene(areaInstanceData);
+                        // Add the scene to the Phaser game instance and start it
+                        this.scene.scene.add('ExpeditionScene', expeditionScene, true);
+                    })
+                    .catch((error) => {
+                        console.error('Error requesting zone:', error);
+                    });
+            }
         });
 
         this.updatePosition(scene.worldmap.x, scene.worldmap.y, scene.zoomLevel);

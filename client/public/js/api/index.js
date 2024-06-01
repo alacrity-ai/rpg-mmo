@@ -10,8 +10,10 @@ import itemApi from './item';
 import battleApi from './battle';
 import battlerActionApi from './battlerAction';
 import settingsApi from './settings';
+import partyAPI from './party';
 
 export default {
+  party: partyAPI,
   battlerAction: battlerActionApi,
   battle: battleApi,
   character: characterApi,

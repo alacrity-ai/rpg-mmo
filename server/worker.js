@@ -11,7 +11,9 @@ require('./services/tasks/userTasks');
 require('./services/tasks/shopTasks');
 require('./services/tasks/characterTasks');
 require('./services/tasks/battlerActionTasks');
-require('./services/tasks/settingsTasks')
+require('./services/tasks/settingsTasks');
+require('./services/tasks/partyTasks');
+require('./services/tasks/zoneTasks');
 
 const redis = new Redis();
 
@@ -32,7 +34,7 @@ async function processTasks() {
           await redis.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
         }
       } else {
-        logger.error(`No handler found for task type: ${taskType}`);
+        logger.error(`No worker task processor found for task type: ${taskType}`);
         const result = { error: `No handler found for task type: ${taskType}` };
         await redis.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
       }

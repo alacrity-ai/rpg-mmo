@@ -67,9 +67,11 @@ export default class CustomCursor {
         } else {
             if (CustomCursor.instance.scene !== scene) {
                 CustomCursor.instance.scene = scene;
+                console.log('Recreating cursor');
                 CustomCursor.instance.recreateCursor();
             }
         }
+        // set the depth of the custom cursor to 1000
         return CustomCursor.instance;
     }
 

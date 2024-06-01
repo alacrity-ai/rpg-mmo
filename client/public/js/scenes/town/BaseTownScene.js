@@ -85,7 +85,7 @@ export default class BaseTownScene extends Phaser.Scene {
         // Initialize the InteractiveZoneManager
         this.interactiveZoneManager = new InteractiveZoneManager(this);
 
-        // Initializ the CustomCursor
+        // Initialize the CustomCursor
         CustomCursor.getInstance(this);
 
         // Add an event listener to switch back to TownScene

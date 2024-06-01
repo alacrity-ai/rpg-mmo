@@ -94,7 +94,6 @@ function mapAreasToCoordinates(areas) {
  * @returns {Object} An object representing the grid of areas with their coordinates and types.
  */
 function generateGrid(areaInstances, gridSize = 10) {
-    console.log('Generating grid with areaInstances: ', areaInstances);
     const maxAreas = areaInstances.length;
 
     if (maxAreas < 1 || maxAreas > gridSize * gridSize) {
@@ -139,7 +138,6 @@ function generateGrid(areaInstances, gridSize = 10) {
     }
 
     while (true) {
-        console.log('Generating grid...');
         startX = Math.floor(gridSize / 2);
         startY = Math.floor(gridSize / 2);
 
@@ -159,7 +157,6 @@ function generateGrid(areaInstances, gridSize = 10) {
         mappedAreas[areaInstanceId] = areas[areaKey];
     }
 
-    console.log('Generate Grid return: ', mappedAreas);
     return mappedAreas;
 }
 

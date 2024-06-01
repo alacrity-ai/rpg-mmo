@@ -50,7 +50,7 @@ const zoneTemplates = [
       { template_id: 2, probability: 0.1, max_instances: 1 }
     ],
     image_folder_path: 'assets/images/zone/area/normal/elderswood',
-    music_path: 'assets/audio/music/zones/elderswood.mp3',
+    music_path: 'assets/music/zones/elderswood.mp3',
     ambient_sound_path: null,
     min_areas: 3,
     max_areas: 7,

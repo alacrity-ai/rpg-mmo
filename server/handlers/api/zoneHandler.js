@@ -1,0 +1,30 @@
+const { enqueueTask } = require('../../services/server/taskUtils');
+
+module.exports = (socket) => {
+  socket.on('requestZone', async (data, callback) => {
+    if (!socket.character || !socket.character.id) {
+      callback({ error: 'Character not logged in.' });
+      return;
+    }
+    if (!socket.party || !socket.party.id) {
+      callback({ error: 'Character is not in a party.' });
+      return;
+    }
+
+    const { sceneKey } = data;
+    const taskData = { 
+      userId: socket.user.id, 
+      characterId: socket.character.id, 
+      partyId: socket.party.id, 
+      sceneKey 
+    };
+    
+    enqueueTask('requestZone', taskData, (response) => {
+      if (response.error) {
+        callback({ error: response.error });
+      } else {
+        callback({ data: response.data });
+      }
+    });
+  });
+};

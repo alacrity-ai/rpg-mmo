@@ -178,8 +178,8 @@ export default class WorldmapScene extends Phaser.Scene {
     }
 
     update(time, delta) {
-        // Update custom cursor position
-        CustomCursor.getInstance(this).update();
+        // // Update custom cursor position
+        // CustomCursor.getInstance(this).update();
 
         // Update fog effect
         this.fogEffect.update(time, delta);

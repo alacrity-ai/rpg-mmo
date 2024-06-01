@@ -44,7 +44,6 @@ async function getZoneTemplateBySceneKey(sceneKey) {
       friendlyNpcs: rows[0].friendly_npcs,
       areaEvents: rows[0].area_events
     });
-    console.log('Created zoneTemplate: ', zoneTemplate);
     return zoneTemplate;
   }
   return null;

@@ -85,13 +85,22 @@ export default class CharacterSelectMenu extends BaseMenu {
                 this.scene.registry.set('characterId', data.id);
                 this.scene.scene.get('LoginScene').cleanup();
                 fadeTransition(this.scene, this.scene.registry.get('firstSceneKey'), 500);
-                this.hide()
+                this.hide();
+    
+                // Call createParty after logging in the character
+                return api.party.createParty();
+            })
+            .then(partyData => {
+                console.log('Party created successfully:', partyData);
+                // Optionally, store partyId in registry or handle as needed
+                this.scene.registry.set('partyId', partyData.partyId);
             })
             .catch(error => {
-                console.error('Error logging in character:', error);
+                console.error('Error during character login or party creation:', error);
                 // Optionally, you can show an error message here
             });
     }
+    
 
     handleBack() {
         this.scene.scene.start('PreloaderScene');
