@@ -144,7 +144,7 @@ async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
                 abilities: [], // Add abilities if applicable
                 script_path: npcTemplate.scriptPath,
                 sprite_path: npcTemplate.battlerSpritePath, // Use NPC's battler sprite path
-                grid_position: [1, 1], // Set initial grid position if applicable
+                grid_position: [4, 1], // Set initial grid position if applicable
                 last_action_time: new Date(),
                 time_created: new Date(),
                 status_effects: [],

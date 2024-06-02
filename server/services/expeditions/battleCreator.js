@@ -43,14 +43,27 @@ class BattleCreator {
         const playerBattlerInstances = await createBattlerInstancesFromCharacterIds([this.characterId]);
         const enemyBattlerInstances = await createBattlerInstancesFromNPCTemplateIds(this.npcTemplates.map(npc => npc.id));
         this.battlerInstances = [...playerBattlerInstances, ...enemyBattlerInstances];
-    
+
+        // Assign enemy positions based on the encounter template
+        this.assignEnemyPositions(enemyBattlerInstances);
+
         const battleInstanceData = {
             battler_ids: this.battlerInstances.map(battler => battler.id),
             area_instance_id: this.areaInstanceId
         };
         this.battleInstance = await createBattleInstance(battleInstanceData);
     }
-    
+
+    assignEnemyPositions(enemyBattlerInstances) {
+        const enemyPositions = this.encounterTemplate.enemies;
+        enemyPositions.forEach((enemy, index) => {
+            const battler = enemyBattlerInstances[index];
+            if (battler) {
+                battler.gridPosition = enemy.position;
+            }
+        });
+    }
+
     async execute() {
         const existingBattleInstance = await getBattleInstanceByAreaInstanceId(this.areaInstanceId);
         if (existingBattleInstance) {

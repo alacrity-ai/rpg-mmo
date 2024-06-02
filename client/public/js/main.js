@@ -3,7 +3,6 @@ import CircleMaskImagePlugin from 'phaser3-rex-plugins/plugins/circlemaskimage-p
 import socketManager from './SocketManager.js';
 
 // Game Scenes
-import BattleScene from './scenes/BattleScene.js';
 import WorldmapScene from './scenes/WorldmapScene.js';
 
 // System Scenes
@@ -28,7 +27,6 @@ const config = {
         PreloaderScene,
         MenuTestScene,
         WorldmapScene,
-        BattleScene,
         LoginScene
     ],
     plugins: {

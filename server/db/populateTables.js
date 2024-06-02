@@ -144,7 +144,6 @@ async function populateItemTemplates() {
   }
 }
 
-
 async function populateNpcTemplates() {
   const connection = await pool.getConnection();
   try {
@@ -156,8 +155,8 @@ async function populateNpcTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO npc_templates (name, sprite_key, description, script_path, base_stats, loot_table, npc_dialogue_template_id)
-          VALUES (?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO npc_templates (name, sprite_key, description, script_path, base_stats, loot_table, npc_dialogue_template_id, battler_sprite_path)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             npc.name,
             npc.sprite_key,
@@ -165,7 +164,8 @@ async function populateNpcTemplates() {
             npc.script_path,
             npc.base_stats,
             npc.loot_table,
-            npc.npc_dialogue_template_id
+            npc.npc_dialogue_template_id,
+            npc.battler_sprite_path // Include the battler_sprite_path field
           ]
         );
       }

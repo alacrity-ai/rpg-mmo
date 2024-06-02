@@ -9,9 +9,11 @@ import SocketManager from '../SocketManager.js';
 import api from '../api';
 
 export default class BattleScene extends Phaser.Scene {
-    constructor() {
-        super({ key: 'BattleScene' });
-        this.battleInstanceId = 2; // Will be passed in from the server
+    constructor(key, battleInstanceData, battlerInstancesData) {
+        super({ key });
+        this.battleInstanceData = battleInstanceData;
+        this.battlerInstancesData = battlerInstancesData;
+        this.battleInstanceId = battleInstanceData.id;
     }
 
     preload() {
@@ -32,40 +34,6 @@ export default class BattleScene extends Phaser.Scene {
         // Create the BattleGrid
         this.battleGrid.createTileGrid();
 
-        // Mock battler data for testing
-        const battlersData = [
-            {
-                id: 5,
-                characterId: 3,
-                spritePath: 'assets/images/characters/rogue/combat/atlas.png',
-                team: 'player',
-                baseStats: { health: 100, mana: 50, strength: 16, stamina: 12, intelligence: 14 },
-                currentStats: { health: 80, mana: 50, strength: 16, stamina: 12, intelligence: 14 },
-                gridPosition: [0, 0]
-            },
-            {
-                id: 6,
-                characterId: 4,
-                spritePath: 'assets/images/characters/warrior/combat/atlas.png',
-                team: 'player',
-                baseStats: { health: 140, mana: 30, strength: 20, stamina: 15, intelligence: 10 },
-                currentStats: { health: 120, mana: 30, strength: 20, stamina: 15, intelligence: 10 },
-                gridPosition: [2, 2]
-            },
-            {
-                id: 3,
-                spritePath: 'assets/images/battle/battlers/sprite_28.png',
-                team: 'enemy',
-                gridPosition: [3, 0]
-            },
-            {
-                id: 4,
-                spritePath: 'assets/images/battle/battlers/sprite_29.png',
-                team: 'enemy',
-                gridPosition: [5, 2]
-            }
-        ];
-
         // Initialize the CustomCursor
         CustomCursor.getInstance(this);
 
@@ -73,22 +41,23 @@ export default class BattleScene extends Phaser.Scene {
         SoundFXManager.initialize(this);
 
         // Get the battlerId for the current character
-        this.battlerId = battlersData.find(battler => battler.characterId === this.registry.get('characterId')).id;
+        this.battler = this.battlerInstancesData.find(battler => battler.characterId === this.registry.get('characterId'));
+        this.battlerId = this.battler.id;
 
-        // Add mock battlers to the grid
-        for (const battlerData of battlersData) {
+        // Add battlers to the grid
+        for (const battlerData of this.battlerInstancesData) {
             await this.battleGrid.addBattler(battlerData, battlerData.gridPosition, battlerData.characterId === this.battlerId);
         }
 
         // Initialize the ActionBarMenu
-        this.actionBarMenu = new ActionBarMenu(this, this.battleInstanceId, this.BattlerId, this.battleGrid);
+        this.actionBarMenu = new ActionBarMenu(this, this.battleInstanceId, this.battlerId, this.battleGrid);
         this.actionBarMenu.show();
 
         // Listen for navigation button clicks
         this.events.on('moveButtonClicked', this.handleMoveButtonClicked, this);
 
         // Initialize the StatsMenu with mock data
-        this.statsMenu = new StatsMenu(this, battlersData[0].currentStats.health, battlersData[0].baseStats.health, battlersData[0].currentStats.mana, battlersData[0].baseStats.mana);
+        this.statsMenu = new StatsMenu(this, this.battler.currentStats.health, this.battler.baseStats.health, this.battler.currentStats.mana, this.battler.baseStats.mana);
         this.statsMenu.show();
 
         // Listen for completed battler actions
@@ -136,5 +105,9 @@ export default class BattleScene extends Phaser.Scene {
     update(time, delta) {
         // Update custom cursor position
         CustomCursor.getInstance(this).update();    
+    }
+
+    cleanup() {
+        // Do cleanup tasks as needed
     }
 }

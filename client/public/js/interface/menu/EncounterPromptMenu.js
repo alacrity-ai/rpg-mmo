@@ -1,5 +1,7 @@
 import { BaseMenu } from './BaseMenu.js';
 import api from '../../api';
+import { fadeTransition } from '../../scenes/utils/SceneTransitions.js';
+import BattleScene from '../../scenes/BattleScene.js';
 
 export default class EncounterPromptMenu extends BaseMenu {
     constructor(scene, areaInstanceId, width = 400, height = 300) {
@@ -35,16 +37,21 @@ export default class EncounterPromptMenu extends BaseMenu {
 
     startBattle() {
         api.battle.getBattleInstance(this.areaInstanceId)
-            .then(response => {
+            .then((response) => {
                 console.log('Battle instance response:', response);
+                const { battleInstance, battlerInstances } = response;
+                const battleKey = `BattleScene_${battleInstance.id}`;
+                const battleScene = new BattleScene(battleKey, battleInstance, battlerInstances);
+                this.scene.scene.add(battleKey, battleScene, false);
+                fadeTransition(this.scene, battleKey);
                 this.hide();
             })
-            .catch(error => {
+            .catch((error) => {
                 console.error('Error starting battle:', error);
                 this.hide();
             });
     }
-
+    
     retreat() {
         // Placeholder function for retreating
         console.log('Retreating from this area:', this.areaInstanceId);

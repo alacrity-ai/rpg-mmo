@@ -33,15 +33,33 @@ We just added binding the characterId to the socket on character login (We shoul
             The client, upon receiving this data, will instantiate a new areascene from the data.
         
         THEN HANDLE ENCOUNTERS:
-            - [ ] If the area has an encounter, raise a popup window that says something like "Detected a hostile presence!" with two buttons: Battle and Retreat
+            - [x] If the area has an encounter, raise a popup window that says something like "Detected a hostile presence!" with two buttons: Battle and Retreat
                 - Battle starts the encounter
                 - Retreat sends the player back to the previous area
-            - [ ] In the scenario that a player goes into an area, chooses Battle, that player will go into the battle instance.  The other players in the party may not have gone to that area yet.  When they enter the area, they'll get the same prompt.  We therefore need to check to see if the battle is already in progress.  If it is, the player will join the battle in progress, if it is not, the player will make a request to the server to instantiate a new battle instance, and join it.
+            - [x] In the scenario that a player goes into an area, chooses Battle, that player will go into the battle instance.  The other players in the party may not have gone to that area yet.  When they enter the area, they'll get the same prompt.  We therefore need to check to see if the battle is already in progress.  If it is, the player will join the battle in progress, if it is not, the player will make a request to the server to instantiate a new battle instance, and join it.
 
 
                 THEN:
                     - [ ] We will figure out how to determine when an encounter is finished.
                     Probably some API call from the client saying that they killed all the enemies in the encounter, then the server will verify, and update the area_instance to show the encounter is cleared, and that they can return to the area_instance scene.
+                        We can make a debug command that simply drops all the health of the enemy team to 0 to test this.  We have the win condition checks in the BattleManager.
+                    - [ ] We will need to handle the Retreat option.
+                    - [ ] Keep in mind we may need to handle more cleanup scenarios for battle instances
+                    - [ ] When the player team wins a battle, we need to make sure to superimpose the current health / mana of the battler onto the characters.
+                            If for some reason the character is buffed beyond their maxhp, we need to make sure that the health we superimpose isn't higher than the max hp/mp.
+
+                    THEN:
+                        - [ ] Delete the entire database, and then rerun the server to create and populate the tables.
+                            Verify that the game is still able to run, including creating a character from scratch, entering an area, and going into battle.
+                        - [ ] Do basic multiplayer testing. 
+                            - [ ] Can two separate accounts that are logged in both have their own instanced areas and combat?
+                            - [ ] Add basic party invite functionality to join two characters into one party.
+                            - [ ] Verify that partied characters enter the same area instance
+                            - [ ] Verify that partied characters enter the same combat encounter
+
+                        THEN:
+                            - [ ] Begin planning ability system
+                            - [ ] Begin planning enemy script system
 
 THEN:
     Modify the trans
@@ -102,7 +120,4 @@ NOTE: If the player requests access to an area_instance that does not exist, the
     - [ ] Add hover sound effect as optional argument
 
 - Redo Party Display Menu using Menu System
-
-
-# TECHNICAL DEBT
 
