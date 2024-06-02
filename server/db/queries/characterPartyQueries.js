@@ -43,7 +43,6 @@ async function removeMemberFromParty(partyId, characterId) {
   if (!party) {
     throw new Error(`Party with ID ${partyId} not found`);
   }
-  console.log('Got Party from database: ', party);
   party.members = party.members.filter(member => member.character_id !== characterId);
 
   if (party.members.length === 0) {

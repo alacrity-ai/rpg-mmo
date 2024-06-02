@@ -13,7 +13,5 @@ const getBattleInstance = (areaId) => {
 };
 
 export default {
-  getBattle,
-  getBattlersInBattle,
   getBattleInstance
 };

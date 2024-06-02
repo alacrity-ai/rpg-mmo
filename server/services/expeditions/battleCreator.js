@@ -53,7 +53,6 @@ class BattleCreator {
     
     async execute() {
         const existingBattleInstance = await getBattleInstanceByAreaInstanceId(this.areaInstanceId);
-
         if (existingBattleInstance) {
             const battleManager = new BattleManager();
             const newBattlerInstance = await battleManager.addCharacterToBattle(existingBattleInstance.id, this.characterId);

@@ -11,7 +11,7 @@ const encounterTemplates = [
       is_boss: false
     },
     {
-      name: 'Dragon\'s Lair',
+      name: "Dragon's Lair",
       enemies: JSON.stringify([
         { npc_template_id: 3, position: [4, 1] }
       ]),

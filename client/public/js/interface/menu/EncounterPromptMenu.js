@@ -1,7 +1,8 @@
 import { BaseMenu } from './BaseMenu.js';
+import api from '../../api';
 
 export default class EncounterPromptMenu extends BaseMenu {
-    constructor(scene, encounterId, width = 400, height = 300) {
+    constructor(scene, areaInstanceId, width = 400, height = 300) {
         const x = scene.sys.game.config.width / 2;
         const y = scene.sys.game.config.height / 2;
         const backgroundColor = 0x000000;
@@ -10,7 +11,7 @@ export default class EncounterPromptMenu extends BaseMenu {
 
         super(scene, x, y, width, height, backgroundColor, backgroundAlpha, borderRadius);
 
-        this.encounterId = encounterId;
+        this.areaInstanceId = areaInstanceId;
         this.createEncounterPromptMenu();
     }
 
@@ -33,14 +34,20 @@ export default class EncounterPromptMenu extends BaseMenu {
     }
 
     startBattle() {
-        // Placeholder function for starting the battle
-        console.log('Starting battle with encounter ID:', this.encounterId);
-        this.hide();
+        api.battle.getBattleInstance(this.areaInstanceId)
+            .then(response => {
+                console.log('Battle instance response:', response);
+                this.hide();
+            })
+            .catch(error => {
+                console.error('Error starting battle:', error);
+                this.hide();
+            });
     }
 
     retreat() {
         // Placeholder function for retreating
-        console.log('Retreating from encounter ID:', this.encounterId);
+        console.log('Retreating from this area:', this.areaInstanceId);
         this.hide();
     }
 }

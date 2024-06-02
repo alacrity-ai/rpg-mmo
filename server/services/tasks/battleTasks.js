@@ -1,112 +1,43 @@
 const Redis = require('ioredis');
-const { createBattleWithCharactersAndNPCs, getBattleInstanceById, getAllBattleInstances, deleteBattleInstance, getBattlersInBattle } = require('../../db/queries/battleInstancesQueries');
-const taskRegistry = require('../server/taskRegistry');
+const BattleCreator = require('../../services/expeditions/battleCreator');
+const { getAreaInstanceById } = require('../../db/queries/areaInstancesQueries');
 const logger = require('../../utilities/logger');
 const redis = new Redis();
 
-async function processCreateBattleTask(task) {
+async function processGetBattleInstanceTask(task) {
     const { taskId, data } = task.taskData;
-    const { characterIds, npcTemplateIds } = data;
+    const { areaId, characterId } = data;
 
     try {
-        // Create the battle with characters and NPCs
-        const battleInstanceId = await createBattleWithCharactersAndNPCs(characterIds, npcTemplateIds);
-
-        const result = { success: true, data: { battleInstanceId } };
-        logger.info(`Battle creation successful for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
-        const result = { error: 'Failed to create battle. ' + error.message };
-        logger.error(`Battle creation failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
-}
-
-async function processGetBattleTask(task) {
-    const { taskId, data } = task.taskData;
-    const { battleId } = data;
-
-    try {
-        const battleInstance = await getBattleInstanceById(battleId);
-
-        if (!battleInstance) {
-            const result = { error: 'Battle not found.' };
-            logger.info(`Battle not found for task ${taskId}`);
-            await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-            return;
+        // Fetch the area instance to get the encounter template ID
+        const areaInstance = await getAreaInstanceById(areaId);
+        if (!areaInstance) {
+            throw new Error(`Area instance with ID ${areaId} not found.`);
+        }
+        const encounterTemplateId = areaInstance.encounter;
+        // If no encounter is set, throw an error
+        if (!encounterTemplateId) {
+            throw new Error(`No encounter set for area instance with ID ${areaId}.`);
         }
 
-        const result = { success: true, data: battleInstance };
-        logger.info(`Battle retrieval successful for task ${taskId}`);
+        // Initialize the BattleCreator with the given parameters
+        const battleCreator = new BattleCreator(characterId, encounterTemplateId, areaId);
+        const response = await battleCreator.execute();
+
+        const result = { success: true, data: response };
+        logger.info(`Battle instance retrieval or creation successful for task ${taskId}`);
         await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     } catch (error) {
-        const result = { error: 'Failed to retrieve battle. ' + error.message };
-        logger.error(`Battle retrieval failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
-}
-
-async function processGetAllBattlesTask(task) {
-    const { taskId } = task.taskData;
-
-    try {
-        const battles = await getAllBattleInstances();
-
-        const result = { success: true, data: battles };
-        logger.info(`All battles retrieval successful for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
-        const result = { error: 'Failed to retrieve all battles. ' + error.message };
-        logger.error(`All battles retrieval failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
-}
-
-async function processDeleteBattleTask(task) {
-    const { taskId, data } = task.taskData;
-    const { battleId } = data;
-
-    try {
-        await deleteBattleInstance(battleId);
-
-        const result = { success: true };
-        logger.info(`Battle deletion successful for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
-        const result = { error: 'Failed to delete battle. ' + error.message };
-        logger.error(`Battle deletion failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
-}
-
-async function processGetBattlersInBattleTask(task) {
-    const { taskId, data } = task.taskData;
-    const { battleId } = data;
-
-    try {
-        const battlers = await getBattlersInBattle(battleId);
-
-        const result = { success: true, data: battlers };
-        logger.info(`Battlers in battle retrieval successful for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
-        const result = { error: 'Failed to retrieve battlers in battle. ' + error.message };
-        logger.error(`Battlers in battle retrieval failed for task ${taskId}:`, error.message);
+        const result = { error: 'Failed to retrieve or create battle instance. ' + error.message };
+        logger.error(`Battle instance retrieval or creation failed for task ${taskId}:`, error.message);
         await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     }
 }
 
 // Register task handlers
-taskRegistry.register('createBattle', processCreateBattleTask);
-taskRegistry.register('getBattle', processGetBattleTask);
-taskRegistry.register('getAllBattles', processGetAllBattlesTask);
-taskRegistry.register('deleteBattle', processDeleteBattleTask);
-taskRegistry.register('getBattlersInBattle', processGetBattlersInBattleTask);
+const taskRegistry = require('../server/taskRegistry');
+taskRegistry.register('getBattleInstance', processGetBattleInstanceTask);
 
 module.exports = {
-    processCreateBattleTask,
-    processGetBattleTask,
-    processGetAllBattlesTask,
-    processDeleteBattleTask,
-    processGetBattlersInBattleTask,
+    processGetBattleInstanceTask
 };

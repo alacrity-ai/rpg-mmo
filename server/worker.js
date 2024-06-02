@@ -11,6 +11,7 @@ require('./services/tasks/userTasks');
 require('./services/tasks/shopTasks');
 require('./services/tasks/characterTasks');
 require('./services/tasks/battlerActionTasks');
+require('./services/tasks/battleTasks');
 require('./services/tasks/settingsTasks');
 require('./services/tasks/partyTasks');
 require('./services/tasks/zoneTasks');

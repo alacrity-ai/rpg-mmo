@@ -1,43 +1,29 @@
 const { enqueueTask } = require('../../services/server/taskUtils');
 
 module.exports = (socket) => {
-  socket.on('createBattle', async (data, callback) => {
-    const { characterIds, npcTemplateIds } = data;
-    if (!characterIds || !npcTemplateIds) {
-      callback({ error: 'Character IDs and NPC Template IDs are required.' });
+  socket.on('getBattleInstance', async (data, callback) => {
+    if (!socket.character || !socket.character.id) {
+      callback({ error: 'Character not logged in.' });
       return;
     }
-    enqueueTask('createBattle', { characterIds, npcTemplateIds }, callback);
-  });
+    const taskData = { areaId: data.areaId, characterId: socket.character.id };
+    enqueueTask('getBattleInstance', taskData, (response) => {
+      if (response.success) {
+        const { battleInstance, battlerInstances } = response.data;
+        
+        // Find the battler matching the character ID and bind battlerId and battleId to the socket
+        const battler = battlerInstances.find(b => b.characterId === socket.character.id);
+        if (battler) {
+          socket.battler = { id: battler.id };
+        }
 
-  socket.on('getBattle', async (data, callback) => {
-    const { battleId } = data;
-    if (!battleId) {
-      callback({ error: 'Battle ID is required.' });
-      return;
-    }
-    enqueueTask('getBattle', { battleId }, callback);
-  });
+        socket.battle = { id: battleInstance.id };
 
-  socket.on('getAllBattles', async (data, callback) => {
-    enqueueTask('getAllBattles', {}, callback);
-  });
-
-  socket.on('deleteBattle', async (data, callback) => {
-    const { battleId } = data;
-    if (!battleId) {
-      callback({ error: 'Battle ID is required.' });
-      return;
-    }
-    enqueueTask('deleteBattle', { battleId }, callback);
-  });
-
-  socket.on('getBattlersInBattle', async (data, callback) => {
-    const { battleId } = data;
-    if (!battleId) {
-      callback({ error: 'Battle ID is required.' });
-      return;
-    }
-    enqueueTask('getBattlersInBattle', { battleId }, callback);
+        // Proceed to call back to the client
+        callback(response);
+      } else {
+        callback(response);
+      }
+    });
   });
 };

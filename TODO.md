@@ -102,3 +102,7 @@ NOTE: If the player requests access to an area_instance that does not exist, the
     - [ ] Add hover sound effect as optional argument
 
 - Redo Party Display Menu using Menu System
+
+
+# TECHNICAL DEBT
+

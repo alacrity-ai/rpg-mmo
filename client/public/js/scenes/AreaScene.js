@@ -99,7 +99,7 @@ export default class AreaScene extends Phaser.Scene {
 
         // Check for an encounter
         if (this.areaInstanceData.encounter) {
-            this.encounterPromptMenu = new EncounterPromptMenu(this, this.areaInstanceData.encounter);
+            this.encounterPromptMenu = new EncounterPromptMenu(this, this.areaInstanceData.id);
         }
 
         // Initialize the Debug class
