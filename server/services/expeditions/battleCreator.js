@@ -1,13 +1,17 @@
+// services/expeditions/battleHelpers.js
+
 const { getEncounterTemplateById } = require('../../db/queries/encounterTemplatesQueries');
 const { getNPCTemplateById } = require('../../db/queries/npcTemplatesQueries');
 const { createBattlerInstancesFromCharacterIds, createBattlerInstancesFromNPCTemplateIds } = require('../../db/queries/battlerInstancesQueries');
-const { createBattleInstance } = require('../../db/queries/battleInstancesQueries');
+const { createBattleInstance, getBattlerInstancesInBattle } = require('../../db/queries/battleInstancesQueries');
+const { getBattleInstanceByAreaInstanceId } = require('../../db/queries/battleInstancesQueries');
+const BattleManager = require('./battleManager');
 
 class BattleCreator {
     constructor(characterId, encounterTemplateId, areaInstanceId) {
         this.characterId = characterId;
         this.encounterTemplateId = encounterTemplateId;
-        this.areaInstanceId = areaInstanceId; // Assign the areaInstanceId here
+        this.areaInstanceId = areaInstanceId;
         this.battleInstance = null;
         this.battlerInstances = [];
     }
@@ -48,8 +52,18 @@ class BattleCreator {
     }
     
     async execute() {
-        await this.initialize();
-        await this.createBattle();
+        const existingBattleInstance = await getBattleInstanceByAreaInstanceId(this.areaInstanceId);
+
+        if (existingBattleInstance) {
+            const battleManager = new BattleManager();
+            const newBattlerInstance = await battleManager.addCharacterToBattle(existingBattleInstance.id, this.characterId);
+            this.battleInstance = existingBattleInstance;
+            this.battlerInstances = await getBattlerInstancesInBattle(existingBattleInstance.id);
+        } else {
+            await this.initialize();
+            await this.createBattle();
+        }
+        
         return {
             battleInstance: this.battleInstance,
             battlerInstances: this.battlerInstances,

@@ -41,16 +41,26 @@ async function createBattleInstance(battleInstanceData) {
         JSON.stringify(battleInstanceData.battler_ids) || null,
         battleInstanceData.area_instance_id
     ];
-    const result = await query(sql, params);
-    const id = result.insertId;
 
-    // Return the newly created BattleInstance object
-    return new BattleInstance({
-        id,
-        battler_ids: battleInstanceData.battler_ids,
-        area_instance_id: battleInstanceData.area_instance_id,
-        time_created: new Date() // This is fine since it's set by the database, but we need to return it
-    });
+    try {
+        const result = await query(sql, params);
+        const id = result.insertId;
+
+        // Return the newly created BattleInstance object
+        return new BattleInstance({
+            id,
+            battler_ids: battleInstanceData.battler_ids,
+            area_instance_id: battleInstanceData.area_instance_id,
+            time_created: new Date() // This is fine since it's set by the database, but we need to return it
+        });
+    } catch (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+            // If there is a duplicate entry error, fetch and return the existing battle instance
+            return await getBattleInstanceByAreaInstanceId(battleInstanceData.area_instance_id);
+        } else {
+            throw err;
+        }
+    }
 }
 
 async function updateBattleInstance(id, battleInstanceData) {
@@ -124,8 +134,23 @@ async function getBattlerInstancesInBattle(battleId) {
       status_effects: row.status_effects,
       team: row.team
     }));
-  }
-  
+}
+
+async function getBattleInstanceByAreaInstanceId(areaInstanceId) {
+    const sql = 'SELECT * FROM battle_instances WHERE area_instance_id = ?';
+    const params = [areaInstanceId];
+    const rows = await query(sql, params);
+    if (rows.length > 0) {
+        const battleInstance = new BattleInstance({
+            ...rows[0],
+            battler_ids: rows[0].battler_ids,
+            area_instance_id: rows[0].area_instance_id,
+            time_created: rows[0].time_created
+        });
+        return battleInstance;
+    }
+    return null;
+}
 
 module.exports = {
   getBattlerInstancesInBattle,
@@ -133,5 +158,6 @@ module.exports = {
   getAllBattleInstances,
   createBattleInstance,
   updateBattleInstance,
-  deleteBattleInstance
+  deleteBattleInstance,
+  getBattleInstanceByAreaInstanceId
 };

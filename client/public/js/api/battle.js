@@ -1,22 +1,8 @@
 import socketManager from '../SocketManager';
 
-// Get a specific battle
-const getBattle = (battleId) => {
+const getBattleInstance = (areaId) => {
   return new Promise((resolve, reject) => {
-    socketManager.getSocket().emit('getBattle', { battleId }, (response) => {
-      if (response.error) {
-        reject(response.error);
-      } else {
-        resolve(response.data);
-      }
-    });
-  });
-};
-
-// Get all battlers in a battle
-const getBattlersInBattle = (battleId) => {
-  return new Promise((resolve, reject) => {
-    socketManager.getSocket().emit('getBattlersInBattle', { battleId }, (response) => {
+    socketManager.getSocket().emit('getBattleInstance', { areaId }, (response) => {
       if (response.error) {
         reject(response.error);
       } else {
@@ -29,4 +15,5 @@ const getBattlersInBattle = (battleId) => {
 export default {
   getBattle,
   getBattlersInBattle,
+  getBattleInstance
 };
