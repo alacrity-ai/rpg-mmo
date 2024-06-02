@@ -248,7 +248,9 @@ async function initTables() {
     `CREATE TABLE IF NOT EXISTS battle_instances (
       id INT AUTO_INCREMENT PRIMARY KEY,
       battler_ids JSON NOT NULL,
-      time_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      area_instance_id INT NOT NULL,
+      time_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (area_instance_id) REFERENCES area_instances(id)
     )`,
     `CREATE TABLE IF NOT EXISTS shop_templates (
       id INT AUTO_INCREMENT PRIMARY KEY,

@@ -1,4 +1,4 @@
-const { updateBattlerPosition } = require('../../../db/queries/battlerInstanceQueries');
+const { updateBattlerPosition } = require('../../../db/queries/battlerInstancesQueries');
 const Redis = require('ioredis');
 const redis = new Redis();
 

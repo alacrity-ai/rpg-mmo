@@ -66,15 +66,6 @@ export default class BattleScene extends Phaser.Scene {
             }
         ];
 
-        // Add mock battlers to the grid
-        for (const battlerData of battlersData) {
-            let isThisPlayer = false;
-            if (battlerData.characterId === this.registry.get('characterId')) {
-                isThisPlayer = true;
-            } 
-            await this.battleGrid.addBattler(battlerData, battlerData.gridPosition, isThisPlayer);
-        }
-
         // Initialize the CustomCursor
         CustomCursor.getInstance(this);
 
@@ -83,6 +74,11 @@ export default class BattleScene extends Phaser.Scene {
 
         // Get the battlerId for the current character
         this.battlerId = battlersData.find(battler => battler.characterId === this.registry.get('characterId')).id;
+
+        // Add mock battlers to the grid
+        for (const battlerData of battlersData) {
+            await this.battleGrid.addBattler(battlerData, battlerData.gridPosition, battlerData.characterId === this.battlerId);
+        }
 
         // Initialize the ActionBarMenu
         this.actionBarMenu = new ActionBarMenu(this, this.battleInstanceId, this.BattlerId, this.battleGrid);

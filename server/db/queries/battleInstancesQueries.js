@@ -1,162 +1,137 @@
 const { query } = require('../database');
+const BattleInstance = require('../../models/BattleInstance');
 const BattlerInstance = require('../../models/BattlerInstance');
-const { getCharacterById } = require('./characterQueries');
-const { getNPCTemplateById } = require('./npcTemplatesQueries');
+const { deleteBattlerInstancesByIds } = require('./battlerInstancesQueries');
 
-async function createBattlerInstance(battlerInstance) {
+async function getBattleInstanceById(id) {
+  const sql = 'SELECT * FROM battle_instances WHERE id = ?';
+  const params = [id];
+  const rows = await query(sql, params);
+  if (rows.length > 0) {
+    const battleInstance = new BattleInstance({
+      ...rows[0],
+      battler_ids: rows[0].battler_ids,
+      area_instance_id: rows[0].area_instance_id,
+      time_created: rows[0].time_created
+    });
+    return battleInstance;
+  }
+  return null;
+}
+
+async function getAllBattleInstances() {
+  const sql = 'SELECT * FROM battle_instances';
+  const rows = await query(sql);
+  return rows.map(row => new BattleInstance({
+    ...row,
+    battler_ids: row.battler_ids,
+    area_instance_id: row.area_instance_id,
+    time_created: row.time_created
+  }));
+}
+
+async function createBattleInstance(battleInstanceData) {
     const sql = `
-        INSERT INTO battler_instances (
-            character_id, npc_template_id, base_stats, current_stats, abilities, script_path,
-            sprite_path, grid_position, last_action_time, time_created, status_effects, team
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO battle_instances (
+            battler_ids,
+            area_instance_id
+        ) VALUES (?, ?)
     `;
     const params = [
-        battlerInstance.characterId,
-        battlerInstance.npcTemplateId,
-        JSON.stringify(battlerInstance.baseStats),
-        JSON.stringify(battlerInstance.currentStats),
-        JSON.stringify(battlerInstance.abilities),
-        battlerInstance.scriptPath,
-        battlerInstance.spritePath, // Include sprite path
-        JSON.stringify(battlerInstance.gridPosition),
-        battlerInstance.lastActionTime,
-        battlerInstance.timeCreated,
-        JSON.stringify(battlerInstance.statusEffects),
-        battlerInstance.team
+        JSON.stringify(battleInstanceData.battler_ids) || null,
+        battleInstanceData.area_instance_id
     ];
     const result = await query(sql, params);
-    return result.insertId;
+    const id = result.insertId;
+
+    // Return the newly created BattleInstance object
+    return new BattleInstance({
+        id,
+        battler_ids: battleInstanceData.battler_ids,
+        area_instance_id: battleInstanceData.area_instance_id,
+        time_created: new Date() // This is fine since it's set by the database, but we need to return it
+    });
 }
 
-async function getBattlerInstanceById(id) {
-    const sql = 'SELECT * FROM battler_instances WHERE id = ?';
-    const params = [id];
-    const rows = await query(sql, params);
-    if (rows.length > 0) {
-        const battlerInstance = rows[0];
-        return new BattlerInstance(battlerInstance);
+async function updateBattleInstance(id, battleInstanceData) {
+  const fields = [
+    'battler_ids',
+    'area_instance_id',
+    'time_created'
+  ];
+
+  const updates = [];
+  const params = [];
+
+  fields.forEach(field => {
+    if (battleInstanceData[field] !== undefined) {
+      updates.push(`${field} = ?`);
+      if (field === 'battler_ids') {
+        params.push(JSON.stringify(battleInstanceData[field]));
+      } else {
+        params.push(battleInstanceData[field]);
+      }
     }
-    return null;
+  });
+
+  const sql = `
+    UPDATE battle_instances SET
+      ${updates.join(', ')}
+    WHERE id = ?
+  `;
+  params.push(id);
+
+  await query(sql, params);
 }
 
-async function updateBattlerInstance(id, updates) {
-    const sql = `
-        UPDATE battler_instances
-        SET
-            base_stats = ?,
-            current_stats = ?,
-            abilities = ?,
-            script_path = ?,
-            sprite_path = ?,
-            grid_position = ?,
-            last_action_time = ?,
-            status_effects = ?,
-            team = ?
-        WHERE id = ?
-    `;
-    const params = [
-        JSON.stringify(updates.baseStats),
-        JSON.stringify(updates.currentStats),
-        JSON.stringify(updates.abilities),
-        updates.scriptPath,
-        updates.spritePath,  // Add sprite path
-        JSON.stringify(updates.gridPosition),
-        updates.lastActionTime,
-        JSON.stringify(updates.statusEffects),
-        updates.team,
-        id
-    ];
-    await query(sql, params);
-}
+async function deleteBattleInstance(id) {
+    const battleInstance = await getBattleInstanceById(id);
+    if (!battleInstance) {
+        throw new Error(`Battle instance with ID ${id} not found.`);
+    }
 
-async function updateBattlerPositions(battlerPositions) {
-    const updates = battlerPositions.map(bp => `(${bp.battlerId}, '${JSON.stringify(bp.newPosition)}')`).join(',');
-    const sql = `
-        INSERT INTO battler_instances (id, grid_position)
-        VALUES ${updates}
-        ON DUPLICATE KEY UPDATE grid_position = VALUES(grid_position)
-    `;
-    await query(sql);
-}
+    const battlerIds = battleInstance.battlerIds;
+    if (battlerIds && battlerIds.length > 0) {
+        await deleteBattlerInstancesByIds(battlerIds);
+    }
 
-async function deleteBattlerInstance(id) {
-    const sql = 'DELETE FROM battler_instances WHERE id = ?';
+    const sql = 'DELETE FROM battle_instances WHERE id = ?';
     const params = [id];
     await query(sql, params);
 }
 
-async function instanceCanAct(id) {
-    const sql = 'SELECT last_action_time FROM battler_instances WHERE id = ?';
-    const params = [id];
+async function getBattlerInstancesInBattle(battleId) {
+    const sql = `
+      SELECT bi.*
+      FROM battler_instances bi
+      JOIN battle_instances b ON JSON_CONTAINS(b.battler_ids, CAST(bi.id AS JSON), '$')
+      WHERE b.id = ?
+    `;
+    const params = [battleId];
     const rows = await query(sql, params);
-    if (rows.length > 0) {
-        const lastActionTime = new Date(rows[0].last_action_time);
-        const now = new Date();
-        const differenceInSeconds = (now - lastActionTime) / 1000;
-        return differenceInSeconds > 3;
-    }
-    return false;
-}
-
-async function createBattlerInstancesFromCharacterIds(characterIds) {
-    const battlerInstanceIds = [];
-    for (const characterId of characterIds) {
-        const character = await getCharacterById(characterId);
-        if (character) {
-            const battlerInstance = new BattlerInstance({
-                character_id: character.id,
-                npc_template_id: null,
-                base_stats: character.baseStats,
-                current_stats: character.currentStats,
-                abilities: [], // Add abilities if applicable
-                script_path: null,
-                sprite_path: `assets/images/characters/${character.characterClass}/combat/atlas.png`,
-                grid_position: [1, 1], // Set initial grid position if applicable
-                last_action_time: new Date(),
-                time_created: new Date(),
-                status_effects: [],
-                team: 'player'
-            });
-            const battlerInstanceId = await createBattlerInstance(battlerInstance);
-            battlerInstanceIds.push(battlerInstanceId);
-        }
-    }
-    return battlerInstanceIds;
-}
-
-async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
-    const battlerInstanceIds = [];
-    for (const npcTemplateId of npcTemplateIds) {
-        const npcTemplate = await getNPCTemplateById(npcTemplateId);
-        if (npcTemplate) {
-            const battlerInstance = new BattlerInstance({
-                character_id: null,
-                npc_template_id: npcTemplate.id,
-                base_stats: npcTemplate.baseStats,
-                current_stats: npcTemplate.baseStats, // NPCs start with base stats as current stats
-                abilities: [], // Add abilities if applicable
-                script_path: npcTemplate.scriptPath,
-                sprite_path: npcTemplate.battlerSpritePath, // Use NPC's battler sprite path
-                grid_position: [1, 1], // Set initial grid position if applicable
-                last_action_time: new Date(),
-                time_created: new Date(),
-                status_effects: [],
-                team: 'enemy'
-            });
-            const battlerInstanceId = await createBattlerInstance(battlerInstance);
-            battlerInstanceIds.push(battlerInstanceId);
-        }
-    }
-    return battlerInstanceIds;
-}
+    return rows.map(row => new BattlerInstance({
+      id: row.id,
+      character_id: row.character_id,
+      npc_template_id: row.npc_template_id,
+      base_stats: row.base_stats,
+      current_stats: row.current_stats,
+      abilities: row.abilities,
+      script_path: row.script_path,
+      sprite_path: row.sprite_path,
+      grid_position: row.grid_position,
+      last_action_time: row.last_action_time,
+      time_created: row.time_created,
+      status_effects: row.status_effects,
+      team: row.team
+    }));
+  }
+  
 
 module.exports = {
-    createBattlerInstance,
-    getBattlerInstanceById,
-    updateBattlerInstance,
-    updateBattlerPositions,
-    deleteBattlerInstance,
-    instanceCanAct,
-    createBattlerInstancesFromCharacterIds,
-    createBattlerInstancesFromNPCTemplateIds
+  getBattlerInstancesInBattle,
+  getBattleInstanceById,
+  getAllBattleInstances,
+  createBattleInstance,
+  updateBattleInstance,
+  deleteBattleInstance
 };

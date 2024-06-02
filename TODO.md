@@ -33,13 +33,18 @@ We just added binding the characterId to the socket on character login (We shoul
             The client, upon receiving this data, will instantiate a new areascene from the data.
         
         THEN HANDLE ENCOUNTERS:
-            - [ ] If the area has an encounter, the client will immediately register the current scene to some key, and then start the combat encounter.
-            Upon completion of the combat encounter, we will return to the scene that we registered.
+            - [ ] If the area has an encounter, raise a popup window that says something like "Detected a hostile presence!" with two buttons: Battle and Retreat
+                - Battle starts the encounter
+                - Retreat sends the player back to the previous area
+            - [ ] In the scenario that a player goes into an area, chooses Battle, that player will go into the battle instance.  The other players in the party may not have gone to that area yet.  When they enter the area, they'll get the same prompt.  We therefore need to check to see if the battle is already in progress.  If it is, the player will join the battle in progress, if it is not, the player will make a request to the server to instantiate a new battle instance, and join it.
+
 
                 THEN:
                     - [ ] We will figure out how to determine when an encounter is finished.
                     Probably some API call from the client saying that they killed all the enemies in the encounter, then the server will verify, and update the area_instance to show the encounter is cleared, and that they can return to the area_instance scene.
 
+THEN:
+    Modify the trans
 
 
 PREREQ: Add encounter_cleared BOOLEAN column to area_instances table.

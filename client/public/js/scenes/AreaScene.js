@@ -11,6 +11,7 @@ import { addBackgroundImage } from '../graphics/BackgroundManager.js';
 import FogEffect from '../graphics/FogEffect.js';
 import AreaNavigationMenu from '../interface/menu/AreaNavigationMenu.js';
 import AreaMapMenu from '../interface/menu/AreaMapMenu.js';
+import EncounterPromptMenu from '../interface/menu/EncounterPromptMenu.js';
 
 /* ExpeditionScene.js
  * Base class for all Expedition Area Scenes
@@ -95,6 +96,11 @@ export default class AreaScene extends Phaser.Scene {
         this.updateRegistryWithAreaConnections();
         const areaConnections = this.registry.get('areaConnections');
         this.areaMapMenu.setupAreaMap(areaConnections, this.areaInstanceData.id);
+
+        // Check for an encounter
+        if (this.areaInstanceData.encounter) {
+            this.encounterPromptMenu = new EncounterPromptMenu(this, this.areaInstanceData.encounter);
+        }
 
         // Initialize the Debug class
         if (this.debugMode) {
