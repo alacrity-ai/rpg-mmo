@@ -42,6 +42,9 @@ const config = {
     pixelArt: false, // Ensures pixel art is rendered without smoothing
 };
 
+// Disable the context menu on right-click
+document.addEventListener('contextmenu', event => event.preventDefault());
+
 // Connect to the server using the URL from .env
 const url = import.meta.env.VITE_SERVER_URL;
 console.log(`Server URL: ${url}`);

@@ -25,8 +25,8 @@ class Battler {
         const tile = battleGrid.grid[y][x];
         // Calculate the position to center the sprite in the tile
         const position = {
-            x: tile.tile.x + tile.tile.width / 2,
-            y: tile.tile.y + this.yOffset
+            x: tile.tile.x + tile.tile.width / 2 - 4,
+            y: tile.tile.y + this.yOffset - 32
         };
         this.sprite = BattlerSpriteManager.createSprite(this.scene, this.battlerData, position, this.spriteConfig);
         // If renderAboveOthers is true, set the depth to a higher value
@@ -44,8 +44,8 @@ class Battler {
         const tile = battleGrid.grid[y][x];
         // Calculate the position to center the sprite in the tile
         const position = {
-            x: tile.tile.x + tile.tile.width / 2,
-            y: tile.tile.y + this.yOffset
+            x: tile.tile.x + tile.tile.width / 2 - 4,
+            y: tile.tile.y + this.yOffset - 32
         };
         this.scene.tweens.add({
             targets: this.sprite,

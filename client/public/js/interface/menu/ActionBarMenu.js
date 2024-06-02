@@ -34,6 +34,49 @@ export default class ActionBarMenu extends BaseMenu {
             const iconY = this.y;
 
             const iconButton = this.addIconButton(iconX, iconY, iconName, () => {
+                const middleRow = 1;
+                const topRow = 0;
+                const bottomRow = 2;
+                const tiles1 = [[0, middleRow], [1, middleRow], [2, middleRow]];
+                const tiles2 = [[0, topRow], [1, topRow], [2, topRow]];
+                const tiles3 = [[0, bottomRow], [1, bottomRow], [2, bottomRow]];
+                // tiles4 will be a telegraph of all the tiles in the first and third columns
+                const tiles4 = [[0, topRow], [0, middleRow], [0, bottomRow], [2, topRow], [2, middleRow], [2, bottomRow]];
+                // tiles5 will be a cross pattern telegraph
+                const tiles5 = [[1, topRow], [0, middleRow], [1, middleRow], [2, middleRow], [1, bottomRow]];
+                // tiles 6 will be an x pattern telegraph
+                const tiles6 = [[0, topRow], [2, topRow], [1, middleRow], [0, bottomRow], [2, bottomRow]];
+
+                const duration = 5000; // Duration in milliseconds for each telegraph
+            
+                // Emit the first telegraph event immediately
+                this.scene.events.emit('showTelegraph', tiles1, duration);
+            
+                // Emit the second telegraph event after a delay of 2 seconds
+                this.scene.time.delayedCall(4000, () => {
+                    this.scene.events.emit('showTelegraph', tiles2, 3500);
+                });
+            
+                // Emit the third telegraph event after a delay of 4 seconds
+                this.scene.time.delayedCall(8000, () => {
+                    this.scene.events.emit('showTelegraph', tiles3, 3500);
+                });
+
+                // Emite fourth telegraph event after a delay of 6 seconds
+                this.scene.time.delayedCall(12000, () => {
+                    this.scene.events.emit('showTelegraph', tiles4, 3500);
+                });
+
+                // Emit fifth telegraph event after a delay of 8 seconds
+                this.scene.time.delayedCall(16000, () => {
+                    this.scene.events.emit('showTelegraph', tiles5, 3500);
+                });
+
+                // Emit sixth telegraph event after a delay of 8 seconds
+                this.scene.time.delayedCall(20000, () => {
+                    this.scene.events.emit('showTelegraph', tiles6, 3500);
+                });
+
                 this.triggerGlobalCooldown();
             });
 

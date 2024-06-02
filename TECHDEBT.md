@@ -1,5 +1,10 @@
 # TECH DEBT
 
+
+## Movement Bug
+If you use an ability, and then immediately move it is allowed.
+We need to make sure that the ability cooldown also enforces movement.
+
 ## Template Ids
 A lot of dependencies in the code on ids of templates.
 E.g. in ZoneTemplate we reference Encounter Template Ids (as encounter_id) e.g.:
