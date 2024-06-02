@@ -1,6 +1,40 @@
 # TODOS
 
 
+TOMORROW (6/2/2024):
+
+- [ ] Determine Encounter Completion:
+
+    - Implement API calls to verify and update when an encounter is finished.
+    - Create a debug command to drop enemy health to zero for testing purposes.
+
+- [ ] Handle Retreat Option:
+
+    - Ensure that retreating from an encounter sends the player back to the previous area.
+    - Address any necessary cleanup when a player retreats.
+
+- [ ] Cleanup Scenarios for Battle Instances:
+
+    - Implement any additional cleanup logic needed for battle instances.
+    - Ensure proper health and mana updates for characters after a battle.
+
+- [ ] Database Validation:
+
+    - Delete the current database and rerun the server to create and populate tables.
+    - Verify that the game runs smoothly, including creating a character, entering an area, and engaging in combat.
+
+- [ ] Basic Multiplayer Testing:
+
+    - Ensure that two separate accounts can have their own instances and combat scenarios.
+    - Add basic party invite functionality to join characters into one party.
+    - Verify that partied characters share the same area instance and combat encounter.
+
+- [ ] Plan Ability System and Enemy Script System:
+
+    - Start planning the structure and implementation of the ability system.
+    - Begin planning the scripting system for enemy behaviors.
+
+
 What We DID:
 We refactored the zone instance creation and all the requisite tables (area_instances, zone_instances, zone_templates).
 zone creator is now creating a properly linked zone_instance, and area_instances with all the information they need to instantiate ExpeditionScene.
@@ -38,7 +72,7 @@ We just added binding the characterId to the socket on character login (We shoul
                 - Retreat sends the player back to the previous area
             - [x] In the scenario that a player goes into an area, chooses Battle, that player will go into the battle instance.  The other players in the party may not have gone to that area yet.  When they enter the area, they'll get the same prompt.  We therefore need to check to see if the battle is already in progress.  If it is, the player will join the battle in progress, if it is not, the player will make a request to the server to instantiate a new battle instance, and join it.
 
-
+            What we will do tomorrow:
                 THEN:
                     - [ ] We will figure out how to determine when an encounter is finished.
                     Probably some API call from the client saying that they killed all the enemies in the encounter, then the server will verify, and update the area_instance to show the encounter is cleared, and that they can return to the area_instance scene.
