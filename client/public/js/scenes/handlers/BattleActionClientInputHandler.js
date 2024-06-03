@@ -13,6 +13,7 @@ export default class BattleActionClientInputHandler {
     initialize() {
         this.attachRightClickListener();
         this.attachSelectTileListener();
+        this.attachMoveKeysListener();
         // Listen for navigation button clicks
         this.scene.events.on('moveButtonClicked', this.handleMoveAction, this);
         this.scene.events.on('tileSelected', (data) => console.log('Tile selected:', data));
@@ -45,6 +46,49 @@ export default class BattleActionClientInputHandler {
         }
     }
 
+    attachMoveKeysListener() {
+        const keysPressed = new Set();
+        let moveTimeout = null;
+        const moveDelay = 50;
+    
+        this.scene.input.keyboard.on('keydown', (event) => {
+            keysPressed.add(event.key.toLowerCase());
+            scheduleEmitMoveDirection();
+        });
+    
+        this.scene.input.keyboard.on('keyup', (event) => {
+            keysPressed.delete(event.key.toLowerCase());
+            scheduleEmitMoveDirection();
+        });
+    
+        const scheduleEmitMoveDirection = () => {
+            if (moveTimeout) {
+                clearTimeout(moveTimeout);
+            }
+    
+            moveTimeout = setTimeout(() => {
+                emitMoveDirection();
+            }, moveDelay);
+        };
+    
+        const emitMoveDirection = () => {
+            let direction = [0, 0];
+    
+            if (keysPressed.has('w')) direction[1] -= 1;
+            if (keysPressed.has('a')) direction[0] -= 1;
+            if (keysPressed.has('s')) direction[1] += 1;
+            if (keysPressed.has('d')) direction[0] += 1;
+    
+            // Clamp the values to ensure they are within the range -1 to 1
+            direction[0] = Math.max(-1, Math.min(1, direction[0]));
+            direction[1] = Math.max(-1, Math.min(1, direction[1]));
+    
+            if (direction[0] !== 0 || direction[1] !== 0) {
+                this.scene.events.emit('moveButtonClicked', direction);
+            }
+        };
+    }    
+    
     attachSelectTileListener() {
         // Attach click event listener to each of the tiles
         for (let y = 0; y < this.battleGrid.grid.length; y++) {

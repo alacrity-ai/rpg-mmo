@@ -1,14 +1,14 @@
 // test/utils/dbHelpers.js
-require('dotenv').config();
 const mysql = require('mysql2/promise');
 const { initTables } = require('../../db/database');
+const config = require('../../config/config'); // Import the config
 
 async function resetDatabase() {
   const pool = mysql.createPool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
+    host: config.db.host,
+    user: config.db.user,
+    password: config.db.password,
+    database: config.db.name,
     waitForConnections: true,
     connectionLimit: 20,
     queueLimit: 0

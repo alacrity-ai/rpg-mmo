@@ -1,4 +1,4 @@
-require('dotenv').config();
+const config = require('./config/config');
 const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
@@ -69,7 +69,7 @@ io.on('connection', (socket) => {
   });
 });
 
-const PORT = process.env.PORT || 3000;
+const PORT = config.server.port;
 
 server.listen(PORT, async () => {
   await initTables();

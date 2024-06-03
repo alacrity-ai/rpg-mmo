@@ -1,4 +1,4 @@
-require('dotenv').config();
+const config = require('./config/config');
 const Redis = require('ioredis');
 const { getTask } = require('./handlers/taskQueue');
 const taskRegistry = require('./handlers/taskRegistry');

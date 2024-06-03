@@ -1,6 +1,7 @@
 const Redis = require('ioredis');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
+const config = require('../../config/config'); // Import the config
 const redis = new Redis();
 
 async function processGetServerSettingsTask(task) {
@@ -9,10 +10,10 @@ async function processGetServerSettingsTask(task) {
     // Organize the items into a structure that is usable by the client
     const serverSettings = {
       cooldowns: {
-        minimum: parseInt(process.env.COOLDOWN_MINIMUM, 10) || 500,
-        short: parseInt(process.env.COOLDOWN_SHORT, 10) || 1500,
-        normal: parseInt(process.env.COOLDOWN_NORMAL, 10) || 3000,
-        long: parseInt(process.env.COOLDOWN_LONG, 10) || 5000,
+        minimum: config.cooldowns.minimum,
+        short: config.cooldowns.short,
+        normal: config.cooldowns.normal,
+        long: config.cooldowns.long,
       },
     };
 
@@ -21,7 +22,7 @@ async function processGetServerSettingsTask(task) {
     await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   } catch (error) {
     const result = { error: 'Failed to get server settings. ' + error.message };
-    logger.info(`Failed to get server settings in task: ${taskId}:`, error.message);
+    logger.error(`Failed to get server settings in task: ${taskId}:`, error.message);
     await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   }
 }
