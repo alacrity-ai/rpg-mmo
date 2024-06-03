@@ -20,6 +20,7 @@ export default class ActionBarMenu extends BaseMenu {
         this.battleGrid = battleGrid;
         this.createActionBar();
         this.createActionNavigationBar(); // Call the new method here
+        this.isCooldownActive = false; // Track the cooldown state
     }
 
     createActionBar() {
@@ -112,6 +113,9 @@ export default class ActionBarMenu extends BaseMenu {
         navIcons.forEach(icon => {
             const iconButton = this.addIconButton(icon.x, icon.y, icon.name, () => {
 
+                // Don't emit of on cooldown
+                if (this.isOnCooldown()) return;
+
                 // Emit the event with direction data
                 this.scene.events.emit('moveButtonClicked', icon.direction);
             });
@@ -134,9 +138,17 @@ export default class ActionBarMenu extends BaseMenu {
         return iconButton;
     }
 
+    isOnCooldown() {
+        return this.isCooldownActive;
+    }
+
     triggerGlobalCooldown(delayAmount = this.scene.registry.get('settings').cooldowns.normal) {
+        this.isCooldownActive = true; // Set cooldown state to active
         this.disableIcons(delayAmount);
-        this.scene.time.delayedCall(delayAmount, this.enableIcons, [], this); // 3000 milliseconds = 3 seconds
+        this.scene.time.delayedCall(delayAmount, () => {
+            this.enableIcons();
+            this.isCooldownActive = false; // Reset cooldown state to inactive
+        });
     }
 
     disableIcons(delayAmount = 3000) {

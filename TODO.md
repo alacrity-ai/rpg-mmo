@@ -3,6 +3,11 @@
 
 TOMORROW (6/2/2024):
 
+- [ ] Database Validation:
+
+    - Delete the current database and rerun the server to create and populate tables.
+    - Verify that the game runs smoothly, including creating a character, entering an area, and engaging in combat.
+
 - [ ] Determine Encounter Completion:
 
     - Implement API calls to verify and update when an encounter is finished.
@@ -17,11 +22,6 @@ TOMORROW (6/2/2024):
 
     - Implement any additional cleanup logic needed for battle instances.
     - Ensure proper health and mana updates for characters after a battle.
-
-- [ ] Database Validation:
-
-    - Delete the current database and rerun the server to create and populate tables.
-    - Verify that the game runs smoothly, including creating a character, entering an area, and engaging in combat.
 
 - [ ] Basic Multiplayer Testing:
 

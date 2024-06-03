@@ -1,4 +1,5 @@
 import Battler from './Battler.js';
+import Tile from './Tile.js';
 import { generateGradientTexture, generateBorderTexture } from './BattleGridTiles.js';
 
 class BattleGrid {
@@ -75,19 +76,13 @@ class BattleGrid {
                 }
     
                 // Determine initial texture key
-                const textureKey = x < 3 ? 'unoccupied_green' : 'unoccupied_red';
+                const isPlayerSide = x < 3;
+                const textureKey = isPlayerSide ? 'unoccupied_green' : 'unoccupied_red';
 
-                // Create a sprite using the initial texture
-                const tile = this.scene.add.sprite(offsetX + adjustedX, offsetY + adjustedY, textureKey);
-                tile.setOrigin(0, 0);
+                // Create a tile using the initial texture
+                const tile = new Tile(this.scene, offsetX + adjustedX, offsetY + adjustedY, textureKey, isPlayerSide);
     
-                this.grid[y][x] = {
-                    tile,
-                    battlers: [], // To store battlers on this tile
-                    telegraphCount: 0, // Count of active telegraphs affecting this tile
-                    tween: null, // To store the tween reference for telegraphed tiles
-                    selected: false // To track if the tile is selected
-                };
+                this.grid[y][x] = tile;
             }
         }
     }
@@ -130,17 +125,16 @@ class BattleGrid {
     addBattlerToTile(battlerId, tile) {
         // Add battler to the specified tile
         const [x, y] = tile;
-        if (!this.grid[y][x].battlers.includes(battlerId)) {
-            this.grid[y][x].battlers.push(battlerId);
-        }
+        const tileObject = this.grid[y][x];
+        tileObject.addBattler(battlerId);
         this.battlerPositions.set(battlerId, tile);
 
         // Update the tile texture
-        this.updateTileTexture(x, y);
+        tileObject.updateTexture();
 
         // If there are other battlers on the same tile, render the current battler above them
         const battlerInstance = this.getBattlerInstance(battlerId);
-        if (this.grid[y][x].battlers.length > 1) {
+        if (tileObject.battlers.length > 1) {
             if (battlerInstance && battlerInstance.renderAboveOthers) {
                 battlerInstance.sprite.setDepth(y + 1);
             }
@@ -154,110 +148,48 @@ class BattleGrid {
     removeBattlerFromTile(battlerId, tile) {
         // Remove battler from the specified tile
         const [x, y] = tile;
-        const index = this.grid[y][x].battlers.indexOf(battlerId);
-        if (index > -1) {
-            this.grid[y][x].battlers.splice(index, 1);
-        }
+        const tileObject = this.grid[y][x];
+        tileObject.removeBattler(battlerId);
         this.battlerPositions.delete(battlerId);
 
         // Update the tile texture
-        this.updateTileTexture(x, y);
-    }
-
-    updateTileTexture(x, y) {
-        const isOccupied = this.grid[y][x].battlers.length > 0;
-        let textureKey = x < 3 
-            ? (isOccupied ? 'occupied_green' : 'unoccupied_green') 
-            : (isOccupied ? 'occupied_red' : 'unoccupied_red');
-
-        const tile = this.grid[y][x].tile;
-
-        // Determine the texture key based on the tile's state
-        if (this.grid[y][x].telegraphCount > 0) {
-            textureKey = 'telegraph';
-        }
-        if (this.grid[y][x].selected) {
-            if (this.grid[y][x].telegraphCount > 0) {
-                textureKey = x < 3 ? 'telegraph_selected_gold' : 'telegraph_selected_red';
-            } else {
-                textureKey = x < 3 ? 'selected_green' : 'selected_red';
-            }
-        }
-
-        tile.setTexture(textureKey);
-        tile.setAlpha(1); // Reset the alpha if not telegraphed or selected
-
-        // Remove the tween if it exists
-        if (this.grid[y][x].tween) {
-            this.grid[y][x].tween.stop();
-            this.grid[y][x].tween = null;
-        }
-
-        // If the tile is selected, create the tween
-        if (this.grid[y][x].selected) {
-            if (!this.grid[y][x].tween) {
-                this.grid[y][x].tween = this.scene.tweens.add({
-                    targets: this.grid[y][x].tile,
-                    alpha: { start: 1, to: 0.7 },
-                    duration: 500,
-                    yoyo: true,
-                    repeat: -1
-                });
-            }
-        }
+        tileObject.updateTexture();
     }
 
     selectTile(x, y) {
         // Deselect the currently selected tile
         if (this.selectedTile) {
             const [prevX, prevY] = this.selectedTile;
-            this.grid[prevY][prevX].selected = false;
-            this.updateTileTexture(prevX, prevY);
+            this.grid[prevY][prevX].deselect();
         }
 
         // Select the new tile
         this.selectedTile = [x, y];
-        this.grid[y][x].selected = true;
-        this.updateTileTexture(x, y);
+        this.grid[y][x].select();
     }
+
+    getSelectedTile() {
+        if (this.selectedTile) {
+            const [x, y] = this.selectedTile;
+            return this.grid[y][x];
+        }
+        return null;
+    }    
 
     showTelegraph(tiles, duration) {
         // Increase the telegraph count and set the telegraph texture
         tiles.forEach(([x, y]) => {
-            this.grid[y][x].telegraphCount += 1;
-
-            // Determine the correct texture for telegraphed tiles
-            const textureKey = this.grid[y][x].selected ? (x < 3 ? 'telegraph_selected_gold' : 'telegraph_selected_red') : 'telegraph';
-            this.grid[y][x].tile.setTexture(textureKey);
-
-            // Create the tween for the telegraphed tile if not already created
-            if (!this.grid[y][x].tween) {
-                this.grid[y][x].tween = this.scene.tweens.add({
-                    targets: this.grid[y][x].tile,
-                    alpha: { start: 1, to: 0.7 },
-                    duration: 500,
-                    yoyo: true,
-                    repeat: -1
-                });
-            }
+            const tile = this.grid[y][x];
+            tile.showTelegraph();
         });
 
         // Restore the appropriate texture after the duration
         this.scene.time.delayedCall(duration, () => {
             tiles.forEach(([x, y]) => {
-                this.grid[y][x].telegraphCount -= 1;
-                if (this.grid[y][x].telegraphCount === 0) {
-                    this.updateTileTexture(x, y);
-                }
+                const tile = this.grid[y][x];
+                tile.hideTelegraph();
             });
         });
-    }
-
-    getSelectedTileCoords() {
-        if (this.selectedTile) {
-            return { x: this.selectedTile[0], y: this.selectedTile[1] };
-        }
-        return null;
     }
 }
 

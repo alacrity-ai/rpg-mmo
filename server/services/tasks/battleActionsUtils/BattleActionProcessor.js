@@ -67,27 +67,19 @@ class BattleActionProcessor {
       };
     }
 
-    // If the team is the player, check if the new position is valid
-    if (team === 'player') {
-        if (action.actionData.newPosition[0] < 0 || action.actionData.newPosition[0] > 2 || action.actionData.newPosition[1] < 0 || action.actionData.newPosition[1] > 2) {
-            return {
-                success: false,
-                message: 'Invalid move action',
-                battlerId: action.battlerId,
-                actionType: action.actionType,
-                actionData: action.actionData
-            };
-        }
-    } else {
-        if (action.actionData.newPosition[0] < 3 || action.actionData.newPosition[0] > 5 || action.actionData.newPosition[1] < 0 || action.actionData.newPosition[1] > 2) {
-            return {
-                success: false,
-                message: 'Invalid move action',
-                battlerId: action.battlerId,
-                actionType: action.actionType,
-                actionData: action.actionData
-            };
-        }
+    // Validate new position based on team
+    const isValidPosition = (team === 'player')
+        ? action.actionData.newPosition[0] >= 0 && action.actionData.newPosition[0] <= 2 && action.actionData.newPosition[1] >= 0 && action.actionData.newPosition[1] <= 2
+        : action.actionData.newPosition[0] >= 3 && action.actionData.newPosition[0] <= 5 && action.actionData.newPosition[1] >= 0 && action.actionData.newPosition[1] <= 2;
+
+    if (!isValidPosition) {
+      return {
+        success: false,
+        message: 'Invalid move action',
+        battlerId: action.battlerId,
+        actionType: action.actionType,
+        actionData: action.actionData
+      };
     }
 
     await updateBattlerPosition(action.battlerId, action.actionData.newPosition);

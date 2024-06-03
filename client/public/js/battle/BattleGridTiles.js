@@ -107,7 +107,6 @@ export const generateGradientTexture = (scene, startColor, endColor, alpha, bord
 
     // Add the canvas texture to the texture manager with the correct key
     scene.textures.addCanvas(key, canvas.canvas);
-    console.log(`Texture key added: ${key}`);
     
     // Remove the temporary key
     scene.textures.remove(tempKey);

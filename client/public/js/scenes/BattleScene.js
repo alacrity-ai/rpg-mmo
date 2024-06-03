@@ -1,14 +1,16 @@
+// BattleScene.js
+
 import Phaser from 'phaser';
+import BattleActionResponseHandler from './handlers/BattleActionResponseHandler';
 import MusicManager from '../audio/MusicManager.js';
 import SoundFXManager from '../audio/SoundFXManager.js';
 import BattleGrid from '../battle/BattleGrid.js';
-import BattleGridInput from '../battle/BattleGridInput.js';
+import BattleActionClientInputHandler from './handlers/BattleActionClientInputHandler.js';
 import CustomCursor from '../interface/CustomCursor.js';
 import ActionBarMenu from '../interface/menu/ActionBarMenu.js';
 import StatsMenu from '../interface/menu/BattleStatbarsMenu.js';
 import SocketManager from '../SocketManager.js';
 import { addBackgroundImage } from '../graphics/BackgroundManager.js';
-import api from '../api';
 
 export default class BattleScene extends Phaser.Scene {
     constructor(key, battleInstanceData, battlerInstancesData, backgroundImage = 'assets/images/zone/area/normal/elderswood/battle.png') {
@@ -58,66 +60,24 @@ export default class BattleScene extends Phaser.Scene {
             await this.battleGrid.addBattler(battlerData, battlerData.gridPosition, battlerData.characterId === this.battlerId);
         }
 
-        // Initialize the BattleGridInput class
-        const battleGridInput = new BattleGridInput(this.battleGrid, this.battlerId);
-
         // Initialize the ActionBarMenu
         this.actionBarMenu = new ActionBarMenu(this, this.battleInstanceId, this.battlerId, this.battleGrid);
         this.actionBarMenu.show();
-
-        // Listen for navigation button clicks
-        this.events.on('moveButtonClicked', this.handleMoveButtonClicked, this);
-        this.events.on('tileSelected', (data) => console.log('Tile selected:', data));
 
         // Initialize the StatsMenu with mock data
         this.statsMenu = new StatsMenu(this, this.battler.currentStats.health, this.battler.baseStats.health, this.battler.currentStats.mana, this.battler.baseStats.mana);
         this.statsMenu.show();
 
-        // Listen for completed battler actions
-        SocketManager.getSocket().on('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));
-    }
+        // Get settings from registry
+        const settings = this.registry.get('settings');
 
-    handleMoveButtonClicked(direction) {
-        // Get the current position
-        const currentPosition = this.battleGrid.getBattlerPosition(this.battlerId);
-        const [currentBattlerX, currentBattlerY] = currentPosition;
-        if (!currentPosition) {
-            console.error(`Battler position not found for battlerId: ${this.battlerId}`);
-            return;
-        }
-        
-        // Get the current position, and the new position
-        const newPosition = [currentBattlerX + direction[0], currentBattlerY + direction[1]];
+        // Initialize the action response handler for messages from the server
+        this.actionResponseHandler = new BattleActionResponseHandler(this.battleGrid, this.actionBarMenu, settings);
+        this.actionResponseHandler.initialize();
 
-        // Verify that the new position is in bounds
-        if (!this.battleGrid.positionInBounds(newPosition, 'player')) {
-            console.log('New position is out of bounds:', newPosition);
-            return;
-        }
-
-        if (Math.abs(direction[0]) > 1 || Math.abs(direction[1]) > 1) {
-            console.log('Only 1 tile of movement permitted');
-            return;
-        }
-        
-        // Send movement request to server
-        const actionData = { newPosition: newPosition, currentPosition: currentPosition, team: 'player' };
-        api.battlerAction.addBattlerAction(this.battleInstanceId, this.battlerId, 'move', actionData)
-            .then(response => {
-                console.log('Action added successfully:', response);
-            })
-            .catch(error => {
-                console.error('Failed to add action:', error);
-            });
-    }
-
-    handleCompletedBattlerAction(data) {
-        if (data.actionType === 'move') {
-            this.actionBarMenu.triggerGlobalCooldown(this.registry.get('settings').cooldowns.short);
-            const battlerInstance = this.battleGrid.getBattlerInstance(data.battlerId);
-            battlerInstance.moveToTile(data.actionData.newPosition, this.battleGrid);
-        }
-        // Handle other action types as needed
+        // Initialize the BattleActionClientInputHandler for client local inputs
+        this.battleActionClientInputHandler = new BattleActionClientInputHandler(this, this.battleGrid, this.actionBarMenu, this.battlerId);
+        this.battleActionClientInputHandler.initialize();
     }
 
     update(time, delta) {
@@ -126,6 +86,13 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     cleanup() {
-        // Do cleanup tasks as needed
+        // Cleanup event listeners and other resources
+        this.actionResponseHandler.cleanup();
+        this.battleActionClientInputHandler.cleanup();
+    }
+
+    destroy() {
+        this.cleanup();
+        super.destroy();
     }
 }

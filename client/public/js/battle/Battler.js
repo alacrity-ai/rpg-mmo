@@ -11,9 +11,7 @@ class Battler {
             this.yOffset = -20;
         } else {
             this.yOffset = 0;
-        
         }
-
     }
 
     async initialize() {
@@ -25,11 +23,14 @@ class Battler {
         const tile = battleGrid.grid[y][x];
         // Calculate the position to center the sprite in the tile
         const position = {
-            x: tile.tile.x + tile.tile.width / 2 - 4,
-            y: tile.tile.y + this.yOffset - 32
+            x: tile.sprite.x + tile.sprite.width / 2 - 4,
+            y: tile.sprite.y + this.yOffset - 32
         };
         this.sprite = BattlerSpriteManager.createSprite(this.scene, this.battlerData, position, this.spriteConfig);
         // If renderAboveOthers is true, set the depth to a higher value
+        if (this.renderAboveOthers) {
+            this.sprite.setDepth(10); // Ensure this battler is rendered above others
+        }
         battleGrid.addBattlerToTile(this.battlerData.id, this.initialTile);
     }
 
@@ -44,8 +45,8 @@ class Battler {
         const tile = battleGrid.grid[y][x];
         // Calculate the position to center the sprite in the tile
         const position = {
-            x: tile.tile.x + tile.tile.width / 2 - 4,
-            y: tile.tile.y + this.yOffset - 32
+            x: tile.sprite.x + tile.sprite.width / 2 - 4,
+            y: tile.sprite.y + this.yOffset - 32
         };
         this.scene.tweens.add({
             targets: this.sprite,
