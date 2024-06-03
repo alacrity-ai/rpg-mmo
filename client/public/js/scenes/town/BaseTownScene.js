@@ -120,15 +120,20 @@ export default class BaseTownScene extends Phaser.Scene {
         // Add the arrow-down-red icon to the bottom right of the screen
         const arrowDownRedIcon = this.iconHelper.getIcon('arrow-down-red');
         const { width, height } = this.sys.game.config;
-
+    
         // Position the icon at the bottom right
         arrowDownRedIcon.setPosition(width - 60, 530); // Adjust as needed for padding
         arrowDownRedIcon.setInteractive();
-
-        arrowDownRedIcon.on('pointerdown', () => {
+    
+        const returnAction = () => {
             SoundFXManager.playSound('assets/sounds/door_close.wav');
             fadeTransition(this, this.returnSceneKey, 500);
-        });
+        };
+    
+        arrowDownRedIcon.on('pointerdown', returnAction);
+    
+        // Add listener for 'S' key press to trigger the return action
+        this.input.keyboard.on('keydown-S', returnAction);
     }
 
     cleanup() {
