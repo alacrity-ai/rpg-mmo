@@ -4,10 +4,10 @@ export default class FogEffect {
     constructor(scene, brightness = 1, thickness = 1, speedX = 0.5, speedY = 0, texturePath = 'assets/images/effects/fg_fog.png') {
         this.scene = scene;
         this.texturePath = texturePath;
-        this.thickness = thickness;
+        this.thickness = thickness / 1.25;
         this.speedX = speedX;
         this.speedY = speedY;
-        this.brightness = brightness;
+        this.brightness = brightness / 1.25;
         this.ready = false;
 
         // Load the fog image

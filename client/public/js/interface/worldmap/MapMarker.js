@@ -55,7 +55,7 @@ export default class MapMarker {
 
         this.marker.on('pointerdown', () => {
             SoundFXManager.playSound('assets/sounds/footstep_chain.wav');
-            if (this.type === 'blue') {
+            if (this.type === 'blue' || this.type === 'gold') {
                 // Transition to the specified scene
                 fadeTransition(this.scene, sceneKey);
             } else if (this.type === 'green') {

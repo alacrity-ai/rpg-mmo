@@ -50,24 +50,29 @@ const applyDithering = (context, width, height, ditherAmount = 64) => {
     context.putImageData(imageData, 0, 0);
 };
 
-export const generateGradientTexture = (scene, startColor, endColor, alpha, border, borderColor, key, ditherAmount = 8) => {
+export const generateGradientTexture = (scene, startColor, endColor, alpha, border, borderColor, key, tileWidth = 84, tileHeight = 32, ditherAmount = 8) => {
     // Check if the texture already exists
     if (scene.textures.exists(key)) {
         console.log(`Texture key already in use: ${key}`);
         return;
     }
-    
-    const tileWidth = 84; // Default 96
-    const tileHeight = 42; // Default 96
+
     const radius = 8; // Radius for rounded corners
-    
+
     const tempKey = `${key}_temp`;
     const canvas = scene.textures.createCanvas(tempKey, tileWidth, tileHeight);
     const context = canvas.context;
     const gradient = context.createLinearGradient(0, 0, 0, tileHeight);
 
-    gradient.addColorStop(0, Phaser.Display.Color.IntegerToColor(startColor).rgba);
-    gradient.addColorStop(1, Phaser.Display.Color.IntegerToColor(endColor).rgba);
+    // Manually add alpha to the colors
+    const startColorObj = Phaser.Display.Color.IntegerToColor(startColor);
+    const endColorObj = Phaser.Display.Color.IntegerToColor(endColor);
+
+    const startColorWithAlpha = `rgba(${startColorObj.red}, ${startColorObj.green}, ${startColorObj.blue}, ${alpha})`;
+    const endColorWithAlpha = `rgba(${endColorObj.red}, ${endColorObj.green}, ${endColorObj.blue}, ${alpha})`;
+
+    gradient.addColorStop(0, startColorWithAlpha);
+    gradient.addColorStop(1, endColorWithAlpha);
 
     context.fillStyle = gradient;
     context.beginPath();
@@ -115,7 +120,9 @@ export const generateGradientTexture = (scene, startColor, endColor, alpha, bord
     scene.textures.get(key).setFilter(Phaser.Textures.FilterMode.NEAREST);
 };
 
+
+
 // Generate texture with gold or red border for selected tile
 export const generateBorderTexture = (scene, startColor, endColor, alpha, key, borderColor, ditherAmount = 8) => {
-    generateGradientTexture(scene, startColor, endColor, alpha, true, borderColor, key, ditherAmount);
+    generateGradientTexture(scene, startColor, endColor, alpha, true, borderColor, key, 84, 32, ditherAmount);
 };

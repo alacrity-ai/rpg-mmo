@@ -37,20 +37,20 @@ class BattleGrid {
 
     generateTextures() {
         // Dramatic colors for the gradients from dark to light
-        generateGradientTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.2, false, 0xFFFFFF, 'unoccupied_green'); // Dark green to muted light green
-        generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.4, true, 0xFFFFFF, 'occupied_green'); // Dark green to less muted light green with border
-        generateGradientTexture(this.scene, 0x582C2C, 0xB47F7F, 0.2, false, 0xFFFFFF, 'unoccupied_red'); // Dark red to muted light red
-        generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.8, true, 0xFFFFFF, 'occupied_red'); // Dark red to less muted light red with border
-        generateGradientTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, false, 0xFFFFFF, 'telegraph'); // Dark orange to muted light orange with brown border
-        generateBorderTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.2, 'selected_green', 0xFFD700); // Dark green to muted light green with gold border
-        generateBorderTexture(this.scene, 0x582C2C, 0xB47F7F, 0.2, 'selected_red', 0xFF0000); // Dark red to muted light red with red border
-        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, 'telegraph_selected_gold', 0xFFD700); // Dark orange to muted light orange with gold border
+        generateGradientTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.4, false, 0xFFFFFF, 'unoccupied_green'); // Dark green to muted light green
+        generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.6, true, 0xFFFFFF, 'occupied_green'); // Dark green to less muted light green with border
+        generateGradientTexture(this.scene, 0x582C2C, 0xB47F7F, 0.4, false, 0xFFFFFF, 'unoccupied_red'); // Dark red to muted light red
+        generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.6, true, 0xFFFFFF, 'occupied_red'); // Dark red to less muted light red with border
+        generateGradientTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, false, 0xFFFFFF, 'telegraph'); // Dark orange to muted light orange with brown border
+        generateBorderTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.4, 'selected_green', 0xFFD700); // Dark green to muted light green with gold border
+        generateBorderTexture(this.scene, 0x582C2C, 0xB47F7F, 0.4, 'selected_red', 0xFF0000); // Dark red to muted light red with red border
+        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, 'telegraph_selected_gold', 0xFFD700); // Dark orange to muted light orange with gold border
         generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, 'telegraph_selected_red', 0xFF0000); // Dark orange to muted light orange with red border
     }
 
     renderGrid() {
         const tileWidth = 84; // Default 96
-        const tileHeight = 42; // Default 96
+        const tileHeight = 32; // Default 96
         const gridWidth = 6;
         const gridHeight = 3;
         const separation = 24; // Separation between player and enemy tiles
@@ -62,7 +62,7 @@ class BattleGrid {
     
         // Calculate the offsets to center the grid
         const offsetX = (this.scene.scale.width - totalGridWidth) / 2;
-        const offsetY = (this.scene.scale.height - totalGridHeight) / 2 + 72;
+        const offsetY = (this.scene.scale.height - totalGridHeight) / 2 + 108;
     
         for (let y = 0; y < gridHeight; y++) {
             this.grid[y] = [];

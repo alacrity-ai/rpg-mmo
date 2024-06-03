@@ -3,7 +3,7 @@
 
 TOMORROW (6/2/2024):
 
-- [ ] Database Validation:
+- [x] Database Validation:
 
     - Delete the current database and rerun the server to create and populate tables.
     - Verify that the game runs smoothly, including creating a character, entering an area, and engaging in combat.
@@ -34,8 +34,34 @@ TOMORROW (6/2/2024):
     - Start planning the structure and implementation of the ability system.
     - Begin planning the scripting system for enemy behaviors.
 
+6/2/2024
+What we Did:
+7370680 - Add more keyboard controls
+dabc865 - Add keyboard controls
+d44376e - Add configs and keyboard controls
+b4cefdc - More cleanup refactoring
+d559fd1 - Major refactors for maintainability
+ac13ea0 - Add selectable tiles, refactor appearance of arena, more battle enhancements (including telegraphs)
+95e618c - Add new utilities and images
+68f7641 - Update todos
+8330335 - Implement encounters in areas triggering
+32cb120 - Add battle handler
+028aa6b - Stable refactor
 
+6/1/2024
 What We DID:
+24d4f67 - Create documentation folder
+5bb663c - Add backend code required for encounters
+68b15fd - Add basic Area transitions, map and navigation menu
+c5d46b3 - Enhance fog and weather effects in zones
+ee145a3 - Add requestZone task and code
+033d06f - Refactor areas/zones/instances, refactor zone instance creation, add additional enhancements
+5c84eea - Add global configuration
+4dc59a2 - Add serverside handling of cooldowns
+6f092ab - Parameterize global cooldown
+28be4d2 - Refactors to prepare for expeditions
+d1cd560 - Add movement handled by redis cache / server commands
+f3370c2 - add battle engine
 We refactored the zone instance creation and all the requisite tables (area_instances, zone_instances, zone_templates).
 zone creator is now creating a properly linked zone_instance, and area_instances with all the information they need to instantiate ExpeditionScene.
 We just added binding the characterId to the socket on character login (We should validate that's working)

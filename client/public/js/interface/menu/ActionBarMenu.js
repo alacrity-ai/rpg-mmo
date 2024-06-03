@@ -19,7 +19,7 @@ export default class ActionBarMenu extends BaseMenu {
         this.battlerId = battlerId;
         this.battleGrid = battleGrid;
         this.createActionBar();
-        this.createActionNavigationBar(); // Call the new method here
+        // this.createActionNavigationBar(); // Call the new method here
         this.isCooldownActive = false; // Track the cooldown state
     }
 

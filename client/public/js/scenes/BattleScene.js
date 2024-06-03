@@ -11,9 +11,10 @@ import ActionBarMenu from '../interface/menu/ActionBarMenu.js';
 import StatsMenu from '../interface/menu/BattleStatbarsMenu.js';
 import SocketManager from '../SocketManager.js';
 import { addBackgroundImage } from '../graphics/BackgroundManager.js';
+import FogEffect from '../graphics/FogEffect.js';
 
 export default class BattleScene extends Phaser.Scene {
-    constructor(key, battleInstanceData, battlerInstancesData, backgroundImage = 'assets/images/zone/area/normal/elderswood/battle.png') {
+    constructor(key, battleInstanceData, battlerInstancesData, backgroundImage = 'assets/images/zone/area/normal/elderswood/battle_3.png') {
         super({ key });
         this.battleInstanceData = battleInstanceData;
         this.battlerInstancesData = battlerInstancesData;
@@ -37,7 +38,7 @@ export default class BattleScene extends Phaser.Scene {
 
     async create() {
         // Add the background image and ensure it fits the canvas
-        addBackgroundImage(this, this.backgroundImage, this.sys.game.config.width, this.sys.game.config.height - 140, 0, 0, true);
+        addBackgroundImage(this, this.backgroundImage, this.sys.game.config.width, this.sys.game.config.height, 0, 0, true);
 
         // Play background music
         MusicManager.playMusic('assets/music/heroic_drums.mp3');
@@ -50,6 +51,9 @@ export default class BattleScene extends Phaser.Scene {
 
         // Initialize SoundFXManager
         SoundFXManager.initialize(this);
+
+        // Initialize the fog effect
+        this.fogEffect = new FogEffect(this, 0.5, 0.5, 2, 0);
 
         // Get the battlerId for the current character
         this.battler = this.battlerInstancesData.find(battler => battler.characterId === this.registry.get('characterId'));
@@ -64,9 +68,9 @@ export default class BattleScene extends Phaser.Scene {
         this.actionBarMenu = new ActionBarMenu(this, this.battleInstanceId, this.battlerId, this.battleGrid);
         this.actionBarMenu.show();
 
-        // Initialize the StatsMenu with mock data
-        this.statsMenu = new StatsMenu(this, this.battler.currentStats.health, this.battler.baseStats.health, this.battler.currentStats.mana, this.battler.baseStats.mana);
-        this.statsMenu.show();
+        // // Initialize the StatsMenu with mock data
+        // this.statsMenu = new StatsMenu(this, this.battler.currentStats.health, this.battler.baseStats.health, this.battler.currentStats.mana, this.battler.baseStats.mana);
+        // this.statsMenu.show();
 
         // Get settings from registry
         const settings = this.registry.get('settings');
@@ -81,6 +85,11 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     update(time, delta) {
+        // Update fog effect if exists
+        if (this.fogEffect) {
+            this.fogEffect.update(time, delta);
+        }
+
         // Update custom cursor position
         CustomCursor.getInstance(this).update();    
     }
