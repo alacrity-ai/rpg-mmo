@@ -2,7 +2,7 @@ const Redis = require('ioredis');
 const { createExpeditionZone } = require('../../services/expeditions/zoneCreator');
 const { getZoneTemplateBySceneKey } = require('../../db/queries/zoneTemplatesQueries');
 const { getAreaInstanceById, updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
-const taskRegistry = require('../server/taskRegistry');
+const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const redis = new Redis();
 

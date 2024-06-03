@@ -1,7 +1,7 @@
 const Redis = require('ioredis');
 const { getShopTemplateById } = require('../../db/queries/shopTemplatesQueries');
 const { getItemTemplateById } = require('../../db/queries/itemTemplatesQueries');
-const taskRegistry = require('../server/taskRegistry');
+const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const redis = new Redis();
 

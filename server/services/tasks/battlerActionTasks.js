@@ -1,8 +1,8 @@
 const Redis = require('ioredis');
-const taskRegistry = require('../server/taskRegistry');
+const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const redis = new Redis();
-const BattleActionProcessor = require('../../services/tasks/battleActionsUtils/BattleActionProcessor');
+const BattleActionProcessor = require('./battleActionsUtils/BattleActionProcessor');
 
 async function processAddBattlerActionTask(task) {
     const { taskId, data } = task.taskData;

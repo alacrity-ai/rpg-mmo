@@ -1,6 +1,7 @@
 const Redis = require('ioredis');
 const BattleCreator = require('../../services/expeditions/battleCreator');
 const { getAreaInstanceById } = require('../../db/queries/areaInstancesQueries');
+const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const redis = new Redis();
 
@@ -35,7 +36,6 @@ async function processGetBattleInstanceTask(task) {
 }
 
 // Register task handlers
-const taskRegistry = require('../server/taskRegistry');
 taskRegistry.register('getBattleInstance', processGetBattleInstanceTask);
 
 module.exports = {

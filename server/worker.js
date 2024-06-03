@@ -1,10 +1,12 @@
 require('dotenv').config();
 const Redis = require('ioredis');
-const { getTask } = require('./services/server/taskQueue');
-const taskRegistry = require('./services/server/taskRegistry');
+const { getTask } = require('./handlers/taskQueue');
+const taskRegistry = require('./handlers/taskRegistry');
 const logger = require('./utilities/logger');
 
-const POLL_INTERVAL_MS = 250;
+const MIN_POLL_INTERVAL_MS = 50;
+const MAX_POLL_INTERVAL_MS = 100;
+let currentPollInterval = MIN_POLL_INTERVAL_MS;
 
 // Import task modules to ensure they are registered
 require('./services/tasks/userTasks');
@@ -29,6 +31,7 @@ async function processTasks() {
       if (taskHandler) {
         try {
           await taskHandler(task);
+          currentPollInterval = MIN_POLL_INTERVAL_MS; // Reset interval after successful task processing
         } catch (error) {
           logger.error(`Failed to process task ${taskType}: ${error}`);
           const result = { error: `Failed to process task ${taskType}. ` + error.message };
@@ -40,7 +43,8 @@ async function processTasks() {
         await redis.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
       }
     } else {
-      await new Promise((resolve) => setTimeout(resolve, POLL_INTERVAL_MS)); // Wait a bit before checking again
+      currentPollInterval = Math.min(currentPollInterval + 50, MAX_POLL_INTERVAL_MS); // Increase interval if no task found
+      await new Promise((resolve) => setTimeout(resolve, currentPollInterval));
     }
   }
 }

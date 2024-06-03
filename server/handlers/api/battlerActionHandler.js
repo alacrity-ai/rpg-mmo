@@ -1,4 +1,4 @@
-const { enqueueTask } = require('../../services/server/taskUtils');
+const { enqueueTask } = require('../taskUtils');
 
 module.exports = (socket, io) => {
   socket.on('addBattlerAction', async (data, callback) => {

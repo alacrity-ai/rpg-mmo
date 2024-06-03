@@ -1,7 +1,7 @@
 const Redis = require('ioredis');
 const { createCharacter, getCharacterByName, getCharactersByUser } = require('../../db/queries/characterQueries');
 const { getClassTemplateByName, getAllClasses } = require('../../db/queries/classTemplatesQueries');
-const taskRegistry = require('../server/taskRegistry');
+const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const redis = new Redis();
 

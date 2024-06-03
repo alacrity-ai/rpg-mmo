@@ -1,7 +1,7 @@
 const Redis = require('ioredis');
 const { getUserByUsername, createUser } = require('../../db/queries/usersQueries');
 const crypto = require('crypto');
-const taskRegistry = require('../server/taskRegistry');
+const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const redis = new Redis();
 

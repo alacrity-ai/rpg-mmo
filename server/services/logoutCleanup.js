@@ -1,6 +1,6 @@
 // services/logoutCleanup.js
 
-const { enqueueTask } = require('./server/taskUtils');
+const { enqueueTask } = require('../handlers/taskUtils');
 const logger = require('../utilities/logger');
 
 const handleDisconnect = (socket) => {

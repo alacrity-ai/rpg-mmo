@@ -1,6 +1,6 @@
 const Redis = require('ioredis');
 const { createCharacterParty, removeMemberFromParty } = require('../../db/queries/characterPartyQueries');
-const taskRegistry = require('../server/taskRegistry');
+const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const redis = new Redis();
 
