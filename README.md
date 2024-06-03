@@ -7,8 +7,10 @@ This project is an MMO (Massively Multiplayer Online) game that combines a graph
 ## Repository Structure
 
 - **client**: Contains the graphical interface for the game.
-- **server**: Manages game logic, communication, and interaction with the database.
-- **database**: Contains database setup and initial data population scripts.
+- **server**: Manages game client connections, enqueues tasks for the workers
+- **workers**: Receives tasks from redis, performs business logic and database interactions, publishes results
+- **redis**: Stores tasks, and task results.  Tasks are handled by worker, results are passed to clients from server.
+- **database**: MySQL 8.0 Database responsible for maintaining game state, user accounts, etc
 
 ## High-Level Description
 
