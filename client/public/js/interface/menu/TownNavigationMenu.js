@@ -16,12 +16,6 @@ export default class TownNavigationMenu extends BaseMenu {
         this.scale = scale;
     }
 
-    /* Sets up the navigation buttons for a town scene.
-     * @param {string|null} up - The scene to the north, or null if there is no scene.
-     * @param {string|null} down - The scene to the south, or null if there is no scene.
-     * @param {string|null} left - The scene to the west, or null if there is no scene.
-     * @param {string|null} right - The scene to the east, or null if there is no scene.
-     * */
     setupTownNavigationButtons(up = null, down = null, left = null, right = null) {
         const buttonSize = 30 * this.scale;
         const labelSize = `${24 * this.scale}px`;
@@ -54,5 +48,34 @@ export default class TownNavigationMenu extends BaseMenu {
         } else {
             this.addButton(this.x + offset, this.y, buttonSize, buttonSize, '→', null, 'No Travel East', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }
+
+        // Attach WASD key listeners for navigation
+        this.attachMoveKeysListener(up, down, left, right);
+    }
+
+    attachMoveKeysListener(up, down, left, right) {
+        this.scene.input.keyboard.on('keydown-W', () => {
+            if (up !== null) {
+                fadeTransition(this.scene, up);
+            }
+        });
+
+        this.scene.input.keyboard.on('keydown-A', () => {
+            if (left !== null) {
+                fadeTransition(this.scene, left);
+            }
+        });
+
+        this.scene.input.keyboard.on('keydown-S', () => {
+            if (down !== null) {
+                fadeTransition(this.scene, down);
+            }
+        });
+
+        this.scene.input.keyboard.on('keydown-D', () => {
+            if (right !== null) {
+                fadeTransition(this.scene, right);
+            }
+        });
     }
 }

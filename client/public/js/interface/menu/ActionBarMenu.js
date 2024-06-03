@@ -35,6 +35,7 @@ export default class ActionBarMenu extends BaseMenu {
             const iconY = this.y;
 
             const iconButton = this.addIconButton(iconX, iconY, iconName, () => {
+                // All of this code is temporary, for showcasing the telegraph system
                 const middleRow = 1;
                 const topRow = 0;
                 const bottomRow = 2;

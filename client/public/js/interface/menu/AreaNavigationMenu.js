@@ -8,21 +8,16 @@ export default class AreaNavigationMenu extends BaseMenu {
     constructor(scene, currentAreaId, x = null, y = null, scale = 1) {
         const width = 112 * scale;
         const height = 112 * scale;
-        // If x is null, use this.sys.game.config.width / 14
         x = x || scene.sys.game.config.width / 14 + 5;
-        // If y is null, use this.sys.game.config.height / 1.4
         y = y || scene.sys.game.config.height / 1.4 + 30;
         super(scene, x, y, width, height, 0x000000, 0.8, 24 * scale, null, null, false, false);
-        // Add a window manually
+        
         const window = this.addWindow(x, y, width, height, 0x000000, 0.8, 24 * scale);
         window.setDepth(90);
         this.scale = scale;
         this.currentAreaId = currentAreaId;
     }
 
-    /* Sets up the navigation buttons for an area scene.
-     * @param {Object} areaConnections - The area connections from the current area.
-     * */
     setupAreaNavigationButtons(areaConnections) {
         const buttonSize = 30 * this.scale;
         const labelSize = `${24 * this.scale}px`;
@@ -55,6 +50,9 @@ export default class AreaNavigationMenu extends BaseMenu {
         } else {
             this.addButton(this.x + offset, this.y, buttonSize, buttonSize, 'E', null, 'No Travel East', 0, 0x555555, '#888', 10 * this.scale, labelSize, true);
         }
+
+        // Attach WASD key listeners for navigation
+        this.attachMoveKeysListener(areaConnections);
     }
 
     requestAreaChange(targetAreaId) {
@@ -71,5 +69,31 @@ export default class AreaNavigationMenu extends BaseMenu {
             .catch((error) => {
                 console.error('Error requesting area:', error);
             });
+    }
+
+    attachMoveKeysListener(areaConnections) {
+        this.scene.input.keyboard.on('keydown-W', () => {
+            if (areaConnections.north !== null) {
+                this.requestAreaChange(areaConnections.north);
+            }
+        });
+
+        this.scene.input.keyboard.on('keydown-A', () => {
+            if (areaConnections.west !== null) {
+                this.requestAreaChange(areaConnections.west);
+            }
+        });
+
+        this.scene.input.keyboard.on('keydown-S', () => {
+            if (areaConnections.south !== null) {
+                this.requestAreaChange(areaConnections.south);
+            }
+        });
+
+        this.scene.input.keyboard.on('keydown-D', () => {
+            if (areaConnections.east !== null) {
+                this.requestAreaChange(areaConnections.east);
+            }
+        });
     }
 }
