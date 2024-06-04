@@ -14,6 +14,7 @@ export default class BattleActionClientInputHandler {
         this.attachRightClickListener();
         this.attachSelectTileListener();
         this.attachMoveKeysListener();
+        this.attachTileHoverListener();
         // Listen for navigation button clicks
         this.scene.events.on('moveButtonClicked', this.handleMoveAction, this);
         this.scene.events.on('tileSelected', (data) => console.log('Tile selected:', data));
@@ -42,6 +43,24 @@ export default class BattleActionClientInputHandler {
                         // Emit the moveButtonClicked event with the direction
                         this.scene.events.emit('moveButtonClicked', direction);
                     }
+                });
+            }
+        }
+    }
+
+    attachTileHoverListener() {
+        // Attach hover event listener to each of the tiles
+        for (let y = 0; y < this.battleGrid.grid.length; y++) {
+            for (let x = 0; x < this.battleGrid.grid[y].length; x++) {
+                const tile = this.battleGrid.grid[y][x];
+                tile.sprite.setInteractive();
+
+                tile.sprite.on('pointerover', () => {
+                    this.scene.events.emit('tileHovered', { x, y });
+                });
+
+                tile.sprite.on('pointerout', () => {
+                    this.scene.events.emit('tileHoveredOff', { x, y });
                 });
             }
         }

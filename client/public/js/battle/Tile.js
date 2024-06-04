@@ -3,11 +3,12 @@ class Tile {
         this.scene = scene;
         this.x = x;
         this.y = y;
-        this.baseTextureKey = textureKey; // Store the initial texture key as the base key
-        this.isPlayerSide = isPlayerSide; // Whether the tile is on the player's side
+        this.baseTextureKey = textureKey;
+        this.isPlayerSide = isPlayerSide;
         this.battlers = [];
         this.telegraphCount = 0;
         this.selected = false;
+        this.hovered = false; // Added this
         this.tween = null;
 
         this.sprite = this.scene.add.sprite(x, y, textureKey);
@@ -32,9 +33,13 @@ class Tile {
                 }
             }
         } else if (this.telegraphCount === 0) {
-            newTextureKey = this.isPlayerSide 
-                ? (this.battlers.length > 0 ? 'occupied_green' : 'unoccupied_green') 
-                : (this.battlers.length > 0 ? 'occupied_red' : 'unoccupied_red');
+            if (this.hovered) {
+                newTextureKey = this.isPlayerSide ? 'hovered_green' : 'hovered_red';
+            } else {
+                newTextureKey = this.isPlayerSide 
+                    ? (this.battlers.length > 0 ? 'occupied_green' : 'unoccupied_green') 
+                    : (this.battlers.length > 0 ? 'occupied_red' : 'unoccupied_red');
+            }
         }
 
         this.sprite.setTexture(newTextureKey);
@@ -47,7 +52,7 @@ class Tile {
         }
 
         // If the tile is selected or telegraphed, create the tween
-        if (this.selected || this.telegraphCount > 0) {
+        if (this.selected || this.telegraphCount > 0 || this.hovered) {
             this.tween = this.scene.tweens.add({
                 targets: this.sprite,
                 alpha: { start: 1, to: 0.7 },

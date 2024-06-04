@@ -33,6 +33,14 @@ class BattleGrid {
         this.scene.events.on('tileFocused', ({ x, y }) => {
             this.focusTile(x, y);
         });
+
+        this.scene.events.on('tileHovered', ({ x, y }) => {
+            this.hoverTile(x, y);
+        });
+
+        this.scene.events.on('tileHoveredOff', ({ x, y }) => {
+            this.unhoverTile(x, y);
+        });
     }
 
     createTileGrid() {
@@ -55,6 +63,9 @@ class BattleGrid {
         generateBorderTexture(this.scene, 0x582C2C, 0x582C2C, 0.5, 'selected_inactive', 0x808080, this.tileWidth, this.tileHeight);
         generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, 'telegraph_selected_gold', 0xFFD700, this.tileWidth, this.tileHeight);
         generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, 'telegraph_selected_red', 0xFF0000, this.tileWidth, this.tileHeight);
+        // Added new hovered_green and hovered_red textures
+        generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.8, false, 0xFFFFFF, 'hovered_green', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.8, false, 0xFFFFFF, 'hovered_red', this.tileWidth, this.tileHeight);
     }
 
     renderGrid() {
@@ -161,6 +172,21 @@ class BattleGrid {
 
         // Update the tile texture
         tileObject.updateTexture();
+    }
+
+    hoverTile(x, y) {
+        const tile = this.grid[y][x];
+        // Check if the tile is focused
+        if (!tile.selected) {
+            tile.hovered = true;
+            tile.updateTexture();
+        }
+    }
+
+    unhoverTile(x, y) {
+        const tile = this.grid[y][x];
+        tile.hovered = false;
+        tile.updateTexture();
     }
 
     focusTile(x, y, inactive = false) {
