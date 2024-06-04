@@ -76,6 +76,7 @@ export default class ActionBarMenu extends BaseMenu {
         // Add a pointerOver event here to target tiles on the battle grid
         iconButton.on('pointerover', () => {
             const targetTiles = this.calculateTargetTiles(ability);
+            console.log('Target tiles:', targetTiles);
             this.battleGrid.selectTiles(targetTiles);
         });
 
@@ -105,7 +106,11 @@ export default class ActionBarMenu extends BaseMenu {
             const battlerPosition = this.battleGrid.getBattlerPosition(this.battlerId);
             const [battlerX, battlerY] = battlerPosition;
             ability.targetArea.forEach(([x, y]) => {
-                targetTiles.push([battlerX + x, battlerY + y]);
+                if (battlerX + x < 3) {
+                    targetTiles.push([battlerX + x, battlerY + y, true])
+                } else {
+                    targetTiles.push([battlerX + x, battlerY + y, false]);
+                }    
             });
         } else if (ability.targetType === 'target') {
             // Placeholder for target logic

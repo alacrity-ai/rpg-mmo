@@ -14,7 +14,7 @@ class Tile {
         this.sprite.setOrigin(0, 0);
     }
 
-    updateTexture() {
+    updateTexture(inactive = false) {
         let newTextureKey = this.baseTextureKey;
 
         if (this.telegraphCount > 0) {
@@ -25,7 +25,11 @@ class Tile {
             if (this.telegraphCount > 0) {
                 newTextureKey = this.isPlayerSide ? 'telegraph_selected_gold' : 'telegraph_selected_red';
             } else {
-                newTextureKey = this.isPlayerSide ? 'selected_green' : 'selected_red';
+                if (inactive) {
+                    newTextureKey = this.isPlayerSide ? 'selected_inactive' : 'selected_inactive';
+                } else {
+                    newTextureKey = this.isPlayerSide ? 'selected_green' : 'selected_red';
+                }
             }
         } else if (this.telegraphCount === 0) {
             newTextureKey = this.isPlayerSide 
@@ -54,9 +58,9 @@ class Tile {
         }
     }
 
-    select() {
+    select(inactive = false) {
         this.selected = true;
-        this.updateTexture();
+        this.updateTexture(inactive);
     }
 
     deselect() {
