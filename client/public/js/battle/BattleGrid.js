@@ -37,19 +37,6 @@ class BattleGrid {
 
     generateTextures() {
         // Dramatic colors for the gradients from dark to light
-        // 0x703838 = Dark red
-        // 0xC27F7F = Muted light red
-        // Dark purple = 0x2E2E4A
-        // Light purple = 0x6E6E8B
-        // Neon violet = 0x8A2BE2
-        // Dark violet = 0x4B0082
-        // Neon Red = 0xFF0000
-        // Dark Neon Red = 0xA63D1D
-        // Neon Green = 0x00FF00
-        // Dark Neon Green = 0x2E4A2E
-        // Faint red = 0xFFD700
-        // Whitish red = 0xFFE4E1
-        // Grey = 0x808080
         generateGradientTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.4, false, 0xFFFFFF, 'unoccupied_green'); // Dark green to muted light green
         generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.8, false, 0xFFFFFF, 'occupied_green'); // Dark green to less muted light green with border
         generateGradientTexture(this.scene, 0x582C2C, 0xB47F7F, 0.4, false, 0xFFFFFF, 'unoccupied_red'); // Dark red to muted light red
@@ -57,8 +44,6 @@ class BattleGrid {
         generateGradientTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, false, 0xFFFFFF, 'telegraph'); // Dark orange to muted light orange with brown border
         generateBorderTexture(this.scene, 0x2E4A2E, 0x00FF00, 1, 'selected_green', 0xFFFFFF); // Dark green to muted light green with gold border
         generateBorderTexture(this.scene, 0xA63D1D, 0xFF0000, 1, 'selected_red', 0xFFFFFF); // Dark red to muted light red with red border
-        // Generate a line for 'selected_inactive', it should be grey
-        // 
         generateBorderTexture(this.scene, 0x582C2C, 0x582C2C, 0.5, 'selected_inactive', 0x808080); // Dark grey to muted light grey with gold border
         generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, 'telegraph_selected_gold', 0xFFD700); // Dark orange to muted light orange with gold border
         generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, 'telegraph_selected_red', 0xFF0000); // Dark orange to muted light orange with red border
