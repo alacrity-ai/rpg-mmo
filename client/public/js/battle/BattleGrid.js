@@ -7,6 +7,9 @@ class BattleGrid {
         this.scene = scene;
         this.battleTileImagePath = battleTileImagePath;
         this.grid = [];
+        this.tileWidth = 96; // Default 96
+        this.tileHeight = 42; // Default 42
+        this.gridYOffset = 120;
         this.battlerPositions = new Map(); // To track battler positions
         this.battlerInstanceMap = new Map(); // To track battler instances
         this.selectedTiles = []; // To track the selected tiles
@@ -28,48 +31,46 @@ class BattleGrid {
     }
 
     createTileGrid() {
-        // Pre-generate the textures
-        this.generateTextures();
+        // Pre-generate the textures for the tiles
+        this.generateTileTextures();
         
         // Logic to create the grid of tiles
         this.renderGrid();
     }
 
-    generateTextures() {
-        // Dramatic colors for the gradients from dark to light
-        generateGradientTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.4, false, 0xFFFFFF, 'unoccupied_green'); // Dark green to muted light green
-        generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.8, false, 0xFFFFFF, 'occupied_green'); // Dark green to less muted light green with border
-        generateGradientTexture(this.scene, 0x582C2C, 0xB47F7F, 0.4, false, 0xFFFFFF, 'unoccupied_red'); // Dark red to muted light red
-        generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.8, false, 0xFFFFFF, 'occupied_red'); // Dark red to less muted light red with border
-        generateGradientTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, false, 0xFFFFFF, 'telegraph'); // Dark orange to muted light orange with brown border
-        generateBorderTexture(this.scene, 0x2E4A2E, 0x00FF00, 1, 'selected_green', 0xFFFFFF); // Dark green to muted light green with gold border
-        generateBorderTexture(this.scene, 0xA63D1D, 0xFF0000, 1, 'selected_red', 0xFFFFFF); // Dark red to muted light red with red border
-        generateBorderTexture(this.scene, 0x582C2C, 0x582C2C, 0.5, 'selected_inactive', 0x808080); // Dark grey to muted light grey with gold border
-        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, 'telegraph_selected_gold', 0xFFD700); // Dark orange to muted light orange with gold border
-        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, 'telegraph_selected_red', 0xFF0000); // Dark orange to muted light orange with red border
+    generateTileTextures() {
+        // Generate each possible tile texture
+        generateGradientTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.4, false, 0xFFFFFF, 'unoccupied_green', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.8, false, 0xFFFFFF, 'occupied_green', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0x582C2C, 0xB47F7F, 0.4, false, 0xFFFFFF, 'unoccupied_red', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.8, false, 0xFFFFFF, 'occupied_red', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, false, 0xFFFFFF, 'telegraph', this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0x2E4A2E, 0x00FF00, 1, 'selected_green', 0xFFFFFF, this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0xA63D1D, 0xFF0000, 1, 'selected_red', 0xFFFFFF, this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0x582C2C, 0x582C2C, 0.5, 'selected_inactive', 0x808080, this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, 'telegraph_selected_gold', 0xFFD700, this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, 'telegraph_selected_red', 0xFF0000, this.tileWidth, this.tileHeight);
     }
 
     renderGrid() {
-        const tileWidth = 84; // Default 96
-        const tileHeight = 32; // Default 96
         const gridWidth = 6;
         const gridHeight = 3;
         const separation = 24; // Separation between player and enemy tiles
         const buffer = 4; // Buffer between tiles
     
         // Calculate the total width and height of the grid including separation and overlap
-        const totalGridWidth = (tileWidth + buffer) * gridWidth + separation - buffer;
-        const totalGridHeight = (tileHeight + buffer) * gridHeight - buffer;
+        const totalGridWidth = (this.tileWidth + buffer) * gridWidth + separation - buffer;
+        const totalGridHeight = (this.tileHeight + buffer) * gridHeight - buffer;
     
         // Calculate the offsets to center the grid
         const offsetX = (this.scene.scale.width - totalGridWidth) / 2;
-        const offsetY = (this.scene.scale.height - totalGridHeight) / 2 + 108;
+        const offsetY = (this.scene.scale.height - totalGridHeight) / 2 + this.gridYOffset;
     
         for (let y = 0; y < gridHeight; y++) {
             this.grid[y] = [];
             for (let x = 0; x < gridWidth; x++) {
-                let adjustedX = x * (tileWidth + buffer);
-                let adjustedY = y * (tileHeight + buffer);
+                let adjustedX = x * (this.tileWidth + buffer);
+                let adjustedY = y * (this.tileHeight + buffer);
     
                 if (x >= 3) {
                     // Add separation for enemy tiles

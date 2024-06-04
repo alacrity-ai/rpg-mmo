@@ -66,6 +66,21 @@ const abilityTemplates = [
         sound_path: 'assets/sounds/rogue_strike.mp3'
     },
     {
+        name: 'Bandage',
+        short_name: 'bandage',
+        description: 'Bandage wounds for light healing.',
+        type: 'ability',
+        potency: 50,
+        cost: 10,
+        required_coords: JSON.stringify([]),
+        target_team: 'friendly',
+        target_type: 'self',
+        target_area: JSON.stringify([]),
+        cooldown_duration: 'long',
+        icon_name: 'bandage',
+        sound_path: 'assets/sounds/rogue_strike.mp3'
+    },
+    {
         name: 'Smite',
         short_name: 'priestAttack',
         description: 'A divine attack that smites the enemy.',

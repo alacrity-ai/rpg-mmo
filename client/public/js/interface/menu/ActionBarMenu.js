@@ -160,12 +160,16 @@ export default class ActionBarMenu extends BaseMenu {
         switch (duration) {
             case 'minimum':
                 return cooldownSettings.minimum;
+            case 'shorter':
+                return cooldownSettings.shorter;
             case 'short':
                 return cooldownSettings.short;
             case 'normal':
                 return cooldownSettings.normal;
             case 'long':
                 return cooldownSettings.long;
+            case 'longer':
+                return cooldownSettings.longer;
             default:
                 return cooldownSettings.normal; // Default to normal if duration is unknown
         }

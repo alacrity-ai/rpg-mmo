@@ -50,10 +50,9 @@ const applyDithering = (context, width, height, ditherAmount = 64) => {
     context.putImageData(imageData, 0, 0);
 };
 
-export const generateGradientTexture = (scene, startColor, endColor, alpha, border, borderColor, key, tileWidth = 84, tileHeight = 32, ditherAmount = 8) => {
+export const generateGradientTexture = (scene, startColor, endColor, alpha, border, borderColor, key, tileWidth, tileHeight, ditherAmount = 8) => {
     // Check if the texture already exists
     if (scene.textures.exists(key)) {
-        console.log(`Texture key already in use: ${key}`);
         return;
     }
 
@@ -123,6 +122,6 @@ export const generateGradientTexture = (scene, startColor, endColor, alpha, bord
 
 
 // Generate texture with gold or red border for selected tile
-export const generateBorderTexture = (scene, startColor, endColor, alpha, key, borderColor, ditherAmount = 8) => {
-    generateGradientTexture(scene, startColor, endColor, alpha, true, borderColor, key, 84, 32, ditherAmount);
+export const generateBorderTexture = (scene, startColor, endColor, alpha, key, borderColor, tileWidth, tileHeight, ditherAmount = 8) => {
+    generateGradientTexture(scene, startColor, endColor, alpha, true, borderColor, key, tileWidth, tileHeight, ditherAmount);
 };

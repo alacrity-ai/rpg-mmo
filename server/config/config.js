@@ -13,9 +13,11 @@ const config = {
     },
     cooldowns: {
         minimum: parseInt(process.env.COOLDOWN_MINIMUM, 10) || 500,
+        shorter: parseInt(process.env.COOLDOWN_SHORTER, 10) || 1000,
         short: parseInt(process.env.COOLDOWN_SHORT, 10) || 1500,
         normal: parseInt(process.env.COOLDOWN_NORMAL, 10) || 2500,
-        long: parseInt(process.env.COOLDOWN_LONG, 10) || 4500,
+        long: parseInt(process.env.COOLDOWN_LONG, 10) || 3500,
+        longer: parseInt(process.env.COOLDOWN_LONGER, 10) || 4500,
     },
     server: {
         port: process.env.PORT || 3000,
