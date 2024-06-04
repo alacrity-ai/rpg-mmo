@@ -61,7 +61,7 @@ module.exports = BattlerInstance;
  *   npc_template_id: null,
  *   base_stats: { health: 100, mana: 50, strength: 20, stamina: 15, intelligence: 10 },
  *   current_stats: { health: 80, mana: 50, strength: 20, stamina: 15, intelligence: 10 },
- *   abilities: [1, 2, 3, 4],
+ *   abilities: ["warriorAttack", "shieldBlock", "taunt"],
  *   script_path: null,
  *   sprite_path: 'assets/battle/battlers/sprite_1.png',
  *   grid_position: [1, 1],

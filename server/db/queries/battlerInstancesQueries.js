@@ -115,10 +115,10 @@ async function createBattlerInstancesFromCharacterIds(characterIds) {
                 npc_template_id: null,
                 base_stats: character.baseStats,
                 current_stats: character.currentStats,
-                abilities: [], // Add abilities if applicable
+                abilities: character.abilities,
                 script_path: null,
                 sprite_path: `assets/images/characters/${character.characterClass}/combat/atlas.png`,
-                grid_position: [1, 1], // Set initial grid position if applicable
+                grid_position: [1, 1],
                 last_action_time: new Date(),
                 time_created: new Date(),
                 status_effects: [],
@@ -144,7 +144,7 @@ async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
                 abilities: [], // Add abilities if applicable
                 script_path: npcTemplate.scriptPath,
                 sprite_path: npcTemplate.battlerSpritePath, // Use NPC's battler sprite path
-                grid_position: [4, 1], // Set initial grid position if applicable
+                grid_position: [4, 1],
                 last_action_time: new Date(),
                 time_created: new Date(),
                 status_effects: [],

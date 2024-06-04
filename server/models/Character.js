@@ -13,16 +13,18 @@ class Character {
    * @param {string} params.characterClass - The class of the character.
    * @param {Object} params.baseStats - The base stats of the character.
    * @param {Object} params.currentStats - The current stats of the character.
+   * @param {Array} params.abilities - The list of abilities the character has.
    * @param {number} params.current_area_id - The ID of the current area the character is in.
    * @param {Object} params.flags - An object representing the flags with key-value pairs.
    */
-  constructor({ id, user_id, name, characterClass, baseStats, currentStats, current_area_id, flags }) {
+  constructor({ id, user_id, name, characterClass, baseStats, currentStats, abilities, current_area_id, flags }) {
     this.id = id;
     this.userId = user_id;
     this.name = name;
     this.characterClass = characterClass;
     this.baseStats = baseStats;
     this.currentStats = currentStats;
+    this.abilities = abilities;
     this.currentAreaId = current_area_id;
     this.flags = flags;
   }
@@ -40,6 +42,7 @@ module.exports = Character;
  *   characterClass: 'ranger',
  *   baseStats: { strength: 10, wisdom: 15, intelligence: 8, health: 100, mana: 50 },
  *   currentStats: { strength: 10, wisdom: 15, intelligence: 8, health: 100, mana: 50 },
+ *   abilities: ['rogueAttack', 'backstab', 'shadowDance'],
  *   current_area_id: 1,
  *   flags: { Boss1: '1', QuestXYZProgress: '3', SwordofTruthQuest: '3' }
  * });

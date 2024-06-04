@@ -9,6 +9,7 @@ const statusTemplates = require('./data/statusTemplates')
 const zoneTemplates = require('./data/zoneTemplates');
 const encounterTemplates = require('./data/encounterTemplates');
 const npcDialogueTemplates = require('./data/npcDialogueTemplates');
+const abilityTemplates = require('./data/abilityTemplates');
 const logger = require('../utilities/logger');
 
 
@@ -295,7 +296,46 @@ async function populateAreaEventTemplates() {
   }
 }
 
+async function populateAbilityTemplates() {
+  const connection = await pool.getConnection();
+  try {
+    for (const ability of abilityTemplates) {
+      const [rows] = await connection.query(
+        `SELECT * FROM ability_templates WHERE short_name = ?`,
+        [ability.short_name]
+      );
+
+      if (rows.length === 0) {
+        await connection.query(
+          `INSERT INTO ability_templates (name, short_name, description, type, potency, cost, target_team, target_type, target_area, cooldown_duration, icon_name, sound_path)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          [
+            ability.name,
+            ability.short_name,
+            ability.description,
+            ability.type,
+            ability.potency,
+            ability.cost,
+            ability.target_team,
+            ability.target_type,
+            ability.target_area,
+            ability.cooldown_duration,
+            ability.icon_name,
+            ability.sound_path
+          ]
+        );
+      }
+    }
+    logger.info('Ability templates populated.');
+  } catch (err) {
+    logger.error('Error populating ability templates', err);
+  } finally {
+    connection.release();
+  }
+}
+
 async function populateTables() {
+  await populateAbilityTemplates();
   await populateAreaEventTemplates();
   await populateNpcDialogueTemplates();
   await populateEncounterTemplates();

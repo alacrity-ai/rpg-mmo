@@ -2,6 +2,21 @@ const { query } = require('../database');
 const Character = require('../../models/Character');
 const { getClassTemplateByName } = require('./classTemplatesQueries');
 
+const classStartingAbilitiesMap = {
+  rogue: 'rogueAttack',
+  monk: 'monkAttack',
+  ranger: 'rangerAttack',
+  reaver: 'reaverAttack',
+  paladin: 'paladinAttack',
+  warrior: 'warriorAttack',
+  shaman: 'shamanAttack',
+  priest: 'priestAttack',
+  druid: 'druidAttack',
+  arcanist: 'arcanistAttack',
+  elementalist: 'elementalistAttack',
+  necromancer: 'necromancerAttack'
+};
+
 async function createCharacter(userId, characterName, characterClass) {
   const lowerCaseCharacterName = characterName.toLowerCase();
   const lowerCaseCharacterClass = characterClass.toLowerCase();
@@ -20,9 +35,11 @@ async function createCharacter(userId, characterName, characterClass) {
     throw new Error(`Class template not found for class: ${lowerCaseCharacterClass}`);
   }
 
+  const abilities = [classStartingAbilitiesMap[lowerCaseCharacterClass]];
   const baseStats = JSON.stringify(classTemplate.baseStats);
-  const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats, flags) VALUES (?, ?, ?, ?, ?, ?)';
-  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats, JSON.stringify({})];
+
+  const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats, abilities, flags) VALUES (?, ?, ?, ?, ?, ?, ?)';
+  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats, JSON.stringify(abilities), JSON.stringify({})];
   const result = await query(sql, params);
   return result.insertId;
 }
@@ -39,6 +56,7 @@ async function getCharacterById(id) {
       characterClass: rows[0].class,
       baseStats: rows[0].base_stats,
       currentStats: rows[0].current_stats,
+      abilities: rows[0].abilities,
       current_area_id: rows[0].current_area_id,
       flags: rows[0].flags
     });
@@ -58,6 +76,7 @@ async function getCharacterByName(name) {
       characterClass: rows[0].class,
       baseStats: rows[0].base_stats,
       currentStats: rows[0].current_stats,
+      abilities: rows[0].abilities,
       current_area_id: rows[0].current_area_id,
       flags: rows[0].flags
     });
@@ -78,6 +97,7 @@ async function getCharacter(userId, characterName) {
       characterClass: rows[0].class,
       baseStats: rows[0].base_stats,
       currentStats: rows[0].current_stats,
+      abilities: rows[0].abilities,
       current_area_id: rows[0].current_area_id,
       flags: rows[0].flags
     });
@@ -98,6 +118,7 @@ async function getCharactersByUser(userId) {
         characterClass: row.class,
         baseStats: row.base_stats,
         currentStats: row.current_stats,
+        abilities: row.abilities,
         current_area_id: row.current_area_id,
         flags: row.flags
       });
@@ -145,6 +166,7 @@ async function getCharactersByIds(characterIds) {
     characterClass: row.class,
     baseStats: row.base_stats,
     currentStats: row.current_stats,
+    abilities: row.abilities,
     current_area_id: row.current_area_id,
     flags: row.flags
   }));

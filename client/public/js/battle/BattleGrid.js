@@ -9,7 +9,7 @@ class BattleGrid {
         this.grid = [];
         this.battlerPositions = new Map(); // To track battler positions
         this.battlerInstanceMap = new Map(); // To track battler instances
-        this.selectedTile = null; // To track the selected tile
+        this.selectedTiles = []; // To track the selected tiles
     }
 
     initialize() {
@@ -42,8 +42,8 @@ class BattleGrid {
         generateGradientTexture(this.scene, 0x582C2C, 0xB47F7F, 0.4, false, 0xFFFFFF, 'unoccupied_red'); // Dark red to muted light red
         generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.6, true, 0xFFFFFF, 'occupied_red'); // Dark red to less muted light red with border
         generateGradientTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, false, 0xFFFFFF, 'telegraph'); // Dark orange to muted light orange with brown border
-        generateBorderTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.4, 'selected_green', 0xFFD700); // Dark green to muted light green with gold border
-        generateBorderTexture(this.scene, 0x582C2C, 0xB47F7F, 0.4, 'selected_red', 0xFF0000); // Dark red to muted light red with red border
+        generateBorderTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 1, 'selected_green', 0xFFD700); // Dark green to muted light green with gold border
+        generateBorderTexture(this.scene, 0x703838, 0xC27F7F, 1, 'selected_red', 0xFF0000); // Dark red to muted light red with red border
         generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, 'telegraph_selected_gold', 0xFFD700); // Dark orange to muted light orange with gold border
         generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, 'telegraph_selected_red', 0xFF0000); // Dark orange to muted light orange with red border
     }
@@ -157,24 +157,40 @@ class BattleGrid {
     }
 
     selectTile(x, y) {
-        // Deselect the currently selected tile
-        if (this.selectedTile) {
-            const [prevX, prevY] = this.selectedTile;
-            this.grid[prevY][prevX].deselect();
-        }
+        // Deselect all currently selected tiles
+        this.clearTileSelections();
 
-        // Select the new tile
-        this.selectedTile = [x, y];
-        this.grid[y][x].select();
+        // Select the new tile and add it to the selected tiles array
+        const tile = this.grid[y][x];
+        tile.select();
+        this.selectedTiles.push([x, y]);
     }
 
-    getSelectedTile() {
-        if (this.selectedTile) {
-            const [x, y] = this.selectedTile;
-            return this.grid[y][x];
-        }
-        return null;
-    }    
+    selectTiles(tiles) {
+        // Deselect all currently selected tiles
+        this.clearTileSelections();
+
+        // Select new tiles and add them to the selected tiles array
+        tiles.forEach(([x, y]) => {
+            const tile = this.grid[y][x];
+            tile.select();
+            this.selectedTiles.push([x, y]);
+        });
+    }
+
+    clearTileSelections() {
+        // Deselect all currently selected tiles
+        this.selectedTiles.forEach(([prevX, prevY]) => {
+            this.grid[prevY][prevX].deselect();
+        });
+
+        // Clear the selected tiles array
+        this.selectedTiles = [];
+    }
+
+    getSelectedTiles() {
+        return this.selectedTiles.map(([x, y]) => this.grid[y][x]);
+    }
 
     showTelegraph(tiles, duration) {
         // Increase the telegraph count and set the telegraph texture

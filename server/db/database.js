@@ -173,6 +173,7 @@ async function initTables() {
       ) NOT NULL,
       base_stats JSON,
       current_stats JSON,
+      abilities JSON,
       current_area_id INT,
       flags JSON,
       FOREIGN KEY (user_id) REFERENCES users(id),
@@ -257,6 +258,21 @@ async function initTables() {
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       inventory JSON NOT NULL
+    )`,
+    `CREATE TABLE ability_templates (
+      id INT AUTO_INCREMENT PRIMARY KEY,
+      name VARCHAR(255) NOT NULL,
+      short_name VARCHAR(255) NOT NULL UNIQUE,
+      description TEXT,
+      type ENUM('spell', 'ability', 'attack') NOT NULL,
+      potency INT NOT NULL,
+      cost INT NOT NULL,
+      target_team ENUM('friendly', 'hostile') NOT NULL,
+      target_type ENUM('target', 'area', 'relative', 'self') NOT NULL,
+      target_area JSON,
+      cooldown_duration ENUM('minimum', 'short', 'normal', 'long') NOT NULL,
+      icon_name VARCHAR(255),
+      sound_path VARCHAR(255)
     )`
   ];
 

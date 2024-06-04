@@ -1,5 +1,6 @@
 import { BaseMenu } from './BaseMenu.js';
 import SoundFXManager from '../../audio/SoundFXManager.js';
+import api from '../../api/battler';
 
 export default class ActionBarMenu extends BaseMenu {
     constructor(scene, battleInstanceId, battlerId, battleGrid) {
@@ -18,108 +19,37 @@ export default class ActionBarMenu extends BaseMenu {
         this.battleInstanceId = battleInstanceId;
         this.battlerId = battlerId;
         this.battleGrid = battleGrid;
-        this.createActionBar();
-        // this.createActionNavigationBar(); // Call the new method here
         this.isCooldownActive = false; // Track the cooldown state
+        this.abilities = []; // Initialize abilities array
+
+        this.getAbilities(); // Call the new method here
     }
 
-    createActionBar() {
-        const iconNames = ['apple', 'banana', 'pear', 'lemon', 'strawberry', 'grapes'];
-        const iconWidth = 48; // Assuming each icon is 48x48 pixels
-        const padding = 0; // Padding between icons
+    async getAbilities() {
+        try {
+            this.abilities = await api.getBattlerAbilities();
+            this.createActionBar(this.abilities);
+        } catch (error) {
+            console.error('Failed to get abilities:', error);
+            this.abilities = [];
+            this.createActionBar([]); // Create an empty action bar if the call fails
+        }
+    }
+
+    createActionBar(abilities) {
+        const iconWidth = 48;
+        const padding = 0;
 
         this.iconButtons = [];
 
-        iconNames.forEach((iconName, index) => {
+        abilities.forEach((ability, index) => {
             const iconX = this.x - (this.width / 2) + iconWidth / 2 + index * (iconWidth + padding);
             const iconY = this.y;
 
-            const iconButton = this.addIconButton(iconX, iconY, iconName, () => {
-                // All of this code is temporary, for showcasing the telegraph system
-                const middleRow = 1;
-                const topRow = 0;
-                const bottomRow = 2;
-                const tiles1 = [[0, middleRow], [1, middleRow], [2, middleRow]];
-                const tiles2 = [[0, topRow], [1, topRow], [2, topRow]];
-                const tiles3 = [[0, bottomRow], [1, bottomRow], [2, bottomRow]];
-                // tiles4 will be a telegraph of all the tiles in the first and third columns
-                const tiles4 = [[0, topRow], [0, middleRow], [0, bottomRow], [2, topRow], [2, middleRow], [2, bottomRow]];
-                // tiles5 will be a cross pattern telegraph
-                const tiles5 = [[1, topRow], [0, middleRow], [1, middleRow], [2, middleRow], [1, bottomRow]];
-                // tiles 6 will be an x pattern telegraph
-                const tiles6 = [[0, topRow], [2, topRow], [1, middleRow], [0, bottomRow], [2, bottomRow]];
-
-                const duration = 5000; // Duration in milliseconds for each telegraph
-            
-                // Emit the first telegraph event immediately
-                this.scene.events.emit('showTelegraph', tiles1, duration);
-            
-                // Emit the second telegraph event after a delay of 2 seconds
-                this.scene.time.delayedCall(4000, () => {
-                    this.scene.events.emit('showTelegraph', tiles2, 3500);
-                });
-            
-                // Emit the third telegraph event after a delay of 4 seconds
-                this.scene.time.delayedCall(8000, () => {
-                    this.scene.events.emit('showTelegraph', tiles3, 3500);
-                });
-
-                // Emite fourth telegraph event after a delay of 6 seconds
-                this.scene.time.delayedCall(12000, () => {
-                    this.scene.events.emit('showTelegraph', tiles4, 3500);
-                });
-
-                // Emit fifth telegraph event after a delay of 8 seconds
-                this.scene.time.delayedCall(16000, () => {
-                    this.scene.events.emit('showTelegraph', tiles5, 3500);
-                });
-
-                // Emit sixth telegraph event after a delay of 8 seconds
-                this.scene.time.delayedCall(20000, () => {
-                    this.scene.events.emit('showTelegraph', tiles6, 3500);
-                });
-
-                this.triggerGlobalCooldown();
-            });
-
-            this.iconButtons.push(iconButton);
-        });
-    }
-
-    createActionNavigationBar() {
-        const navX = this.x - this.width / 2 - 84; // Position the navigation bar to the left of the action bar
-        const navY = this.y - 40; // Center vertically with the action bar
-        const navWidth = 128;
-        const navHeight = 128;
-
-        // Create the navigation window (assuming BaseMenu can be used to create simple windows)
-        const navWindow = this.scene.add.rectangle(navX, navY, navWidth, navHeight, 0x000000, 0.8);
-        this.scene.add.existing(navWindow);
-
-        // Define the pixel spacing between buttons
-        const spacing = 8;
-
-        // Icon names for navigation buttons
-        const navIcons = [
-            { name: 'arrow-up-blue', x: navX, y: navY - 32 - spacing, direction: [0, -1] },
-            { name: 'arrow-upright-blue', x: navX + 32 + spacing, y: navY - 32 - spacing, direction: [1, -1] },
-            { name: 'arrow-right-blue', x: navX + 32 + spacing, y: navY, direction: [1, 0] },
-            { name: 'arrow-downright-blue', x: navX + 32 + spacing, y: navY + 32 + spacing, direction: [1, 1] },
-            { name: 'arrow-down-blue', x: navX, y: navY + 32 + spacing, direction: [0, 1] },
-            { name: 'arrow-downleft-blue', x: navX - 32 - spacing, y: navY + 32 + spacing, direction: [-1, 1] },
-            { name: 'arrow-left-blue', x: navX - 32 - spacing, y: navY, direction: [-1, 0] },
-            { name: 'arrow-upleft-blue', x: navX - 32 - spacing, y: navY - 32 - spacing, direction: [-1, -1] }
-        ];
-
-        navIcons.forEach(icon => {
-            const iconButton = this.addIconButton(icon.x, icon.y, icon.name, () => {
-
-                // Don't emit of on cooldown
-                if (this.isOnCooldown()) return;
-
-                // Emit the event with direction data
-                this.scene.events.emit('moveButtonClicked', icon.direction);
-            });
+            const iconButton = this.addIconButton(iconX, iconY, ability.iconName, () => {
+                // Trigger the cooldown for the ability with the appropriate duration
+                this.triggerGlobalCooldown(this.getCooldownDuration(ability.cooldownDuration));
+            }, ability.name);
 
             this.iconButtons.push(iconButton);
         });
@@ -136,14 +66,74 @@ export default class ActionBarMenu extends BaseMenu {
         this.addElementToTab(tab, iconButton);
         if (tooltip) this.addTooltip(iconButton, tooltip);
 
+        // Add a pointerOver event here to target tiles on the battle grid
+        iconButton.on('pointerover', () => {
+            console.log('Looking for ability:', iconName)
+            const ability = this.abilities.find(ability => ability.iconName === iconName);
+            if (ability) {
+                console.log('Found ability, calculatingTargetTiles')
+                const targetTiles = this.calculateTargetTiles(ability);
+                console.log('Got target tiles: ', targetTiles)
+                this.battleGrid.selectTiles(targetTiles);
+            }
+        });
+
+        // Add a pointerOut event to clear the target tiles on the battle grid
+        iconButton.on('pointerout', () => {
+            this.battleGrid.clearTileSelections();
+        });
+
         return iconButton;
+    }
+
+    calculateTargetTiles(ability) {
+        const targetTiles = [];
+    
+        if (ability.targetType === 'self') {
+            const position = this.battleGrid.getBattlerPosition(this.battlerId);
+            targetTiles.push(position);
+        } else if (ability.targetType === 'area') {
+            if (ability.targetTeam === 'friendly') {
+                targetTiles.push(...ability.targetArea);
+            } else if (ability.targetTeam === 'hostile') {
+                ability.targetArea.forEach(([x, y]) => {
+                    targetTiles.push([x + 3, y]);
+                });
+            }
+        } else if (ability.targetType === 'relative') {
+            const battlerPosition = this.battleGrid.getBattlerPosition(this.battlerId);
+            const [battlerX, battlerY] = battlerPosition;
+            ability.targetArea.forEach(([x, y]) => {
+                targetTiles.push([battlerX + x, battlerY + y]);
+            });
+        } else if (ability.targetType === 'target') {
+            // Placeholder for target logic
+        }
+    
+        return targetTiles;
+    }    
+
+    getCooldownDuration(duration) {
+        const cooldownSettings = this.scene.registry.get('settings').cooldowns;
+        switch (duration) {
+            case 'minimum':
+                return cooldownSettings.minimum;
+            case 'short':
+                return cooldownSettings.short;
+            case 'normal':
+                return cooldownSettings.normal;
+            case 'long':
+                return cooldownSettings.long;
+            default:
+                return cooldownSettings.normal; // Default to normal if duration is unknown
+        }
     }
 
     isOnCooldown() {
         return this.isCooldownActive;
     }
 
-    triggerGlobalCooldown(delayAmount = this.scene.registry.get('settings').cooldowns.normal) {
+    triggerGlobalCooldown(delayAmount) {
         this.isCooldownActive = true; // Set cooldown state to active
         this.disableIcons(delayAmount);
         this.scene.time.delayedCall(delayAmount, () => {
@@ -152,7 +142,7 @@ export default class ActionBarMenu extends BaseMenu {
         });
     }
 
-    disableIcons(delayAmount = 3000) {
+    disableIcons(delayAmount) {
         this.iconButtons.forEach(container => {
             container.disableInteractive(); // Disable interactivity
             this.iconHelper.setTint(container, 0x888888); // Apply tint to the icon image

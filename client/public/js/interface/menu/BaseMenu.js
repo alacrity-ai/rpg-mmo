@@ -506,6 +506,10 @@ class BaseMenu {
         target.on('pointerout', () => {
             tooltip.setVisible(false);
         });
+
+        target.on('pointerdown', () => {
+            tooltip.setVisible(false);
+        });
     
         this.tabs[this.currentTab].push(tooltip); // Tooltips are associated with the current tab
     }    
