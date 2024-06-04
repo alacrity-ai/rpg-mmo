@@ -13,6 +13,7 @@ class BattleGrid {
         this.battlerPositions = new Map(); // To track battler positions
         this.battlerInstanceMap = new Map(); // To track battler instances
         this.selectedTiles = []; // To track the selected tiles
+        this.tileFocused = false; // To track if a tile is focused
     }
 
     initialize() {
@@ -27,6 +28,10 @@ class BattleGrid {
         // Listen for tile selection
         this.scene.events.on('tileSelected', ({ x, y }) => {
             this.selectTile(x, y);
+        });
+
+        this.scene.events.on('tileFocused', ({ x, y }) => {
+            this.focusTile(x, y);
         });
     }
 
@@ -158,6 +163,16 @@ class BattleGrid {
         tileObject.updateTexture();
     }
 
+    focusTile(x, y, inactive = false) {
+        this.clearTileSelections();
+
+        // Select the new tile and add it to the selected tiles array
+        const tile = this.grid[y][x];
+        tile.select(inactive)
+        this.selectedTiles.push([x, y]);
+        this.tileFocused = true;
+    }
+
     selectTile(x, y, inactive = false) {
         // Deselect all currently selected tiles
         this.clearTileSelections();
@@ -188,6 +203,9 @@ class BattleGrid {
 
         // Clear the selected tiles array
         this.selectedTiles = [];
+
+        // Clear the focused tile flag
+        this.tileFocused = false;
     }
 
     getSelectedTiles() {

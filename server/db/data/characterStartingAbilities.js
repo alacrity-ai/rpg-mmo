@@ -1,5 +1,5 @@
 const classStartingAbilitiesMap = {
-    rogue: ['rogueAttack', 'fanDaggers', 'toxicVial', 'bandage'],
+    rogue: ['rogueAttack', 'fanDaggers', 'toxicVial', 'assassinate', 'bandage'],
     monk: ['monkAttack'],
     ranger: ['rangerAttack'],
     reaver: ['reaverAttack'],

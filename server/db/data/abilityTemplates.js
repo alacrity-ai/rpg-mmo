@@ -66,6 +66,21 @@ const abilityTemplates = [
         sound_path: 'assets/sounds/rogue_strike.mp3'
     },
     {
+        name: 'Assassinate',
+        short_name: 'assassinate',
+        description: 'Sneak attack a vulnerable enemy for massive damage.',
+        type: 'ability',
+        potency: 120,
+        cost: 20,
+        required_coords: JSON.stringify([[1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]),
+        target_team: 'hostile',
+        target_type: 'target',
+        target_area: JSON.stringify([[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]),
+        cooldown_duration: 'normal',
+        icon_name: 'bloody-blade',
+        sound_path: 'assets/sounds/rogue_strike.mp3'
+    },
+    {
         name: 'Bandage',
         short_name: 'bandage',
         description: 'Bandage wounds for light healing.',

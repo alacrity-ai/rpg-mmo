@@ -17,6 +17,7 @@ export default class BattleActionClientInputHandler {
         // Listen for navigation button clicks
         this.scene.events.on('moveButtonClicked', this.handleMoveAction, this);
         this.scene.events.on('tileSelected', (data) => console.log('Tile selected:', data));
+        this.scene.events.on('tileFocused', (data) => console.log('Tile focused:', data));
     }
 
     attachRightClickListener() {
@@ -95,16 +96,25 @@ export default class BattleActionClientInputHandler {
             for (let x = 0; x < this.battleGrid.grid[y].length; x++) {
                 const tile = this.battleGrid.grid[y][x];
                 tile.sprite.setInteractive();
-
+    
                 tile.sprite.on('pointerdown', (pointer) => {
                     if (pointer.leftButtonDown()) {
-                        // Emit the tileSelected event with the x, y coordinates of the selected tile
-                        this.scene.events.emit('tileSelected', { x, y });
+                        const selectedTile = this.battleGrid.selectedTiles.find(([selectedX, selectedY]) => selectedX === x && selectedY === y);
+    
+                        if (selectedTile) {
+                            // Deselect the tile
+                            this.battleGrid.clearTileSelections();
+                            this.scene.events.emit('tileUnfocused', { x, y });
+                        } else {
+                            // Select the tile
+                            this.scene.events.emit('tileFocused', { x, y });
+                        }
                     }
                 });
             }
         }
     }
+    
 
     handleMoveAction(direction) {
         // Don't allow movement if the action bar is on cooldown

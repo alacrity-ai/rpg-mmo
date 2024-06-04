@@ -21,6 +21,11 @@ export default class BattleActionResponseHandler {
                 }
             }
             // Handle other action types as needed
+
+            // Reset target selection
+            if (!this.battleGrid.tileFocused) {
+                this.battleGrid.clearTileSelections();
+            }
         } catch (error) {
             console.error('Error handling completed battler action:', error);
         }

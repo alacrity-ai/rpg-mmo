@@ -641,8 +641,8 @@ class BaseMenu {
         this.tabs[0].push(closeButton); // Close button is added to the default tab
     }
 
-    addIconButton(x, y, iconName, callback, tooltip = null, tab = 0) {
-        const iconButton = this.iconHelper.getIcon(iconName);
+    addIconButton(x, y, iconName, callback, tooltip = null, tab = 0, normalBorderColor = 0xffffff, hoverBorderColor = 0xffff00) {
+        const iconButton = this.iconHelper.getIcon(iconName, true, normalBorderColor, hoverBorderColor);
         iconButton.setPosition(x, y);
         iconButton.on('pointerdown', () => {
             SoundFXManager.playSound('assets/sounds/menu/ui_2.wav');

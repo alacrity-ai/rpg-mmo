@@ -27,7 +27,14 @@ export default class ActionBarMenu extends BaseMenu {
     }
 
     setupEventListeners() {
-        // Add any event listeners here
+        this.scene.events.on('tileFocused', ({ x, y }) => {
+            this.updateButtonStates();
+        });
+
+        this.scene.events.on('tileUnfocused', ({ x, y }) => {
+            this.battleGrid.clearTileSelections();
+            this.updateButtonStates();
+        });
     }
 
     async getAbilities() {
@@ -63,7 +70,9 @@ export default class ActionBarMenu extends BaseMenu {
     }
 
     addIconButton(x, y, ability, callback, tooltip = null, tab = 0) {
-        const iconButton = this.iconHelper.getIcon(ability.iconName);
+        const { normalBorderColor, hoverBorderColor } = this.getIconButtonBorderColors(ability.targetTeam, ability.targetType);
+    
+        const iconButton = this.iconHelper.getIcon(ability.iconName, true, normalBorderColor, hoverBorderColor);
         iconButton.setPosition(x, y);
         iconButton.setInteractive();
         iconButton.on('pointerdown', () => {
@@ -72,21 +81,54 @@ export default class ActionBarMenu extends BaseMenu {
         });
         this.addElementToTab(tab, iconButton);
         if (tooltip) this.addTooltip(iconButton, tooltip);
-
+    
         // Add a pointerOver event here to target tiles on the battle grid
         iconButton.on('pointerover', () => {
-            const targetTiles = this.calculateTargetTiles(ability);
-            console.log('Target tiles:', targetTiles);
-            this.battleGrid.selectTiles(targetTiles);
+            if (ability.targetType != 'target') {
+                const targetTiles = this.calculateTargetTiles(ability);
+                this.battleGrid.selectTiles(targetTiles);
+            }
         });
-
+    
         // Add a pointerOut event to clear the target tiles on the battle grid
         iconButton.on('pointerout', () => {
-            this.battleGrid.clearTileSelections();
+            if (ability.targetType != 'target') {
+                this.battleGrid.clearTileSelections();
+            }
         });
-
+    
         return iconButton;
     }
+    
+
+    getIconButtonBorderColors(targetTeam, targetType) {
+        let normalBorderColor = 0xffffff; // Default white color
+        let hoverBorderColor = 0xffff00; // Default yellow color
+    
+        if (targetType === 'self') {
+            normalBorderColor = 0xadd8e6; // Light blue
+        } else if (targetType === 'area') {
+            if (targetTeam === 'hostile') {
+                normalBorderColor = 0x800080; // Purple
+            } else if (targetTeam === 'friendly') {
+                normalBorderColor = 0x00ff00; // Green
+            }
+        } else if (targetType === 'relative') {
+            if (targetTeam === 'hostile') {
+                normalBorderColor = 0xff0000; // Red
+            } else if (targetTeam === 'friendly') {
+                normalBorderColor = 0x00ff00; // Green
+            }
+        } else if (targetType === 'target') {
+            if (targetTeam === 'hostile') {
+                normalBorderColor = 0xffa500; // Orange
+            } else if (targetTeam === 'friendly') {
+                normalBorderColor = 0x32cd32; // Lime green
+            }
+        }
+    
+        return { normalBorderColor, hoverBorderColor };
+    }    
 
     calculateTargetTiles(ability) {
         const targetTiles = [];
@@ -113,7 +155,9 @@ export default class ActionBarMenu extends BaseMenu {
                 }    
             });
         } else if (ability.targetType === 'target') {
-            // Placeholder for target logic
+            if (this.battleGrid.tileFocused) {
+                targetTiles.push(this.battleGrid.selectedTiles[0]);
+            }
         }
 
         // Filter out any tiles that are out of bounds (x > 5 or y > 2 or x < 0 or y < 0)
@@ -125,23 +169,53 @@ export default class ActionBarMenu extends BaseMenu {
     
         this.iconButtons.forEach((iconButton, index) => {
             const ability = this.abilities[index];
+    
+            if (this.shouldDisableIcon(ability, battlerPosition)) {
+                this.disableIcon(iconButton); // Greyed out
+            } else {
+                this.enableIcon(iconButton); // Normal state
+            }
+        });
+    }
+
+    shouldDisableIcon(ability, battlerPosition) {
             const requiredCoords = ability.requiredCoords || [];
+
+            // If a tile is focused, and this ability's targetType is not 'target', disable the icon
+            if (this.battleGrid.tileFocused && ability.targetType !== 'target') {
+                return true
+            }
+    
+            // If a tile is not focused, and this ability's targetType is 'target', disable the icon
+            if (!this.battleGrid.tileFocused && ability.targetType === 'target') {
+                return true
+            }
+    
+            // Check if the selected tile matches the ability's target team
+            if (this.battleGrid.tileFocused) {
+                const selectedTileX = this.battleGrid.selectedTiles[0][0];
+                const isFriendlyTile = selectedTileX < 3;
+                const isHostileTile = selectedTileX >= 3;
+    
+                if ((ability.targetTeam === 'friendly' && !isFriendlyTile) || (ability.targetTeam === 'hostile' && !isHostileTile)) {
+                    return true;
+                }
+            }
     
             // If requiredCoords is empty, enable the icon
             if (requiredCoords.length === 0) {
-                this.enableIcon(iconButton); // Normal state
-                return;
+                return false;
             }
     
             const isInRequiredCoords = requiredCoords.some(([x, y]) => x === battlerPosition[0] && y === battlerPosition[1]);
     
             if (isInRequiredCoords) {
-                this.enableIcon(iconButton); // Normal state
+                return false;
             } else {
-                this.disableIcon(iconButton); // Greyed out
+                return true;
             }
-        });
-    }    
+
+    }
 
     disableIcon(iconButton) {
         iconButton.disableInteractive();
