@@ -25,6 +25,7 @@ export default class BattleActionResponseHandler {
             console.error('Error handling completed battler action:', error);
         }
     }
+    
 
     initialize() {
         SocketManager.getSocket().on('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));

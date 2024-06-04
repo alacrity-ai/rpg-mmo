@@ -267,6 +267,7 @@ async function initTables() {
       type ENUM('spell', 'ability', 'attack') NOT NULL,
       potency INT NOT NULL,
       cost INT NOT NULL,
+      required_coords JSON,
       target_team ENUM('friendly', 'hostile') NOT NULL,
       target_type ENUM('target', 'area', 'relative', 'self') NOT NULL,
       target_area JSON,

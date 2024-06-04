@@ -23,6 +23,11 @@ export default class ActionBarMenu extends BaseMenu {
         this.abilities = []; // Initialize abilities array
 
         this.getAbilities(); // Call the new method here
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        // Add any event listeners here
     }
 
     async getAbilities() {
@@ -46,17 +51,19 @@ export default class ActionBarMenu extends BaseMenu {
             const iconX = this.x - (this.width / 2) + iconWidth / 2 + index * (iconWidth + padding);
             const iconY = this.y;
 
-            const iconButton = this.addIconButton(iconX, iconY, ability.iconName, () => {
+            const iconButton = this.addIconButton(iconX, iconY, ability, () => {
                 // Trigger the cooldown for the ability with the appropriate duration
                 this.triggerGlobalCooldown(this.getCooldownDuration(ability.cooldownDuration));
             }, ability.name);
 
             this.iconButtons.push(iconButton);
         });
+
+        this.updateButtonStates(); // Initial update of button states
     }
 
-    addIconButton(x, y, iconName, callback, tooltip = null, tab = 0) {
-        const iconButton = this.iconHelper.getIcon(iconName);
+    addIconButton(x, y, ability, callback, tooltip = null, tab = 0) {
+        const iconButton = this.iconHelper.getIcon(ability.iconName);
         iconButton.setPosition(x, y);
         iconButton.setInteractive();
         iconButton.on('pointerdown', () => {
@@ -68,14 +75,8 @@ export default class ActionBarMenu extends BaseMenu {
 
         // Add a pointerOver event here to target tiles on the battle grid
         iconButton.on('pointerover', () => {
-            console.log('Looking for ability:', iconName)
-            const ability = this.abilities.find(ability => ability.iconName === iconName);
-            if (ability) {
-                console.log('Found ability, calculatingTargetTiles')
-                const targetTiles = this.calculateTargetTiles(ability);
-                console.log('Got target tiles: ', targetTiles)
-                this.battleGrid.selectTiles(targetTiles);
-            }
+            const targetTiles = this.calculateTargetTiles(ability);
+            this.battleGrid.selectTiles(targetTiles);
         });
 
         // Add a pointerOut event to clear the target tiles on the battle grid
@@ -88,7 +89,7 @@ export default class ActionBarMenu extends BaseMenu {
 
     calculateTargetTiles(ability) {
         const targetTiles = [];
-    
+
         if (ability.targetType === 'self') {
             const position = this.battleGrid.getBattlerPosition(this.battlerId);
             targetTiles.push(position);
@@ -109,9 +110,45 @@ export default class ActionBarMenu extends BaseMenu {
         } else if (ability.targetType === 'target') {
             // Placeholder for target logic
         }
+
+        // Filter out any tiles that are out of bounds (x > 5 or y > 2 or x < 0 or y < 0)
+        return targetTiles.filter(([x, y]) => x >= 0 && x < 6 && y >= 0 && y < 3);
+    }
+
+    updateButtonStates() {
+        const battlerPosition = this.battleGrid.getBattlerPosition(this.battlerId);
     
-        return targetTiles;
+        this.iconButtons.forEach((iconButton, index) => {
+            const ability = this.abilities[index];
+            const requiredCoords = ability.requiredCoords || [];
+    
+            // If requiredCoords is empty, enable the icon
+            if (requiredCoords.length === 0) {
+                this.enableIcon(iconButton); // Normal state
+                return;
+            }
+    
+            const isInRequiredCoords = requiredCoords.some(([x, y]) => x === battlerPosition[0] && y === battlerPosition[1]);
+    
+            if (isInRequiredCoords) {
+                this.enableIcon(iconButton); // Normal state
+            } else {
+                this.disableIcon(iconButton); // Greyed out
+            }
+        });
     }    
+
+    disableIcon(iconButton) {
+        iconButton.disableInteractive();
+        this.iconHelper.setTint(iconButton, 0x444444);
+        this.iconHelper.setBorderTint(iconButton, 0x444444);
+    }
+
+    enableIcon(iconButton) {
+        iconButton.setInteractive();
+        this.iconHelper.clearTint(iconButton);
+        this.iconHelper.clearBorderTint(iconButton);
+    }
 
     getCooldownDuration(duration) {
         const cooldownSettings = this.scene.registry.get('settings').cooldowns;
@@ -137,24 +174,21 @@ export default class ActionBarMenu extends BaseMenu {
         this.isCooldownActive = true; // Set cooldown state to active
         this.disableIcons(delayAmount);
         this.scene.time.delayedCall(delayAmount, () => {
-            this.enableIcons();
+            this.updateButtonStates(); // Update button states after cooldown
             this.isCooldownActive = false; // Reset cooldown state to inactive
         });
     }
 
     disableIcons(delayAmount) {
         this.iconButtons.forEach(container => {
-            container.disableInteractive(); // Disable interactivity
-            this.iconHelper.setTint(container, 0x888888); // Apply tint to the icon image
-            this.iconHelper.resetBorderColor(container); // Reset border color to white
+            this.disableIcon(container); // Disable interactivity and apply tint
             this.iconHelper.addCooldownTimer(container, delayAmount); // Add spinner effect for delayAmount
         });
     }
 
     enableIcons() {
         this.iconButtons.forEach(container => {
-            container.setInteractive(); // Re-enable interactivity
-            this.iconHelper.clearTint(container); // Clear tint from the icon image
+            this.enableIcon(container); // Re-enable interactivity and clear tint
         });
     }
 }

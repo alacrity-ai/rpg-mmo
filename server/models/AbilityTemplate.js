@@ -14,6 +14,7 @@ class AbilityTemplate {
      * @param {string} params.type - The type of the ability (spell, ability, attack).
      * @param {number} params.potency - The power level of the ability.
      * @param {number} params.cost - The mana cost of the ability.
+     * @param {Array<number>} params.required_coords - The required coordinates to stand in for using the ability.
      * @param {string} params.target_team - The target team (friendly, hostile).
      * @param {string} params.target_type - The target type (target, area, relative, self).
      * @param {Object} params.target_area - The target area coordinates.
@@ -21,7 +22,7 @@ class AbilityTemplate {
      * @param {string} params.icon_name - The path to the icon of the ability.
      * @param {string} params.sound_path - The path to the sound effect of the ability.
      */
-    constructor({ id, name, short_name, description, type, potency, cost, target_team, target_type, target_area, cooldown_duration, icon_name, sound_path }) {
+    constructor({ id, name, short_name, description, type, potency, cost, required_coords, target_team, target_type, target_area, cooldown_duration, icon_name, sound_path }) {
       this.id = id;
       this.name = name;
       this.shortName = short_name;
@@ -29,6 +30,7 @@ class AbilityTemplate {
       this.type = type;
       this.potency = potency;
       this.cost = cost;
+      this.requiredCoords = required_coords;
       this.targetTeam = target_team;
       this.targetType = target_type;
       this.targetArea = target_area;
@@ -51,6 +53,7 @@ class AbilityTemplate {
    *   type: 'spell',
    *   potency: 100,
    *   cost: 50,
+   *   required_coords: [[2, 0], [2, 1], [2, 2]], # Front line
    *   target_team: 'hostile',
    *   target_type: 'area',
    *   target_area: [[0, 0], [0, 1], [0, 2]],

@@ -1,21 +1,7 @@
 const { query } = require('../database');
 const Character = require('../../models/Character');
 const { getClassTemplateByName } = require('./classTemplatesQueries');
-
-const classStartingAbilitiesMap = {
-  rogue: 'rogueAttack',
-  monk: 'monkAttack',
-  ranger: 'rangerAttack',
-  reaver: 'reaverAttack',
-  paladin: 'paladinAttack',
-  warrior: 'warriorAttack',
-  shaman: 'shamanAttack',
-  priest: 'priestAttack',
-  druid: 'druidAttack',
-  arcanist: 'arcanistAttack',
-  elementalist: 'elementalistAttack',
-  necromancer: 'necromancerAttack'
-};
+const { classStartingAbilitiesMap } = require('../data/characterStartingAbilities');
 
 async function createCharacter(userId, characterName, characterClass) {
   const lowerCaseCharacterName = characterName.toLowerCase();
@@ -35,7 +21,11 @@ async function createCharacter(userId, characterName, characterClass) {
     throw new Error(`Class template not found for class: ${lowerCaseCharacterClass}`);
   }
 
-  const abilities = [classStartingAbilitiesMap[lowerCaseCharacterClass]];
+  const abilities = classStartingAbilitiesMap[lowerCaseCharacterClass];
+  if (!abilities) {
+    throw new Error(`Abilities not found for class: ${lowerCaseCharacterClass}`);
+  }
+
   const baseStats = JSON.stringify(classTemplate.baseStats);
 
   const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats, abilities, flags) VALUES (?, ?, ?, ?, ?, ?, ?)';

@@ -72,6 +72,22 @@ export default class IconHelper {
         }
     }
 
+    setBorderTint(container, color) {
+        if (container.border) {
+            container.border.clear();
+            container.border.lineStyle(2, color, 1);
+            container.border.strokeRoundedRect(-container.iconImage.width / 2, -container.iconImage.height / 2, container.iconImage.width, container.iconImage.height, 8);
+        }
+    }
+
+    clearBorderTint(container) {
+        if (container.border) {
+            container.border.clear();
+            container.border.lineStyle(2, 0xffffff, 1); // Reset to white border
+            container.border.strokeRoundedRect(-container.iconImage.width / 2, -container.iconImage.height / 2, container.iconImage.width, container.iconImage.height, 8);
+        }
+    }
+
     resetBorderColor(container) {
         if (container.border) {
             container.border.clear();

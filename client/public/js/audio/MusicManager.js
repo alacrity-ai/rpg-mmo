@@ -32,6 +32,7 @@ class MusicManager {
 
         this.currentMusicKey = key;
         this.currentMusic.play();
+        this.currentMusic.setVolume(0);
     }
 
     stopMusic() {

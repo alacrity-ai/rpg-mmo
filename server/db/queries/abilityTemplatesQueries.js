@@ -19,6 +19,7 @@ async function getAbilityTemplateById(id) {
       type: rows[0].type,
       potency: rows[0].potency,
       cost: rows[0].cost,
+      required_coords: rows[0].required_coords,
       target_team: rows[0].target_team,
       target_type: rows[0].target_type,
       target_area: rows[0].target_area,
@@ -48,6 +49,7 @@ async function getAbilityTemplateByShortName(short_name) {
       type: rows[0].type,
       potency: rows[0].potency,
       cost: rows[0].cost,
+      required_coords: rows[0].required_coords,
       target_team: rows[0].target_team,
       target_type: rows[0].target_type,
       target_area: rows[0].target_area,
@@ -63,7 +65,8 @@ async function getAbilityTemplatesByShortNames(short_names) {
     const sql = `SELECT * FROM ability_templates WHERE short_name IN (${short_names.map(() => '?').join(',')})`;
     const params = short_names;
     const rows = await query(sql, params);
-    return rows.map(row => new AbilityTemplate({
+
+    const abilities = rows.map(row => new AbilityTemplate({
         id: row.id,
         name: row.name,
         short_name: row.short_name,
@@ -71,6 +74,7 @@ async function getAbilityTemplatesByShortNames(short_names) {
         type: row.type,
         potency: row.potency,
         cost: row.cost,
+        required_coords: row.required_coords,
         target_team: row.target_team,
         target_type: row.target_type,
         target_area: row.target_area,
@@ -78,6 +82,11 @@ async function getAbilityTemplatesByShortNames(short_names) {
         icon_name: row.icon_name,
         sound_path: row.sound_path
     }));
+
+    // Reorder abilities to match the order of short_names
+    const orderedAbilities = short_names.map(shortName => abilities.find(ability => ability.shortName === shortName));
+
+    return orderedAbilities;
 }
 
 module.exports = {
