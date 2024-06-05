@@ -16,6 +16,7 @@ const partyHandler = require('./handlers/api/partyHandler');
 const zoneHandler = require('./handlers/api/zoneHandler');
 const logger = require('./utilities/logger');
 const { handleDisconnect } = require('./services/logoutCleanup');
+const clearRedis = require('./handlers/taskClear');
 
 const app = express();
 const server = http.createServer(app);
@@ -74,6 +75,7 @@ io.on('connection', (socket) => {
 const PORT = config.server.port;
 
 server.listen(PORT, async () => {
+  await clearRedis();
   await initTables();
   await populateTables(); // Call populateTables after initTables
   logger.info(`Server is running on port ${PORT}`);
