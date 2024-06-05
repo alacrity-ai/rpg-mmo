@@ -1,3 +1,5 @@
+// handlers/api/settingsHandler.js
+
 const { enqueueTask } = require('../taskUtils');
 
 module.exports = (socket) => {
