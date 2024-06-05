@@ -17,6 +17,7 @@ const zoneHandler = require('./handlers/api/zoneHandler');
 const logger = require('./utilities/logger');
 const { handleDisconnect } = require('./services/logoutCleanup');
 const clearRedis = require('./handlers/taskClear');
+const { handleNpcTaskResult } = require('./handlers/taskResultHandler');
 
 const app = express();
 const server = http.createServer(app);
@@ -39,6 +40,9 @@ app.use(cors({
 app.get('/', (req, res) => {
   res.send('MUD Server is running');
 });
+
+// Initialize NPC task result handling
+// handleNpcTaskResult(io);
 
 io.on('connection', (socket) => {
   logger.info(`A user connected`);

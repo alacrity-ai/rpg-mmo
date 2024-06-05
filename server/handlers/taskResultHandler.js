@@ -49,6 +49,38 @@ function handleTaskResult(taskChannel, callback, io) {
   });
 }
 
+function handleNpcTaskResult(io) {
+  const onNpcTaskResult = (pattern, channel, message) => {
+    try {
+      const response = JSON.parse(message);
+      const taskId = channel.split(':')[1];
+      logger.info(`NPC task result received for task ${taskId}: ${message}`);
+
+      if (response.success) {
+        const { battleInstanceId, actionResult } = response.data;
+        if (battleInstanceId) {
+          io.to(`battle-${battleInstanceId}`).emit('completedBattlerAction', actionResult);
+        }
+      } else {
+        logger.error(`NPC task failed: ${response.error}`);
+      }
+    } catch (error) {
+      logger.error(`Failed to process NPC task result: ${error.message}`);
+    }
+  };
+
+  redis.subscribe('npc-task-result', (err, count) => {
+    if (err) {
+      logger.error(`Failed to subscribe: ${err.message}`);
+    } else {
+      logger.info(`Subscribed to npc-task-result channel. ${count} total subscriptions.`);
+    }
+  });
+
+  redis.on('message', onNpcTaskResult);
+}
+
 module.exports = {
-  handleTaskResult
+  handleTaskResult,
+  handleNpcTaskResult
 };
