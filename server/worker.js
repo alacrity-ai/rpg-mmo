@@ -1,6 +1,6 @@
 const config = require('./config/config');
 const Redis = require('ioredis');
-const { getTask } = require('./handlers/taskQueue');
+const { getTask, addTask } = require('./handlers/taskQueue');
 const taskRegistry = require('./handlers/taskRegistry');
 const logger = require('./utilities/logger');
 
@@ -50,4 +50,51 @@ async function processTasks() {
   }
 }
 
-processTasks().catch(logger.error);
+async function processDelayedTasks() {
+  while (true) {
+    const now = Date.now();
+    const tasks = await redis.zrangebyscore('delayed-tasks', 0, now, 'WITHSCORES', 'LIMIT', 0, 10);
+
+    for (let i = 0; i < tasks.length; i += 2) {
+      const task = JSON.parse(tasks[i]);
+      const score = tasks[i + 1];
+
+      if (score <= now) {
+        const { taskType, fullTaskData } = task;
+        const taskHandler = taskRegistry.getHandler(taskType);
+
+        if (taskHandler) {
+          try {
+            await taskHandler(fullTaskData);
+            const result = { success: true, data: fullTaskData };
+            logger.info(`Delayed task processed successfully: ${taskType}`);
+            await redis.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
+          } catch (error) {
+            const result = { error: 'Failed to process delayed task. ' + error.message };
+            logger.error(`Failed to process delayed task ${taskType}: ${error.message}`);
+            await redis.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
+          }
+        } else {
+          logger.error(`No worker task processor found for delayed task type: ${taskType}`);
+          const result = { error: `No handler found for delayed task type: ${taskType}` };
+          await redis.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
+        }
+
+        await redis.zrem('delayed-tasks', tasks[i]);
+      }
+    }
+
+    // Wait for a short period before polling again
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+  }
+}
+
+// Start the main task processing and delayed task processing concurrently
+async function startWorkers() {
+  await Promise.all([
+    processTasks().catch(logger.error),
+    processDelayedTasks().catch(logger.error)
+  ]);
+}
+
+startWorkers().catch(logger.error);
