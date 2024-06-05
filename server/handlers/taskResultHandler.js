@@ -49,21 +49,20 @@ function handleTaskResult(taskChannel, callback, io) {
 }
 
 function handleNpcTaskResult(io) {
-  const onNpcTaskResult = (pattern, channel, message) => {
+  const onNpcTaskResult = (channel, message) => {
     try {
+      logger.info(`Message received on channel ${channel}: ${message}`); // Log received message
       if (channel !== 'npc-task-result') return; // Ensure we're only processing the NPC task result channel
-
       const response = JSON.parse(message);
-      const taskId = channel.split(':')[1];
-      logger.info(`NPC task result received for task ${taskId}: ${message}`);
 
-      if (response.success) {
-        const { battleInstanceId, actionResult } = response.data;
+      if (response.result.success) {
+        const { battleInstanceId, actionResult } = response.result.data;
         if (battleInstanceId) {
+          logger.info(`Emitting completedBattlerAction to battle-${battleInstanceId}`); // Log emission
           io.to(`battle-${battleInstanceId}`).emit('completedBattlerAction', actionResult);
         }
       } else {
-        logger.error(`NPC task failed: ${response.error}`);
+        logger.error(`NPC task failed: ${response.result.error}`);
       }
     } catch (error) {
       logger.error(`Failed to process NPC task result: ${error.message}`);

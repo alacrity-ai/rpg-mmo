@@ -18,6 +18,7 @@ class BattlerInstance {
      * @param {Date} params.time_created - The timestamp when the battler instance was created.
      * @param {Array<number>} [params.status_effects] - The status effects applied to the battler.
      * @param {string} params.team - The team the battler belongs to ('player' or 'enemy').
+     * @param {number} params.phase - The current phase of the battler.
      */
     constructor({
         id,
@@ -32,7 +33,8 @@ class BattlerInstance {
         last_action_time,
         time_created,
         status_effects,
-        team
+        team,
+        phase
     }) {
         this.id = id;
         this.characterId = character_id;
@@ -47,6 +49,7 @@ class BattlerInstance {
         this.timeCreated = time_created;
         this.statusEffects = status_effects;
         this.team = team;
+        this.phase = phase;
     }
 }
 
@@ -68,6 +71,7 @@ module.exports = BattlerInstance;
  *   last_action_time: new Date(),
  *   time_created: new Date(),
  *   status_effects: [1, 2],
- *   team: 'player'
+ *   team: 'player',
+ *   phase: 0
  * });
  */

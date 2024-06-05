@@ -132,7 +132,8 @@ async function getBattlerInstancesInBattle(battleId) {
       last_action_time: row.last_action_time,
       time_created: row.time_created,
       status_effects: row.status_effects,
-      team: row.team
+      team: row.team,
+      phase: row.phase
     }));
 }
 

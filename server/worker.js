@@ -9,6 +9,7 @@ const MAX_POLL_INTERVAL_MS = 100;
 let currentPollInterval = MIN_POLL_INTERVAL_MS;
 
 // Import task modules to ensure they are registered
+require('./services/tasks/scriptTasks');
 require('./services/tasks/userTasks');
 require('./services/tasks/shopTasks');
 require('./services/tasks/characterTasks');

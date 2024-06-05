@@ -67,13 +67,11 @@ async function processRequestAreaTask(task) {
       if (!currentAreaInstance) {
         throw new Error(`Area instance with ID ${currentAreaId} not found.`);
       }
-      console.log('Got the current Area Instance');
   
       // Verify that if there is an encounter, it has been cleared
       if (currentAreaInstance.encounter !== null && !currentAreaInstance.encounter_cleared) {
         throw new Error(`Encounter in current area instance with ID ${currentAreaId} has not been cleared.`);
       }
-      console.log('Checked for encounters cleared');
   
       // Verify that the target area instance is connected to the current area instance
       const connections = currentAreaInstance.areaConnections;
@@ -81,17 +79,14 @@ async function processRequestAreaTask(task) {
       if (!isConnected) {
         throw new Error(`Area instance with ID ${targetAreaId} is not connected to the current area instance with ID ${currentAreaId}.`);
       }
-      console.log('Checked for connections');
   
       // Mark the current area as explored
       currentAreaInstance.explored = true;
-      console.log('Attempting to update the current area instance');
       try {
         await updateAreaInstance(currentAreaId, currentAreaInstance);
       } catch (error) {
         throw new Error(`Failed to update current area instance with ID ${currentAreaId}. ${error.message}`);
       }
-      console.log('Finished updating the current area instance');
   
       const result = { success: true, data: { areaInstance: targetAreaInstance } };
       logger.info(`Area request successful for task ${taskId}`);

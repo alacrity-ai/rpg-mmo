@@ -16,6 +16,7 @@ async function enqueueTask(taskType, taskData, callback, io, delay = 0) {
     // Handle task result in a separate function
     handleTaskResult(taskChannel, callback, io);
 
+    // Enqueue the task with or without delay
     if (delay > 0) {
       const executeTime = Date.now() + delay; // Calculate the future timestamp
       await redis.zadd('delayed-tasks', executeTime, JSON.stringify({ taskType, fullTaskData }));

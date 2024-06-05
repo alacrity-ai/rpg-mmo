@@ -7,8 +7,8 @@ async function createBattlerInstance(battlerInstanceData) {
     const sql = `
         INSERT INTO battler_instances (
             character_id, npc_template_id, base_stats, current_stats, abilities, script_path,
-            sprite_path, grid_position, last_action_time, time_created, status_effects, team
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            sprite_path, grid_position, last_action_time, time_created, status_effects, team, phase
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
         battlerInstanceData.characterId,
@@ -22,7 +22,8 @@ async function createBattlerInstance(battlerInstanceData) {
         battlerInstanceData.lastActionTime,
         battlerInstanceData.timeCreated,
         JSON.stringify(battlerInstanceData.statusEffects),
-        battlerInstanceData.team
+        battlerInstanceData.team,
+        battlerInstanceData.phase || 0 // Default phase to 0
     ];
     const result = await query(sql, params);
     const id = result.insertId;
@@ -41,7 +42,8 @@ async function createBattlerInstance(battlerInstanceData) {
         last_action_time: battlerInstanceData.lastActionTime,
         time_created: battlerInstanceData.timeCreated,
         status_effects: battlerInstanceData.statusEffects,
-        team: battlerInstanceData.team
+        team: battlerInstanceData.team,
+        phase: battlerInstanceData.phase || 0 // Default phase to 0
     });
 }
 
@@ -68,7 +70,8 @@ async function updateBattlerInstance(id, updates) {
             grid_position = ?,
             last_action_time = ?,
             status_effects = ?,
-            team = ?
+            team = ?,
+            phase = ?
         WHERE id = ?
     `;
     const params = [
@@ -81,6 +84,7 @@ async function updateBattlerInstance(id, updates) {
         updates.lastActionTime,
         JSON.stringify(updates.statusEffects),
         updates.team,
+        updates.phase,
         id
     ];
     await query(sql, params);
@@ -89,6 +93,29 @@ async function updateBattlerInstance(id, updates) {
 async function updateBattlerPosition(battlerId, newPosition) {
     const sql = 'UPDATE battler_instances SET grid_position = ? WHERE id = ?';
     const params = [JSON.stringify(newPosition), battlerId];
+    await query(sql, params);
+}
+
+async function updateBattlerPositions(battlerPositions) {
+    if (battlerPositions.length === 0) return;
+
+    let sql = 'UPDATE battler_instances SET grid_position = CASE id';
+    const ids = [];
+    const params = [];
+
+    battlerPositions.forEach(({ id, position }) => {
+        sql += ' WHEN ? THEN ?';
+        ids.push(id);
+        params.push(id, JSON.stringify(position));
+    });
+
+    sql += ' END WHERE id IN (' + ids.map(() => '?').join(',') + ')';
+    await query(sql, [...params, ...ids]);
+}
+
+async function updateBattlerPhase(battlerId, newPhase) {
+    const sql = 'UPDATE battler_instances SET phase = ? WHERE id = ?';
+    const params = [newPhase, battlerId];
     await query(sql, params);
 }
 
@@ -122,7 +149,8 @@ async function createBattlerInstancesFromCharacterIds(characterIds) {
                 last_action_time: new Date(),
                 time_created: new Date(),
                 status_effects: [],
-                team: 'player'
+                team: 'player',
+                phase: 0 // Default phase to 0
             });
             const createdBattlerInstance = await createBattlerInstance(battlerInstance);
             battlerInstances.push(createdBattlerInstance);
@@ -148,7 +176,8 @@ async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
                 last_action_time: new Date(),
                 time_created: new Date(),
                 status_effects: [],
-                team: 'enemy'
+                team: 'enemy',
+                phase: 0 // Default phase to 0
             });
             const createdBattlerInstance = await createBattlerInstance(battlerInstance);
             battlerInstances.push(createdBattlerInstance);
@@ -157,20 +186,15 @@ async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
     return battlerInstances;
 }
 
-async function deleteBattlerInstancesByIds(ids) {
-    if (ids.length === 0) return;
-    const placeholders = ids.map(() => '?').join(',');
-    const sql = `DELETE FROM battler_instances WHERE id IN (${placeholders})`;
-    await query(sql, ids);
-}
-
 module.exports = {
     createBattlerInstance,
     getBattlerInstanceById,
     updateBattlerInstance,
+    updateBattlerPhase,
     deleteBattlerInstance,
     deleteBattlerInstancesByIds,
     createBattlerInstancesFromCharacterIds,
     createBattlerInstancesFromNPCTemplateIds,
-    updateBattlerPosition
+    updateBattlerPosition,
+    updateBattlerPositions
 };

@@ -2,7 +2,7 @@
 
 const { getEncounterTemplateById } = require('../../db/queries/encounterTemplatesQueries');
 const { getNPCTemplateById } = require('../../db/queries/npcTemplatesQueries');
-const { createBattlerInstancesFromCharacterIds, createBattlerInstancesFromNPCTemplateIds } = require('../../db/queries/battlerInstancesQueries');
+const { createBattlerInstancesFromCharacterIds, createBattlerInstancesFromNPCTemplateIds, updateBattlerPositions } = require('../../db/queries/battlerInstancesQueries');
 const { createBattleInstance, getBattlerInstancesInBattle } = require('../../db/queries/battleInstancesQueries');
 const { getBattleInstanceByAreaInstanceId } = require('../../db/queries/battleInstancesQueries');
 const BattleManager = require('./battleManager');
@@ -45,7 +45,7 @@ class BattleCreator {
         this.battlerInstances = [...playerBattlerInstances, ...enemyBattlerInstances];
 
         // Assign enemy positions based on the encounter template
-        this.assignEnemyPositions(enemyBattlerInstances);
+        await this.assignEnemyPositions(enemyBattlerInstances);
 
         const battleInstanceData = {
             battler_ids: this.battlerInstances.map(battler => battler.id),
@@ -54,14 +54,19 @@ class BattleCreator {
         this.battleInstance = await createBattleInstance(battleInstanceData);
     }
 
-    assignEnemyPositions(enemyBattlerInstances) {
+    async assignEnemyPositions(enemyBattlerInstances) {
         const enemyPositions = this.encounterTemplate.enemies;
+        const battlerPositions = [];
+
         enemyPositions.forEach((enemy, index) => {
             const battler = enemyBattlerInstances[index];
             if (battler) {
                 battler.gridPosition = enemy.position;
+                battlerPositions.push({ id: battler.id, position: enemy.position });
             }
         });
+
+        await updateBattlerPositions(battlerPositions);
     }
 
     async execute() {

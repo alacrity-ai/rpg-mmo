@@ -243,6 +243,7 @@ async function initTables() {
       time_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       status_effects JSON,
       team ENUM('player', 'enemy') NOT NULL,
+      phase INT DEFAULT 0,
       FOREIGN KEY (character_id) REFERENCES characters(id),
       FOREIGN KEY (npc_template_id) REFERENCES npc_templates(id)
     )`,
@@ -259,7 +260,7 @@ async function initTables() {
       name VARCHAR(255) NOT NULL,
       inventory JSON NOT NULL
     )`,
-    `CREATE TABLE ability_templates (
+    `CREATE TABLE IF NOT EXISTS ability_templates (
       id INT AUTO_INCREMENT PRIMARY KEY,
       name VARCHAR(255) NOT NULL,
       short_name VARCHAR(255) NOT NULL UNIQUE,

@@ -41,9 +41,6 @@ app.get('/', (req, res) => {
   res.send('MUD Server is running');
 });
 
-// Initialize NPC task result handling
-handleNpcTaskResult(io);
-
 io.on('connection', (socket) => {
   logger.info(`A user connected`);
 
@@ -81,6 +78,8 @@ const PORT = config.server.port;
 server.listen(PORT, async () => {
   await clearRedis();
   await initTables();
-  await populateTables(); // Call populateTables after initTables
+  await populateTables(); 
+  // Initialize NPC task result handling
+  handleNpcTaskResult(io);
   logger.info(`Server is running on port ${PORT}`);
 });

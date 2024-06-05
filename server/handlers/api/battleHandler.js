@@ -2,6 +2,7 @@
 
 const { enqueueTask } = require('../taskUtils');
 const logger = require('../../utilities/logger');
+const config = require('../../config/config')
 
 module.exports = (socket) => {
   socket.on('getBattleInstance', async (data, callback) => {
@@ -29,7 +30,7 @@ module.exports = (socket) => {
         const followupTaskData = { data: { battleInstance, battlerInstances } };
         enqueueTask('startBattlerScripts', followupTaskData, () => {
           logger.info('Battler scripts task processed');
-        }, null, 10000);
+        }, null, config.cooldowns.minimum);
       } else {
         callback(response);
       }

@@ -1,3 +1,5 @@
+// services/tasks/battleActionsUtils/BattleActionProcessor.js
+
 const { updateBattlerPosition } = require('../../../db/queries/battlerInstancesQueries');
 const Redis = require('ioredis');
 const redis = new Redis();
@@ -53,7 +55,7 @@ class BattleActionProcessor {
     const team = action.actionData.team || 'enemy';
     const cooldownKey = `cooldown:${action.battlerId}`;
     const currentTime = Date.now();
-    
+
     // Check cooldown from Redis
     const cooldownEndTime = await redis.get(cooldownKey);
 

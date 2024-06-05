@@ -12,7 +12,12 @@ export default class BattleActionResponseHandler {
     handleCompletedBattlerAction(data) {
         try {
             if (data.actionType === 'move') {
-                this.actionBarMenu.triggerGlobalCooldown(this.settings.cooldowns.short);
+                // if the data.battlerId is the same as the current player's battlerId, trigger the global cooldown
+                if (data.battlerId === this.battleGrid.scene.battlerId) {
+                    this.actionBarMenu.triggerGlobalCooldown(this.settings.cooldowns.short);
+                }
+
+                // Get the battler instance that moved and update its position
                 const battlerInstance = this.battleGrid.getBattlerInstance(data.battlerId);
                 if (battlerInstance) {
                     battlerInstance.moveToTile(data.actionData.newPosition, this.battleGrid);
