@@ -42,12 +42,20 @@ async function processStartBattlerScriptsTask(task) {
     try {
         // For now, just log the start of battler scripts
         logger.info(`Battler scripts started for battle instance ${battleInstance.id}`);
-        // Implement logic to look through battlerInstances and run the scripts for each battler
+        // Implement logic to look through battlerInstances and enqueue a runScriptAction task for each battler
         // We'll need a BattlerScriptRunner class to handle this
-        // BattlerScriptRunner will handling incrementing the phase (of the battler) and running the scripts
-        // We'll then need to make sure that we publish the result so that the server taskResultHandler emits 
-        // the result to all the clients in the battle room.
-        // Lastly, we'll need to make sure the server also enqueues a new delayed task for the next script execution 
+        // BattlerScriptRunner runScript method will take the battleInstance, and a battlerInstance as inputs
+        // It will import the script designated by the battlerInstance.scriptPath, and run it, making sure that the script has the necessary
+        //     information, like the BattleInstance.  The BattleScriptRunner also has access to the BattlerInstances table, where it can get the current "phase" of the BattlerInstance.
+        //     An NPC script is a list of actions, each associated with a phase number.  This script will run the action for the first phase.
+        //     The script action in the first phase might, for example, have the NPC move down a tile, then increment the BattlerInstance.phase.
+        //     The BattlerScriptRunner will leverage the BattleActionProcessor (BAP)
+        //     to process actions.  The BattleScriptRunner, after getting the result from the BAP, will publish the result
+        //     in the task-result channel, with an appropriate taskId and the result object.
+        //     The BattlerScriptRunner should also enqueue another delayed task for the next execution of that battler's script. (e.g. in 3 seconds)
+        //     When this enqueued task is processed, if for example the script incremented the BattlerInstance.phase, then the next action in the script will be executed on the next rotation.
+        // The server should see the completed task, and emit the result to all the clients in the 'battle-<battleInstanceId>' room.
+        // NOTE: Keep in mind, that each execution of the script, 
         // Note: If we consider this action to be the script tick, then all the NPCs we'll be synced,
         //   therefore, we may just use this action to set discrete script run actions for each NPC,
         //   and another action handler will actually instantiate the BattleScriptRunner, for 1 NPC at a time.
