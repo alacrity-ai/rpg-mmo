@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project is an MMO (Massively Multiplayer Online) game that combines a graphical client, a server to handle game logic and communication, and a database for storing game data. The game features a transition from a text-based to a graphical interface, utilizing a 32-bit pixel art style. It includes multiple scenes such as towns, expeditions, and combat encounters.
+This project is an MMO (Massively Multiplayer Online) game that combines a graphical client, a server to handle client connections, workers to handle game logic, and a database for storing game data. The game features a transition from a text-based to a graphical interface, utilizing a 32-bit pixel art style. It includes multiple scenes such as towns, expeditions, and combat encounters.
 
 ## Quickstart
 
