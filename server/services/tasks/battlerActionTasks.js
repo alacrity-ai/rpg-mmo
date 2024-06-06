@@ -1,7 +1,6 @@
-const Redis = require('ioredis');
+const { redisClient } = require('../../redisClient');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
-const redis = new Redis();
 const BattleActionProcessor = require('./battleActionsUtils/BattleActionProcessor');
 
 async function processAddBattlerActionTask(task) {
@@ -14,14 +13,14 @@ async function processAddBattlerActionTask(task) {
         if (actionResult.success) {
             const result = { success: true, data: { battleInstanceId, actionResult } };
             logger.info(`Battler action processed successfully for task ${taskId}`);
-            await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+            await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
         } else {
             throw new Error(actionResult.message);
         }
     } catch (error) {
         const result = { error: 'Failed to process battler action. ' + error.message };
         logger.error(`Processing battler action failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+        await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     }
 }
 

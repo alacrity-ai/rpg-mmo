@@ -1,8 +1,7 @@
-const Redis = require('ioredis');
+const { redisClient } = require('../../redisClient');
 const { createCharacterParty, removeMemberFromParty } = require('../../db/queries/characterPartyQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
-const redis = new Redis();
 
 async function processCreatePartyTask(task) {
   const { taskId, data } = task.taskData;
@@ -14,11 +13,11 @@ async function processCreatePartyTask(task) {
 
     const result = { success: true, data: { partyId } };
     logger.info(`Party creation successful for task ${taskId}`);
-    await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   } catch (error) {
     const result = { error: 'Failed to create party. ' + error.message };
     logger.error(`Party creation failed for task ${taskId}:`, error.message);
-    await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   }
 }
 
@@ -31,11 +30,11 @@ async function processLeavePartyTask(task) {
 
     const result = { success: true };
     logger.info(`Party leave successful for task ${taskId}`);
-    await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   } catch (error) {
     const result = { error: 'Failed to leave party. ' + error.message };
     logger.error(`Party leave failed for task ${taskId}:`, error.message);
-    await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   }
 }
 

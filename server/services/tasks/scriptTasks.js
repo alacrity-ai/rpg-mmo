@@ -1,5 +1,4 @@
-const Redis = require('ioredis');
-const redis = new Redis();
+const { redisClient } = require('../../redisClient');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const { enqueueTask } = require('../../handlers/taskUtils');
@@ -31,7 +30,7 @@ async function processRunScriptActionTask(task) {
         if (actionResult.success) {
             const result = { success: true, data: { battleInstanceId, actionResult } };
             logger.info(`RunScriptAction task processed successfully for task ${taskId}`);
-            await redis.publish('npc-task-result', JSON.stringify({ taskId, result }));
+            await redisClient.publish('npc-task-result', JSON.stringify({ taskId, result }));
         } else {
             throw new Error(actionResult.message);
         }
@@ -39,7 +38,7 @@ async function processRunScriptActionTask(task) {
     } catch (error) {
         const result = { error: 'Failed to process runScriptAction task. ' + error.message };
         logger.error(`Processing runScriptAction task failed for task ${taskId}: ${error.message}`);
-        await redis.publish('npc-task-result', JSON.stringify({ taskId, result }));
+        await redisClient.publish('npc-task-result', JSON.stringify({ taskId, result }));
     }
 }
 

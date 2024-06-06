@@ -1,9 +1,8 @@
-const Redis = require('ioredis');
+const { redisClient } = require('../../redisClient');
 const BattleCreator = require('../../services/expeditions/battleCreator');
 const { getAreaInstanceById } = require('../../db/queries/areaInstancesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
-const redis = new Redis();
 const { enqueueTask } = require('../../handlers/taskUtils');
 
 async function processGetBattleInstanceTask(task) {
@@ -28,11 +27,11 @@ async function processGetBattleInstanceTask(task) {
 
         const result = { success: true, data: response };
         logger.info(`Battle instance retrieval or creation successful for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+        await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     } catch (error) {
         const result = { error: 'Failed to retrieve or create battle instance. ' + error.message };
         logger.error(`Battle instance retrieval or creation failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+        await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     }
 }
 
@@ -61,11 +60,11 @@ async function processStartBattlerScriptsTask(task) {
 
         // Publish the results for the startBattlerScripts task
         const result = { success: true, data: { battleInstanceId: battleInstance.id } };
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+        await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     } catch (error) {
         const result = { error: 'Failed to start battler scripts. ' + error.message };
         logger.error(`Failed to start battler scripts for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+        await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     }
 }
 

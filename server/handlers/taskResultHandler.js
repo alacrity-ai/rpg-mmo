@@ -1,7 +1,6 @@
 // services/server/taskResultHandler.js
 
-const Redis = require('ioredis');
-const redis = new Redis();
+const { redisSubscriber } = require('../redisClient');
 const logger = require('../utilities/logger');
 
 function handleTaskResult(taskChannel, callback, io) {
@@ -24,26 +23,26 @@ function handleTaskResult(taskChannel, callback, io) {
         }
 
         // Unsubscribe and remove the listener
-        redis.unsubscribe(taskChannel);
-        redis.off('message', onTaskResult);
+        redisSubscriber.unsubscribe(taskChannel);
+        redisSubscriber.off('message', onTaskResult);
       }
     } catch (error) {
       logger.error(`Failed to process task result: ${error.message}`);
       callback({ success: false, error: 'Failed to process task result. ' + error.message });
 
       // Ensure to unsubscribe and remove the listener to avoid memory leaks
-      redis.unsubscribe(taskChannel);
-      redis.off('message', onTaskResult);
+      redisSubscriber.unsubscribe(taskChannel);
+      redisSubscriber.off('message', onTaskResult);
     }
   };
 
-  redis.subscribe(taskChannel, (err, count) => {
+  redisSubscriber.subscribe(taskChannel, (err, count) => {
     if (err) {
       logger.error(`Failed to subscribe: ${err.message}`);
       callback({ success: false, error: 'Subscription failed. ' + err.message });
     } else {
       logger.info(`Subscribed to ${taskChannel}. ${count} total subscriptions.`);
-      redis.on('message', onTaskResult);
+      redisSubscriber.on('message', onTaskResult);
     }
   });
 }
@@ -69,15 +68,14 @@ function handleNpcTaskResult(io) {
     }
   };
 
-  redis.subscribe('npc-task-result', (err, count) => {
+  redisSubscriber.subscribe('npc-task-result', (err, count) => {
     if (err) {
       logger.error(`Failed to subscribe: ${err.message}`);
     } else {
       logger.info(`Subscribed to npc-task-result channel. ${count} total subscriptions.`);
+      redisSubscriber.on('message', onNpcTaskResult);
     }
   });
-
-  redis.on('message', onNpcTaskResult);
 }
 
 module.exports = {

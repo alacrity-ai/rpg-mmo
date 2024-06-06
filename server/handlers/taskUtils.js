@@ -1,5 +1,4 @@
-const Redis = require('ioredis');
-const redis = new Redis();
+const { redisClient } = require('../redisClient');
 const { addTask } = require('./taskQueue');
 const logger = require('../utilities/logger');
 const crypto = require('crypto');
@@ -19,7 +18,7 @@ async function enqueueTask(taskType, taskData, callback, io, delay = 0) {
     // Enqueue the task with or without delay
     if (delay > 0) {
       const executeTime = Date.now() + delay; // Calculate the future timestamp
-      await redis.zadd('delayed-tasks', executeTime, JSON.stringify({ taskType, fullTaskData }));
+      await redisClient.zadd('delayed-tasks', executeTime, JSON.stringify({ taskType, fullTaskData }));
       logger.info(`Delayed task added to queue: ${taskType}, to be executed in ${delay} ms`);
     } else {
       await addTask(taskType, fullTaskData);

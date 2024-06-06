@@ -1,10 +1,9 @@
-const Redis = require('ioredis');
+const { redisClient } = require('../redisClient');
 const logger = require('../utilities/logger');
-const redis = new Redis();
 
 async function clearRedis() {
   try {
-    await redis.flushall();
+    await redisClient.flushall();
     logger.info('Redis database cleared successfully.');
   } catch (error) {
     logger.error('Failed to clear Redis database:', error.message);

@@ -1,7 +1,6 @@
 const { updateBattlerPosition, updateBattlerHealth, updateBattlerMana, applyStatusEffect, getBattlerInstanceById } = require('../../../db/queries/battlerInstancesQueries');
 const { getCooldownDuration } = require('../../../utilities/helpers');
-const Redis = require('ioredis');
-const redis = new Redis();
+const { redisClient } = require('../../../redisClient');
 
 class BattleActionProcessor {
     /**
@@ -41,7 +40,7 @@ class BattleActionProcessor {
         const currentTime = Date.now();
         const cooldownDuration = getCooldownDuration(actionData.cooldownDuration);
 
-        const cooldownEndTime = await redis.get(cooldownKey);
+        const cooldownEndTime = await redisClientClient.get(cooldownKey);
         if (cooldownEndTime && currentTime < cooldownEndTime) {
             return {
                 success: false,
@@ -52,7 +51,7 @@ class BattleActionProcessor {
             };
         }
 
-        await redis.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
+        await redisClient.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
 
         actionData.results = actionData.results || [];
 
@@ -181,8 +180,8 @@ class BattleActionProcessor {
         const cooldownKey = `cooldown:${action.battlerId}`;
         const currentTime = Date.now();
 
-        // Check cooldown from Redis
-        const cooldownEndTime = await redis.get(cooldownKey);
+        // Check cooldown from redisClient
+        const cooldownEndTime = await redisClient.get(cooldownKey);
 
         if (cooldownEndTime && currentTime < cooldownEndTime) {
             return {
@@ -211,9 +210,9 @@ class BattleActionProcessor {
 
         await updateBattlerPosition(action.battlerId, action.actionData.newPosition);
         
-        // Set cooldown in Redis
+        // Set cooldown in redisClient
         const cooldownDuration = getCooldownDuration('short'); // Uses the short cooldown duration for movement
-        await redis.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
+        await redisClient.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
 
         return {
             success: true,

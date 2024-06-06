@@ -1,10 +1,10 @@
-const Redis = require('ioredis');
+const { redisClient } = require('../../redisClient');
 const { createExpeditionZone } = require('../../services/expeditions/zoneCreator');
 const { getZoneTemplateBySceneKey } = require('../../db/queries/zoneTemplatesQueries');
 const { getAreaInstanceById, updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
-const redis = new Redis();
+
 
 async function processRequestZoneTask(task) {
   const { taskId, data } = task.taskData;
@@ -43,11 +43,11 @@ async function processRequestZoneTask(task) {
 
     const result = { success: true, data: { areaInstance } };
     logger.info(`Zone request successful for task ${taskId}`);
-    await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   } catch (error) {
     const result = { error: 'Failed to request zone. ' + error.message };
     logger.error(`Zone request failed for task ${taskId}:`, error.message);
-    await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
   }
 }
 
@@ -90,11 +90,11 @@ async function processRequestAreaTask(task) {
   
       const result = { success: true, data: { areaInstance: targetAreaInstance } };
       logger.info(`Area request successful for task ${taskId}`);
-      await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+      await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     } catch (error) {
       const result = { error: 'Failed to request area. ' + error.message };
       logger.error(`Area request failed for task ${taskId}:`, error.message);
-      await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+      await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     }
   }
   

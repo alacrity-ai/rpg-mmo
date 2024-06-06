@@ -1,5 +1,5 @@
 const config = require('./config/config');
-const Redis = require('ioredis');
+const { redisClient } = require('./redisClient');
 const { getTask, addTask } = require('./handlers/taskQueue');
 const taskRegistry = require('./handlers/taskRegistry');
 const logger = require('./utilities/logger');
@@ -20,8 +20,6 @@ require('./services/tasks/settingsTasks');
 require('./services/tasks/partyTasks');
 require('./services/tasks/zoneTasks');
 
-const redis = new Redis();
-
 async function processTasks() {
   while (true) {
     const task = await getTask();
@@ -37,12 +35,12 @@ async function processTasks() {
         } catch (error) {
           logger.error(`Failed to process task ${taskType}: ${error}`);
           const result = { error: `Failed to process task ${taskType}. ` + error.message };
-          await redis.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
+          await redisClient.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
         }
       } else {
         logger.error(`No worker task processor found for task type: ${taskType}`);
         const result = { error: `No handler found for task type: ${taskType}` };
-        await redis.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
+        await redisClient.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
       }
     } else {
       currentPollInterval = Math.min(currentPollInterval + 50, MAX_POLL_INTERVAL_MS); // Increase interval if no task found
@@ -54,7 +52,7 @@ async function processTasks() {
 async function processDelayedTasks() {
   while (true) {
     const now = Date.now();
-    const tasks = await redis.zrangebyscore('delayed-tasks', 0, now, 'WITHSCORES', 'LIMIT', 0, 10);
+    const tasks = await redisClient.zrangebyscore('delayed-tasks', 0, now, 'WITHSCORES', 'LIMIT', 0, 10);
 
     for (let i = 0; i < tasks.length; i += 2) {
       const task = JSON.parse(tasks[i]);
@@ -69,19 +67,19 @@ async function processDelayedTasks() {
             await taskHandler(fullTaskData);
             const result = { success: true, data: fullTaskData };
             logger.info(`Delayed task processed successfully: ${taskType}`);
-            await redis.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
+            await redisClient.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
           } catch (error) {
             const result = { error: 'Failed to process delayed task. ' + error.message };
             logger.error(`Failed to process delayed task ${taskType}: ${error.message}`);
-            await redis.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
+            await redisClient.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
           }
         } else {
           logger.error(`No worker task processor found for delayed task type: ${taskType}`);
           const result = { error: `No handler found for delayed task type: ${taskType}` };
-          await redis.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
+          await redisClient.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
         }
 
-        await redis.zrem('delayed-tasks', tasks[i]);
+        await redisClient.zrem('delayed-tasks', tasks[i]);
       }
     }
 

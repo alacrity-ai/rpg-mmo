@@ -1,9 +1,8 @@
-const Redis = require('ioredis');
+const { redisClient } = require('../../redisClient');
 const { getBattlerInstanceById } = require('../../db/queries/battlerInstancesQueries');
 const { getAbilityTemplatesByShortNames } = require('../../db/queries/abilityTemplatesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
-const redis = new Redis();
 
 async function processGetBattlerAbilitiesTask(task) {
     const { taskId, data } = task.taskData;
@@ -26,11 +25,11 @@ async function processGetBattlerAbilitiesTask(task) {
 
         const result = { success: true, data: abilityTemplates };
         logger.info(`Battler abilities retrieval successful for task ${taskId}`);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+        await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     } catch (error) {
         const result = { error: 'Failed to retrieve battler abilities. ' + error.message };
         logger.error(`Battler abilities retrieval failed for task ${taskId}:`, error.message);
-        await redis.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+        await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
     }
 }
 
