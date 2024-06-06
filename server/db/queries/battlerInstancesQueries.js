@@ -100,6 +100,23 @@ async function updateBattlerPosition(battlerId, newPosition) {
     await query(sql, params);
 }
 
+async function updateBattlerHealth(battlerId, newHealth) {
+    const sql = 'UPDATE battler_instances SET current_stats = JSON_SET(current_stats, "$.health", ?) WHERE id = ?';
+    const params = [newHealth, battlerId];
+    await query(sql, params);
+}
+
+async function updateBattlerMana(battlerId, newMana) {
+    const sql = 'UPDATE battler_instances SET current_stats = JSON_SET(current_stats, "$.mana", ?) WHERE id = ?';
+    const params = [newMana, battlerId];
+    await query(sql, params);
+}
+
+// applyStatusEffect stub
+async function applyStatusEffect(targetId, status) {
+    // stub
+}
+
 async function updateBattlerPositions(battlerPositions) {
     if (battlerPositions.length === 0) return;
 
@@ -202,5 +219,8 @@ module.exports = {
     createBattlerInstancesFromCharacterIds,
     createBattlerInstancesFromNPCTemplateIds,
     updateBattlerPosition,
-    updateBattlerPositions
+    updateBattlerPositions,
+    updateBattlerHealth,
+    updateBattlerMana,
+    applyStatusEffect
 };

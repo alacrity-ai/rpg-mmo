@@ -17,7 +17,7 @@ const config = {
         short: parseInt(process.env.COOLDOWN_SHORT, 10) || 1500,
         normal: parseInt(process.env.COOLDOWN_NORMAL, 10) || 2500,
         long: parseInt(process.env.COOLDOWN_LONG, 10) || 3500,
-        longer: parseInt(process.env.COOLDOWN_LONGER, 10) || 4500,
+        longest: parseInt(process.env.COOLDOWN_LONGEST, 10) || 4500,
     },
     server: {
         port: process.env.PORT || 3000,

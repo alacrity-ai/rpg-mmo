@@ -1,11 +1,7 @@
-const { updateBattlerPosition, updateBattlerHealth, applyStatusEffect } = require('../../../db/queries/battlerInstancesQueries');
+const { updateBattlerPosition, updateBattlerHealth, updateBattlerMana, applyStatusEffect, getBattlerInstanceById } = require('../../../db/queries/battlerInstancesQueries');
+const { getCooldownDuration } = require('../../../utilities/helpers');
 const Redis = require('ioredis');
 const redis = new Redis();
-
-const COOLDOWN_MINIMUM = parseInt(process.env.COOLDOWN_MINIMUM, 10) || 500;
-const COOLDOWN_SHORT = parseInt(process.env.COOLDOWN_SHORT, 10) || 1500;
-const COOLDOWN_NORMAL = parseInt(process.env.COOLDOWN_NORMAL, 10) || 3000;
-const COOLDOWN_LONG = parseInt(process.env.COOLDOWN_LONG, 10) || 5000;
 
 class BattleActionProcessor {
     /**
@@ -33,19 +29,44 @@ class BattleActionProcessor {
      */
     static async processAbilityAction(action) {
         const { actionData } = action;
-        let results = [];
+
+        // Deduct mana cost
+        const manaResult = await this.useMana(action.battlerId, actionData.manaCost);
+        if (!manaResult.success) {
+            return manaResult;
+        }
+
+        // Set cooldown based on ability's cooldown duration
+        const cooldownKey = `cooldown:${action.battlerId}`;
+        const currentTime = Date.now();
+        const cooldownDuration = getCooldownDuration(actionData.cooldownDuration);
+
+        const cooldownEndTime = await redis.get(cooldownKey);
+        if (cooldownEndTime && currentTime < cooldownEndTime) {
+            return {
+                success: false,
+                message: 'Ability is currently on cooldown',
+                battlerId: action.battlerId,
+                actionType: action.actionType,
+                actionData: action.actionData
+            };
+        }
+
+        await redis.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
+
+        actionData.results = actionData.results || [];
 
         if (actionData.damage) {
-            results.push(await this.doDamage(actionData.targetId, actionData.damage));
+            actionData.results.push(await this.doDamage(actionData.targetId, actionData.damage));
         }
 
         if (actionData.healing) {
-            results.push(await this.doHealing(actionData.targetId, actionData.healing));
+            actionData.results.push(await this.doHealing(actionData.targetId, actionData.healing));
         }
 
         if (actionData.statusEffects) {
             for (let status of actionData.statusEffects) {
-                results.push(await this.applyStatus(actionData.targetId, status));
+                actionData.results.push(await this.applyStatus(actionData.targetId, status));
             }
         }
 
@@ -54,8 +75,38 @@ class BattleActionProcessor {
             message: 'Ability action processed successfully',
             battlerId: action.battlerId,
             actionType: action.actionType,
-            actionData: action.actionData,
-            results
+            actionData: action.actionData
+        };
+    }
+
+    /**
+     * Deduct mana from a battler.
+     * @param {number} battlerId - The ID of the battler.
+     * @param {number} manaCost - The amount of mana to deduct.
+     * @returns {Object} The result of the mana deduction.
+     */
+    static async useMana(battlerId, manaCost) {
+        let battler = await getBattlerInstanceById(battlerId);
+        if (!battler) {
+            return {
+                success: false,
+                message: `Battler ${battlerId} not found`
+            };
+        }
+
+        if (battler.currentStats.mana < manaCost) {
+            return {
+                success: false,
+                message: `Insufficient mana for battler ${battlerId}`
+            };
+        }
+
+        battler.currentStats.mana -= manaCost;
+        await updateBattlerMana(battler.id, battler.currentStats.mana);
+
+        return {
+            success: true,
+            message: `Deducted ${manaCost} mana from battler ${battlerId}`
         };
     }
 
@@ -66,9 +117,15 @@ class BattleActionProcessor {
      * @returns {Object} The result of applying the damage.
      */
     static async doDamage(targetId, damage) {
-        let target = await this.getBattlerById(targetId); // Assume this function fetches the battler from the database
-        target.health -= damage;
-        await updateBattlerHealth(target.id, target.health);
+        let target = await getBattlerInstanceById(targetId);
+        if (!target) {
+            return {
+                success: false,
+                message: `Battler ${targetId} not found`
+            };
+        }
+        target.currentStats.health = Math.max(target.currentStats.health - damage, 0); // Clamp health to a minimum of 0
+        await updateBattlerHealth(target.id, target.currentStats.health);
 
         return {
             success: true,
@@ -83,9 +140,15 @@ class BattleActionProcessor {
      * @returns {Object} The result of applying the healing.
      */
     static async doHealing(targetId, healing) {
-        let target = await this.getBattlerById(targetId); // Assume this function fetches the battler from the database
-        target.health += healing;
-        await updateBattlerHealth(target.id, target.health);
+        let target = await getBattlerInstanceById(targetId);
+        if (!target) {
+            return {
+                success: false,
+                message: `Battler ${targetId} not found`
+            };
+        }
+        target.currentStats.health = Math.min(target.currentStats.health + healing, target.baseStats.health); // Clamp health to a maximum of base health
+        await updateBattlerHealth(target.id, target.currentStats.health);
 
         return {
             success: true,
@@ -149,7 +212,7 @@ class BattleActionProcessor {
         await updateBattlerPosition(action.battlerId, action.actionData.newPosition);
         
         // Set cooldown in Redis
-        const cooldownDuration = COOLDOWN_SHORT; // 1500 ms default
+        const cooldownDuration = getCooldownDuration('short'); // Uses the short cooldown duration for movement
         await redis.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
 
         return {
@@ -176,11 +239,6 @@ class BattleActionProcessor {
             actionType: action.actionType,
             actionData: action.actionData
         };
-    }
-
-    // Placeholder function for fetching a battler by ID
-    static async getBattlerById(id) {
-        // Implement the logic to fetch a battler by ID from the database
     }
 }
 

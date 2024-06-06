@@ -11,9 +11,11 @@ async function processGetServerSettingsTask(task) {
     const serverSettings = {
       cooldowns: {
         minimum: config.cooldowns.minimum,
+        shorter: config.cooldowns.shorter,
         short: config.cooldowns.short,
         normal: config.cooldowns.normal,
         long: config.cooldowns.long,
+        longest: config.cooldowns.longest,
       },
     };
 
