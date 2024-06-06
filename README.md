@@ -54,8 +54,11 @@ This project combines a graphical client, server, and database to create a fully
 2. Build the Docker container:
     
     `make build`
+3. Start the Database:
+
+    `make start`
     
-3. Connect to the database (`mysql` client must be installed):
+3. (Optional) Connect to the database (`mysql` client must be installed):
     
     `make connect`
     
@@ -90,7 +93,7 @@ At least one instance of the worker service must be running in order for any bac
 
 3. Start the worker.
 
-   `npm run worker`
+   `npm run worker` or for docker, `make start-worker`
 
 ### Running the Server
 
@@ -100,7 +103,7 @@ At least one instance of the worker service must be running in order for any bac
     
 2. Install the necessary dependencies:
     
-    `npm install`
+    `npm install` or for docker `make build`
     
 3. Ensure you have a `.env` file in the `server` directory with the following content:
     
@@ -113,7 +116,7 @@ DB_NAME=testdb
     
 4. Start the server:
     
-    `node index.js`
+    `npm start` or for docker `make start`
 
 ### Running the Client
 
@@ -123,7 +126,7 @@ DB_NAME=testdb
     
 2. Install the necessary dependencies:
     
-    `npm install`
+    `npm install` or for docker `make build`
     
 3. Ensure you have a `.env` file in the `client` directory with the following content:
     
@@ -131,7 +134,7 @@ DB_NAME=testdb
     
 4. Start the client:
     
-    `npm start`
+    `npm start` or for docker `make start`
     
     This should open the client in your browser window. Make sure the server is running before starting the client.
 

@@ -8,7 +8,7 @@ build:
 	docker build -t $(IMAGE_NAME) .
 
 # Run the Docker container
-run: stop
+start: stop
 	docker run -d -p $(PORT):$(PORT) $(IMAGE_NAME)
 
 # Clean up Docker images
@@ -16,7 +16,7 @@ clean:
 	-docker rmi $(IMAGE_NAME)
 
 # Rebuild the Docker image and run the container
-rebuild: clean build run
+rebuild: clean build start
 
 # Tail logs of the running container
 logs:
@@ -26,4 +26,4 @@ logs:
 debug-build:
 	docker build --build-arg NPM_CONFIG_LOGLEVEL=verbose -t $(IMAGE_NAME) .
 
-.PHONY: build run stop clean rebuild logs debug-build
+.PHONY: build start stop clean rebuild logs debug-build

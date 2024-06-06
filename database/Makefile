@@ -9,7 +9,7 @@ DB_PASSWORD = rootpassword
 VOLUME_NAME = $(shell pwd)/volume
 
 # Default target
-all: build run
+all: build start
 
 # Ensure the volume directory exists
 ensure-volume:
@@ -20,7 +20,7 @@ build:
 	docker build -t $(DOCKER_IMAGE_NAME) .
 
 # Run the Docker container with volume mounting
-run: ensure-volume
+start: ensure-volume
 	docker run -d --name $(DOCKER_CONTAINER_NAME) -e MYSQL_ROOT_PASSWORD=$(MYSQL_ROOT_PASSWORD) -e MYSQL_DATABASE=$(MYSQL_DATABASE) -p 3306:3306 -v $(VOLUME_NAME):/var/lib/mysql $(DOCKER_IMAGE_NAME)
 
 # Stop the Docker container
@@ -32,10 +32,10 @@ clean: stop
 	docker rm $(DOCKER_CONTAINER_NAME)
 
 # Rebuild the Docker image and restart the container
-restart: clean build run
+restart: clean build start
 
 # Connect to the MySQL database using mysql client
 connect:
 	mysql -h $(DB_HOST) -P 3306 -u $(DB_USER) -p$(DB_PASSWORD) $(MYSQL_DATABASE)
 
-.PHONY: all build run stop clean restart connect ensure-volume
+.PHONY: all build start stop clean restart connect ensure-volume
