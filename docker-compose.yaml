@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  redis:
+    build:
+      context: ./redis
+      dockerfile: Dockerfile
+    volumes:
+      - ./redis/volume:/data
+    ports:
+      - "6379:6379"
+
+  database:
+    build:
+      context: ./database
+      dockerfile: Dockerfile
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: testdb
+    volumes:
+      - ./database/volume:/var/lib/mysql
+    ports:
+      - "3306:3306"
+
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: database
+      REDIS_HOST: redis  # Update to use service name
+    env_file:
+      - ./server/.env
+    ports:
+      - "3000:3000"
+    depends_on:
+      - database
+      - redis
+
+  worker:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.worker
+    environment:
+      DB_HOST: database
+      REDIS_HOST: redis  # Update to use service name
+    env_file:
+      - ./server/.env
+    depends_on:
+      - database
+      - redis
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    env_file:
+      - ./client/.env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - server
+
+volumes:
+  redis-data:
+  db-data:

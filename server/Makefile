@@ -11,3 +11,11 @@ build:
 # Start the Docker container
 start:
 	docker run --env-file $(ENV_FILE) -e DB_HOST=$(shell hostname -I | awk '{print $$1}') -p 3000:3000 $(DOCKER_IMAGE_NAME)
+
+# Build the Worker Docker image
+build-worker:
+	docker build -t $(DOCKER_IMAGE_NAME)-worker -f Dockerfile.worker .
+
+# Start the Worker Docker container
+start-worker:
+	docker run --env-file $(ENV_FILE) -e DB_HOST=$(shell hostname -I | awk '{print $$1}') $(DOCKER_IMAGE_NAME)-worker

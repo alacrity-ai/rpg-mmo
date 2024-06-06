@@ -22,6 +22,10 @@ const config = {
     server: {
         port: process.env.PORT || 3000,
     },
+    redis: {
+        host: process.env.REDIS_HOST || 'localhost',
+        port: parseInt(process.env.REDIS_PORT, 10) || 6379,
+    },
 };
 
 module.exports = config;
