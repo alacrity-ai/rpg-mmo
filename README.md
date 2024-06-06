@@ -4,6 +4,14 @@
 
 This project is an MMO (Massively Multiplayer Online) game that combines a graphical client, a server to handle game logic and communication, and a database for storing game data. The game features a transition from a text-based to a graphical interface, utilizing a 32-bit pixel art style. It includes multiple scenes such as towns, expeditions, and combat encounters.
 
+## Quickstart
+
+1. Clone the repository
+2. Navigate to the repository folder you just cloned
+3. Start the all services with docker-compose, with command: `make up`
+
+NOTE: Docker must be installed
+
 ## Repository Structure
 
 - **client**: Contains the graphical interface for the game.
