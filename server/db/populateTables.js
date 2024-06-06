@@ -308,8 +308,8 @@ async function populateAbilityTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO ability_templates (name, short_name, description, type, potency, cost, required_coords, target_team, target_type, target_area, cooldown_duration, icon_name, sound_path)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO ability_templates (name, short_name, description, type, potency, cost, required_coords, target_team, target_type, target_area, cooldown_duration, icon_name, sound_path, script_path, animation_script)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             ability.name,
             ability.short_name,
@@ -323,7 +323,9 @@ async function populateAbilityTemplates() {
             ability.target_area,
             ability.cooldown_duration,
             ability.icon_name,
-            ability.sound_path
+            ability.sound_path,
+            ability.script_path,
+            ability.animation_script
           ]
         );
       }

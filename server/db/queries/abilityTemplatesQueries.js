@@ -55,7 +55,9 @@ async function getAbilityTemplateByShortName(short_name) {
       target_area: rows[0].target_area,
       cooldown_duration: rows[0].cooldown_duration,
       icon_name: rows[0].icon_name,
-      sound_path: rows[0].sound_path
+      sound_path: rows[0].sound_path,
+      script_path: rows[0].script_path,
+      animation_script: rows[0].animation_script
     });
   }
   return null;
@@ -80,7 +82,9 @@ async function getAbilityTemplatesByShortNames(short_names) {
         target_area: row.target_area,
         cooldown_duration: row.cooldown_duration,
         icon_name: row.icon_name,
-        sound_path: row.sound_path
+        sound_path: row.sound_path,
+        script_path: row.script_path,
+        animation_script: row.animation_script
     }));
 
     // Reorder abilities to match the order of short_names

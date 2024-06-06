@@ -12,7 +12,6 @@ class RogueAttack extends AbilityScript {
         const targetBattlerInstances = this.getTargetsByGridPositions(gridPositions);
         const actionResults = await this.useAbility(targetBattlerInstances, {
             damage,
-            statusEffects: ['poison'] // Example of applying a poison status effect
         });
 
         return actionResults;

@@ -274,9 +274,11 @@ async function initTables() {
       target_team ENUM('friendly', 'hostile') NOT NULL,
       target_type ENUM('target', 'area', 'relative', 'self') NOT NULL,
       target_area JSON,
-      cooldown_duration ENUM('minimum', 'shorter, 'short', 'normal', 'long', 'longest') NOT NULL,
+      cooldown_duration ENUM('minimum', 'shorter', 'short', 'normal', 'long', 'longest') NOT NULL,
       icon_name VARCHAR(255),
-      sound_path VARCHAR(255)
+      sound_path VARCHAR(255),
+      script_path VARCHAR(255),
+      animation_script VARCHAR(255)
     )`
   ];
 
