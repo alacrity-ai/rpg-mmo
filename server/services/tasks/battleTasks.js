@@ -51,7 +51,7 @@ async function processStartBattlerScriptsTask(task) {
                     battleInstanceId: battleInstance.id,
                     battlerId: battlerInstance.id
                 };
-                const delay = 250; // Initial run with short delay
+                const delay = battlerInstance.scriptSpeed;
 
                 await enqueueTask('runScriptAction', nextTaskData, () => {
                     logger.info(`Initial script action enqueued for NPC battler ${battlerInstance.id}`);

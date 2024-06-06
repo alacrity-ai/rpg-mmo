@@ -1,5 +1,9 @@
 # TECH DEBT
 
+## Battle Cleanup
+- Cleanup a battle if all players disconnect.
+    - logoutCleanup.js, needs to check if no players in a battle, and delete it
+    - scriptTasks.js needs to not queue the next action if the battle no longer exists
 
 ## Movement Bug
 If you use an ability, and then immediately move it is allowed.

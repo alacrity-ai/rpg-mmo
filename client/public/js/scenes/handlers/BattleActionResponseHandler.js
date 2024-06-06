@@ -15,6 +15,10 @@ export default class BattleActionResponseHandler {
                 // if the data.battlerId is the same as the current player's battlerId, trigger the global cooldown
                 if (data.battlerId === this.battleGrid.scene.battlerId) {
                     this.actionBarMenu.triggerGlobalCooldown(this.settings.cooldowns.short);
+                    // Reset target selection
+                    if (!this.battleGrid.tileFocused) {
+                        this.battleGrid.clearTileSelections();
+                    }
                 }
 
                 // Get the battler instance that moved and update its position
@@ -27,10 +31,7 @@ export default class BattleActionResponseHandler {
             }
             // Handle other action types as needed
 
-            // Reset target selection
-            if (!this.battleGrid.tileFocused) {
-                this.battleGrid.clearTileSelections();
-            }
+
         } catch (error) {
             console.error('Error handling completed battler action:', error);
         }
