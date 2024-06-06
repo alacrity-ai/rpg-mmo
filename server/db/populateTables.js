@@ -156,13 +156,14 @@ async function populateNpcTemplates() {
 
       if (rows.length === 0) {
         await connection.query(
-          `INSERT INTO npc_templates (name, sprite_key, description, script_path, base_stats, loot_table, npc_dialogue_template_id, battler_sprite_path)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO npc_templates (name, sprite_key, description, script_path, script_speed, base_stats, loot_table, npc_dialogue_template_id, battler_sprite_path)
+          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
           [
             npc.name,
             npc.sprite_key,
             npc.description,
             npc.script_path,
+            npc.script_speed,
             npc.base_stats,
             npc.loot_table,
             npc.npc_dialogue_template_id,

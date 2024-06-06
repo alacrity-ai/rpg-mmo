@@ -6,6 +6,7 @@ const npcTemplates = [
     sprite_key: 'bugbear_sprite',
     description: 'Lumbering and brutish beast.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 20,
       mana: 0,
@@ -22,6 +23,7 @@ const npcTemplates = [
     sprite_key: 'werebear_sprite',
     description: 'A monstrous bear with a fearsome roar.',
     script_path: 'testScript.js',
+    script_speed: 3000,
     base_stats: JSON.stringify({
       health: 25,
       mana: 5,
@@ -38,6 +40,7 @@ const npcTemplates = [
     sprite_key: 'sneering_imp_sprite',
     description: 'A small, mischievous demon with a wicked grin.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 15,
       mana: 10,
@@ -54,6 +57,7 @@ const npcTemplates = [
     sprite_key: 'owlbear_horror_sprite',
     description: 'A terrifying blend of owl and bear.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 30,
       mana: 0,
@@ -70,6 +74,7 @@ const npcTemplates = [
     sprite_key: 'forest_wight_sprite',
     description: 'An undead creature that haunts the woods.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 18,
       mana: 8,
@@ -86,6 +91,7 @@ const npcTemplates = [
     sprite_key: 'dire_wolf_sprite',
     description: 'A giant and ferocious wolf.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 22,
       mana: 0,
@@ -102,6 +108,7 @@ const npcTemplates = [
     sprite_key: 'minor_horror_sprite',
     description: 'A lesser creature of pure terror.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 16,
       mana: 6,
@@ -118,6 +125,7 @@ const npcTemplates = [
     sprite_key: 'shadow_sprite_sprite',
     description: 'A creature made of living shadow.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 14,
       mana: 10,
@@ -134,6 +142,7 @@ const npcTemplates = [
     sprite_key: 'dire_porcupine_sprite',
     description: 'A large porcupine with deadly quills.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 20,
       mana: 0,
@@ -150,6 +159,7 @@ const npcTemplates = [
     sprite_key: 'lumbering_centipede_sprite',
     description: 'A giant centipede with a poisonous bite.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 24,
       mana: 0,
@@ -166,6 +176,7 @@ const npcTemplates = [
     sprite_key: 'fiendish_shrub_sprite',
     description: 'A plant with a malevolent nature.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 18,
       mana: 5,
@@ -182,6 +193,7 @@ const npcTemplates = [
     sprite_key: 'infested_treant_sprite',
     description: 'A treant corrupted by dark forces, covered in parasitic vines.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 35,
       mana: 5,
@@ -198,6 +210,7 @@ const npcTemplates = [
     sprite_key: 'deepforest_rat_sprite',
     description: 'A cunning rat that thrives in the shadows of the deep forest.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 12,
       mana: 0,
@@ -214,6 +227,7 @@ const npcTemplates = [
     sprite_key: 'treant_youth_sprite',
     description: 'A young treant, still growing but already formidable.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 25,
       mana: 3,
@@ -230,6 +244,7 @@ const npcTemplates = [
     sprite_key: 'orcish_hunter_sprite',
     description: 'An orc skilled in tracking and hunting prey.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 22,
       mana: 2,
@@ -246,6 +261,7 @@ const npcTemplates = [
     sprite_key: 'orcish_mystic_sprite',
     description: 'An orc shaman who wields dark magic.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 18,
       mana: 10,
@@ -262,6 +278,7 @@ const npcTemplates = [
     sprite_key: 'demonic_howler_sprite',
     description: 'A demonic beast that terrifies with its bloodcurdling howl.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 20,
       mana: 8,
@@ -278,6 +295,7 @@ const npcTemplates = [
     sprite_key: 'lumbering_wolf_sprite',
     description: 'A massive wolf that moves with a slow, predatory grace.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 24,
       mana: 0,
@@ -294,6 +312,7 @@ const npcTemplates = [
     sprite_key: 'winged_garrotter_sprite',
     description: 'A large and aggressive mosquito that preys on the weak.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 10,
       mana: 0,
@@ -310,6 +329,7 @@ const npcTemplates = [
     sprite_key: 'ogre_mystic_sprite',
     description: 'A hulking ogre with surprising magical abilities.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 40,
       mana: 15,
@@ -326,6 +346,7 @@ const npcTemplates = [
     sprite_key: 'orcish_runt_sprite',
     description: 'A small and weak orc, often underestimated.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 12,
       mana: 0,
@@ -342,6 +363,7 @@ const npcTemplates = [
     sprite_key: 'banished_hunter_sprite',
     description: 'A skilled hunter exiled from their tribe.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 22,
       mana: 3,
@@ -358,6 +380,7 @@ const npcTemplates = [
     sprite_key: 'orcish_mage_sprite',
     description: 'An orc who has mastered the arcane arts.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 18,
       mana: 12,
@@ -374,6 +397,7 @@ const npcTemplates = [
     sprite_key: 'giant_spider_sprite',
     description: 'A terrifying spider that lurks in the dark, waiting for prey.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 25,
       mana: 0,
@@ -390,6 +414,7 @@ const npcTemplates = [
     sprite_key: 'demonic_serpent_sprite',
     description: 'A snake infused with demonic energy, highly dangerous.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 20,
       mana: 8,
@@ -406,6 +431,7 @@ const npcTemplates = [
     sprite_key: 'flying_millipede_sprite',
     description: 'A grotesque millipede with wings, agile and deadly.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 15,
       mana: 0,
@@ -422,6 +448,7 @@ const npcTemplates = [
     sprite_key: 'orcish_warrior_sprite',
     description: 'A fierce orcish warrior, known for their brute strength.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 30,
       mana: 0,
@@ -438,6 +465,7 @@ const npcTemplates = [
     sprite_key: 'giant_wasp_sprite',
     description: 'A giant wasp with a venomous sting, swift and dangerous.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 20,
       mana: 0,
@@ -454,6 +482,7 @@ const npcTemplates = [
     sprite_key: 'giant_beetle_sprite',
     description: 'A massive beetle with a hard shell, tough to crack.',
     script_path: 'testScript.js',
+    script_speed: 2000,
     base_stats: JSON.stringify({
       health: 35,
       mana: 0,

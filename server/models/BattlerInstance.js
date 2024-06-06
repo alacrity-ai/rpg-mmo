@@ -12,6 +12,7 @@ class BattlerInstance {
      * @param {Object} params.current_stats - The current stats of the battler.
      * @param {Array<number>} [params.abilities] - The list of ability IDs for the battler.
      * @param {string} [params.script_path] - The path to the battle script, if applicable.
+     * @param {number} [params.script_speed] - The speed at which the NPC script runs, if applicable.
      * @param {string} params.sprite_path - The path to the battler's sprite.
      * @param {JSON} params.grid_position - The grid position of the battler.
      * @param {Date} params.last_action_time - The timestamp of the last action.
@@ -28,6 +29,7 @@ class BattlerInstance {
         current_stats,
         abilities,
         script_path,
+        script_speed,
         sprite_path,
         grid_position,
         last_action_time,
@@ -43,6 +45,7 @@ class BattlerInstance {
         this.currentStats = current_stats;
         this.abilities = abilities;
         this.scriptPath = script_path;
+        this.scriptSpeed = script_speed;
         this.spritePath = sprite_path;
         this.gridPosition = grid_position;
         this.lastActionTime = last_action_time;
@@ -66,6 +69,7 @@ module.exports = BattlerInstance;
  *   current_stats: { health: 80, mana: 50, strength: 20, stamina: 15, intelligence: 10 },
  *   abilities: ["warriorAttack", "shieldBlock", "taunt"],
  *   script_path: null,
+ *   script_speed: null,
  *   sprite_path: 'assets/battle/battlers/sprite_1.png',
  *   grid_position: [1, 1],
  *   last_action_time: new Date(),

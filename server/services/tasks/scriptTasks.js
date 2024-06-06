@@ -23,8 +23,7 @@ async function processRunScriptActionTask(task) {
 
         // Enqueue the next script action task
         const nextTaskData = { battleInstanceId, battlerId };
-        // TODO : Have the delay be handled by the NPC script itself
-        const delay = 2500; // Example delay
+        const delay = battlerInstance.scriptSpeed;
         await enqueueTask('runScriptAction', nextTaskData, () => {
             logger.info(`Next script action enqueued for battler ${battlerId}`);
         }, null, delay);

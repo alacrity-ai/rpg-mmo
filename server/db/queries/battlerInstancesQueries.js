@@ -6,9 +6,9 @@ const { getNPCTemplateById } = require('./npcTemplatesQueries');
 async function createBattlerInstance(battlerInstanceData) {
     const sql = `
         INSERT INTO battler_instances (
-            character_id, npc_template_id, base_stats, current_stats, abilities, script_path,
+            character_id, npc_template_id, base_stats, current_stats, abilities, script_path, script_speed,
             sprite_path, grid_position, last_action_time, time_created, status_effects, team, phase
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
         battlerInstanceData.characterId,
@@ -17,7 +17,8 @@ async function createBattlerInstance(battlerInstanceData) {
         JSON.stringify(battlerInstanceData.currentStats),
         JSON.stringify(battlerInstanceData.abilities),
         battlerInstanceData.scriptPath,
-        battlerInstanceData.spritePath, // Include sprite path
+        battlerInstanceData.scriptSpeed,
+        battlerInstanceData.spritePath,
         JSON.stringify(battlerInstanceData.gridPosition),
         battlerInstanceData.lastActionTime,
         battlerInstanceData.timeCreated,
@@ -37,6 +38,7 @@ async function createBattlerInstance(battlerInstanceData) {
         current_stats: battlerInstanceData.currentStats,
         abilities: battlerInstanceData.abilities,
         script_path: battlerInstanceData.scriptPath,
+        script_speed: battlerInstanceData.scriptSpeed,
         sprite_path: battlerInstanceData.spritePath,
         grid_position: battlerInstanceData.gridPosition,
         last_action_time: battlerInstanceData.lastActionTime,
@@ -66,6 +68,7 @@ async function updateBattlerInstance(id, updates) {
             current_stats = ?,
             abilities = ?,
             script_path = ?,
+            script_speed = ?,
             sprite_path = ?,
             grid_position = ?,
             last_action_time = ?,
@@ -79,7 +82,8 @@ async function updateBattlerInstance(id, updates) {
         JSON.stringify(updates.currentStats),
         JSON.stringify(updates.abilities),
         updates.scriptPath,
-        updates.spritePath,  // Add sprite path
+        updates.scriptSpeed,
+        updates.spritePath,
         JSON.stringify(updates.gridPosition),
         updates.lastActionTime,
         JSON.stringify(updates.statusEffects),
@@ -144,6 +148,7 @@ async function createBattlerInstancesFromCharacterIds(characterIds) {
                 current_stats: character.currentStats,
                 abilities: character.abilities,
                 script_path: null,
+                script_speed: null,
                 sprite_path: `assets/images/characters/${character.characterClass}/combat/atlas.png`,
                 grid_position: [1, 1],
                 last_action_time: new Date(),
@@ -171,6 +176,7 @@ async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
                 current_stats: npcTemplate.baseStats, // NPCs start with base stats as current stats
                 abilities: [], // Add abilities if applicable
                 script_path: npcTemplate.scriptPath,
+                script_speed: npcTemplate.scriptSpeed,
                 sprite_path: npcTemplate.battlerSpritePath, // Use NPC's battler sprite path
                 grid_position: [4, 1],
                 last_action_time: new Date(),

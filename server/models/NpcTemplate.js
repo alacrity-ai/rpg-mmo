@@ -10,6 +10,7 @@ class NpcTemplate {
    * @param {string} params.sprite_key - The sprite key for the NPC.
    * @param {string} params.description - The description of the NPC.
    * @param {string} params.script_path - The script path for the NPC behavior.
+   * @param {number} params.script_speed - The speed at which the NPC script runs.
    * @param {Object} params.baseStats - The base stats of the NPC.
    * @param {number} params.baseStats.health - The base health of the NPC.
    * @param {number} params.baseStats.mana - The base mana of the NPC.
@@ -20,12 +21,13 @@ class NpcTemplate {
    * @param {number} [params.npc_dialogue_template_id] - The ID of the dialogue template associated with the NPC (nullable).
    * @param {string} params.battler_sprite_path - The path to the battler sprite for the NPC.
    */
-  constructor({ id, name, sprite_key, description, script_path, base_stats, loot_table, npc_dialogue_template_id = null, battler_sprite_path }) {
+  constructor({ id, name, sprite_key, description, script_path, script_speed, base_stats, loot_table, npc_dialogue_template_id = null, battler_sprite_path }) {
     this.id = id;
     this.name = name;
     this.spriteKey = sprite_key;
     this.description = description;
     this.scriptPath = script_path;
+    this.scriptSpeed = script_speed;
     this.baseStats = base_stats;
     this.lootTable = loot_table;
     this.npcDialogueTemplateId = npc_dialogue_template_id;
@@ -44,6 +46,7 @@ module.exports = NpcTemplate;
  *   sprite_key: 'rat_sprite',
  *   description: 'A small, skittish rodent.',
  *   script_path: 'scripts/rat_behavior.js',
+ *   script_speed: 2500,
  *   baseStats: { health: 20, mana: 0, strength: 3, stamina: 5, intelligence: 1 },
  *   lootTable: [
  *     { item_id: 1, chance_to_drop: 0.5 },

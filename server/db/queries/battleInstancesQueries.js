@@ -127,6 +127,7 @@ async function getBattlerInstancesInBattle(battleId) {
       current_stats: row.current_stats,
       abilities: row.abilities,
       script_path: row.script_path,
+      script_speed: row.script_speed,
       sprite_path: row.sprite_path,
       grid_position: row.grid_position,
       last_action_time: row.last_action_time,
