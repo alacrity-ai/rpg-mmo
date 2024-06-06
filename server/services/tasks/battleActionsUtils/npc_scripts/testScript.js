@@ -6,16 +6,34 @@ class TestScript extends NpcScript {
     }
 
     async phase0() {
-        // Move right a tile
-        const actionResult = await this.actionMove(1, 0);
-        this.updatePhase(1);
+        const actionResult = await this.actionMoveToEnemy();
+        if (!this.actionFailed(actionResult)) {
+            await this.updatePhase(1);
+        }
         return actionResult;
     }
 
     async phase1() {
-        // Move left a tile
-        const actionResult = await this.actionMove(-1, 0);
-        this.updatePhase(0);
+        const actionResult = await this.actionMoveFromEnemy();
+        if (!this.actionFailed(actionResult)) {
+            await this.updatePhase(2);
+        }
+        return actionResult;
+    }
+
+    async phase2() {
+        const actionResult = await this.actionMoveToEnemy();
+        if (!this.actionFailed(actionResult)) {
+            await this.updatePhase(3);
+        }
+        return actionResult;
+    }
+
+    async phase3() {
+        const actionResult = await this.actionMoveToEnemy();
+        if (!this.actionFailed(actionResult)) {
+            await this.updatePhase(0);
+        }
         return actionResult;
     }
 }

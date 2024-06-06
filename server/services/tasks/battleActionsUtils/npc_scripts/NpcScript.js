@@ -1,5 +1,5 @@
 const { updateBattlerPhase } = require('../../../../db/queries/battlerInstancesQueries');
-const BattleActionProcessor = require('../BattleActionProcessor');
+const { actionMove, actionMoveToEnemy, actionMoveFromEnemy, moveToDestination, moveToBattler } = require('./npc_actions/moveActions');
 
 class NpcScript {
     constructor(battlerInstance, battlerInstances, battleInstanceId) {
@@ -13,35 +13,60 @@ class NpcScript {
     }
 
     async execute() {
-        const phaseMethod = `phase${this.phase}`;
-        if (this[phaseMethod]) {
-            const actionData = await this[phaseMethod]();
-            return actionData;
-        } else {
-            throw new Error(`Phase method ${phaseMethod} not implemented.`);
+        const totalPhases = this.getTotalPhases();
+        let attempts = 0;
+
+        while (attempts < totalPhases) {
+            const phaseMethod = `phase${this.phase}`;
+            if (this[phaseMethod]) {
+                const actionResult = await this[phaseMethod]();
+                if (!this.actionFailed(actionResult)) {
+                    return actionResult;
+                } 
+            } else {
+                return { success: false, message: `Phase method ${phaseMethod} not implemented.` };
+            }
+
+            this.phase = (this.phase + 1) % totalPhases;
+            await this.updatePhase(this.phase);
+            attempts += 1;
         }
+        return { success: false, message: 'All phases failed, potential infinite loop detected' };
     }
 
     async updatePhase(newPhase) {
-        // Logic to update the battler's phase in the database
+        this.phase = newPhase;
         await updateBattlerPhase(this.battlerInstanceId, newPhase);
     }
 
     async actionMove(x, y) {
-        const newPosition = [this.gridPosition[0] + x, this.gridPosition[1] + y];
-        const actionData = {
-            newPosition,
-            currentPosition: this.gridPosition,
-            team: this.team
-        };
-        const action = {
-            battleInstanceId: this.battleInstanceId,
-            battlerId: this.battlerInstanceId,
-            actionType: 'move',
-            actionData
-        };
-        const result = await BattleActionProcessor.processSingleAction(action);
-        return result;
+        return await actionMove(this, x, y);
+    }
+
+    async actionMoveToEnemy() {
+        return await actionMoveToEnemy(this, this.battlerInstances);
+    }
+
+    async actionMoveFromEnemy() {
+        return await actionMoveFromEnemy(this, this.battlerInstances);
+    }
+
+    async moveToDestination(x, y) {
+        return await moveToDestination(this, x, y);
+    }
+
+    async moveToBattler(targetBattlerInstance) {
+        return await moveToBattler(this, targetBattlerInstance);
+    }
+
+    actionFailed(result) {
+        return !result.success;
+    }
+
+    getTotalPhases() {
+        const phaseMethods = Object.getOwnPropertyNames(Object.getPrototypeOf(this))
+            .filter(prop => prop.startsWith('phase') && typeof this[prop] === 'function');
+        return phaseMethods.length;
     }
 }
 
