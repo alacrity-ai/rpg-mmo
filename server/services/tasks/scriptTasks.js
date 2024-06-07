@@ -24,19 +24,19 @@ async function processRunScriptActionTask(task) {
     // Run the script and get the result
     const actionResult = await npcScriptExecutor.runScript();
 
+    // Enqueue the next script action task based on the battler's script speed (delay), this way a battler will perform an action continuously
+    const nextTaskData = { battleInstanceId, battlerId };
+    const delay = battlerInstance.scriptSpeed;
+    console.log('ENQUEING NEXT TASK WITH DELAY', delay, 'AT TIME', Date.now());
+    await enqueueTask('runScriptAction', nextTaskData, () => {
+      logger.info(`Next script action enqueued for battler ${battlerId}`);
+    }, delay);
+
     if (actionResult.success) {
       // Publish the results to the task-result-stream with the battleInstanceId so the server will know to transmit to all clients in the battle
       const result = { success: true, data: { battleInstanceId, actionResult } };
       logger.info(`RunScriptAction task processed successfully for task ${taskId}`);
       await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
-
-      // Enqueue the next script action task based on the battler's script speed (delay), this way a battler will perform an action continuously
-      const nextTaskData = { battleInstanceId, battlerId };
-      const delay = battlerInstance.scriptSpeed;
-      console.log('ENQUEING NEXT TASK WITH DELAY', delay, 'AT TIME', Date.now());
-      await enqueueTask('runScriptAction', nextTaskData, () => {
-        logger.info(`Next script action enqueued for battler ${battlerId}`);
-      }, delay);
     } else {
       throw new Error(actionResult.message);
     }

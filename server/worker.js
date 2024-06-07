@@ -66,12 +66,23 @@ async function processDelayedTasks() {
       if (score <= now) {
         const { taskType, fullTaskData } = task;
         const lockKey = `lock:${taskType}:${fullTaskData.taskId}`;
+        const processingKey = `processing:${taskType}:${fullTaskData.taskId}`;
 
         // Attempt to acquire the lock
         const lockAcquired = await redisClient.set(lockKey, 'locked', 'NX', 'PX', LOCK_EXPIRATION_MS);
         if (!lockAcquired) {
           continue; // If lock not acquired, skip to the next task
         }
+
+        // Check if the task is already being processed
+        const processingFlag = await redisClient.exists(processingKey);
+        if (processingFlag) {
+          await redisClient.del(lockKey); // Release the lock if task is already being processed
+          continue;
+        }
+
+        // Set the processing flag
+        await redisClient.set(processingKey, 'processing', 'PX', LOCK_EXPIRATION_MS);
 
         const taskHandler = taskRegistry.getHandler(taskType);
 
@@ -87,7 +98,8 @@ async function processDelayedTasks() {
             logger.error(`Failed to process delayed task ${taskType}: ${error.message}`);
             await redisClient.xadd('task-result-stream', '*', 'taskId', fullTaskData.taskId, 'result', JSON.stringify({ taskId: fullTaskData.taskId, result }));
           } finally {
-            // Remove the lock after processing the task
+            // Remove the processing flag and the lock after processing the task
+            await redisClient.del(processingKey);
             await redisClient.del(lockKey);
           }
         } else {
