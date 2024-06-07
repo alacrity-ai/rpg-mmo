@@ -1,5 +1,7 @@
-const { redisClient } = require('../redisClient');
+const { getRedisClient } = require('../redisClient');
 const logger = require('../utilities/logger');
+
+const redisClient = getRedisClient();
 
 async function clearRedis() {
   try {

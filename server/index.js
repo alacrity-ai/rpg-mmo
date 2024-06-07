@@ -17,7 +17,8 @@ const zoneHandler = require('./handlers/api/zoneHandler');
 const logger = require('./utilities/logger');
 const { handleDisconnect } = require('./services/logoutCleanup');
 const clearRedis = require('./handlers/taskClear');
-const { handleNpcTaskResult } = require('./handlers/taskResultHandler');
+const { createStreamIfNotExists, createConsumerGroup } = require('./handlers/taskQueue');
+const { subscribeToTaskResultStream } = require('./handlers/taskResultSubscriber');
 
 const app = express();
 const server = http.createServer(app);
@@ -78,8 +79,10 @@ const PORT = config.server.port;
 server.listen(PORT, async () => {
   await clearRedis();
   await initTables();
-  await populateTables(); 
+  await populateTables();
+  await createStreamIfNotExists();
+  await createConsumerGroup();
   // Initialize NPC task result handling
-  handleNpcTaskResult(io);
+  subscribeToTaskResultStream(io);
   logger.info(`Server is running on port ${PORT}`);
 });

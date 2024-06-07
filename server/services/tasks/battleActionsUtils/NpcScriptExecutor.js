@@ -21,6 +21,7 @@ class NPCScriptExecutor {
         // Execute the NPC script, which will utilize the BattleActionProcessor, and return the result
         const actionResult = await npcScript.execute();
         logger.info(`NPCScriptExecutor result: ${actionResult}`);
+        console.log('NPC EXECUTOR RESULT: ', actionResult);
         return actionResult;
     }
 }

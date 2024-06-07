@@ -6,34 +6,16 @@ class TestScript extends NpcScript {
     }
 
     async phase0() {
-        const actionResult = await this.actionMoveToEnemy();
-        if (!this.actionFailed(actionResult)) {
-            await this.updatePhase(1);
-        }
+        const actionResult = await this.actionMove(1, 0);
+        await this.updatePhase(1);
+        console.log('TESTSCRIPT: phase0 actionResult:', actionResult);
         return actionResult;
     }
 
     async phase1() {
-        const actionResult = await this.actionMoveFromEnemy();
-        if (!this.actionFailed(actionResult)) {
-            await this.updatePhase(2);
-        }
-        return actionResult;
-    }
-
-    async phase2() {
-        const actionResult = await this.actionMoveToEnemy();
-        if (!this.actionFailed(actionResult)) {
-            await this.updatePhase(3);
-        }
-        return actionResult;
-    }
-
-    async phase3() {
-        const actionResult = await this.actionMoveToEnemy();
-        if (!this.actionFailed(actionResult)) {
-            await this.updatePhase(0);
-        }
+        const actionResult = await this.actionMove(-1, 0);
+        await this.updatePhase(0);
+        console.log('TESTSCRIPT: phase0 actionResult:', actionResult);
         return actionResult;
     }
 }

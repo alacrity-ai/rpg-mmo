@@ -49,6 +49,7 @@ services:
     depends_on:
       - database
       - redis
+      - server
 
   client:
     build:
@@ -60,6 +61,9 @@ services:
       - "8000:8000"
     depends_on:
       - server
+      - worker
+      - database
+      - redis
 
 volumes:
   redis-data:

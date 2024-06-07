@@ -4,6 +4,7 @@ import MusicManager from '../audio/MusicManager.js';
 import SoundFXManager from '../audio/SoundFXManager.js';
 import CustomCursor from '../interface/CustomCursor.js';
 import { addBackgroundImage } from '../graphics/BackgroundManager.js';
+import api from '../api';
 
 export default class LoginScene extends Phaser.Scene {
     constructor() {
@@ -29,6 +30,15 @@ export default class LoginScene extends Phaser.Scene {
 
         // Get CustomCursor instance
         CustomCursor.getInstance(this);
+
+        // Load server settings
+        api.settings.getServerSettings()
+        .then((settings) => {
+            this.registry.set('settings', settings);
+        })
+        .catch((error) => {
+            console.error('Error getting server settings:', error);
+        });
     }
 
     update(time, delta) {
