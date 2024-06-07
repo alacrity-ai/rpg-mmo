@@ -1,9 +1,7 @@
 const { getRedisClient } = require('../../redisClient');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
-const { getAllCachedBattlerInstancesInBattle } = require('../../db/cache/battle')
 const { getBattlerInstancesInBattle } = require('../../db/queries/battleInstancesQueries');
-const { enqueueTask } = require('../../handlers/taskUtils');
 const NPCScriptExecutor = require('./battleActionsUtils/NpcScriptExecutor');
 
 const redisClient = getRedisClient();
@@ -42,49 +40,10 @@ async function processRunScriptActionTask(task) {
   }
 }
 
-// workers/processScriptTasks.js
-async function processRunNpcScriptsInBattleTask(task) {
-  const { taskId, data } = task.taskData;
-  const { battleInstanceId } = data;
-  try {
-    const battlerInstances = await getAllCachedBattlerInstancesInBattle(battleInstanceId);
-
-    for (const battlerInstance of battlerInstances) {
-      if (battlerInstance.npcTemplateId && battlerInstance.scriptPath) {
-        const nextActionTimeKey = `nextActionTime:${battleInstanceId}:${battlerInstance.id}`;
-        const nextActionTime = await redisClient.get(nextActionTimeKey);
-        const currentTime = Date.now();
-        
-        // Ensure at least 5 seconds have passed since the timeCreated
-        const timeCreated = new Date(battlerInstance.timeCreated).getTime();
-        const timeSinceCreation = currentTime - timeCreated;
-        if (timeSinceCreation < 5000) {
-          continue;
-        }
-
-        if (!nextActionTime || currentTime >= nextActionTime) {
-          // Enqueue the next script action task
-          const nextTaskData = { battleInstanceId, battlerId: battlerInstance.id };
-          await enqueueTask('runScriptAction', nextTaskData, () => {});
-        }
-      }
-    }
-
-    const result = { success: true };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
-  } catch (error) {
-    const result = { success: false, error: 'Failed to run NPC scripts in battle. ' + error.message };
-    logger.error(`Failed to run NPC scripts in battle for task ${taskId}: ${error.message}`);
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
-  }
-}
-
 
 // Register task handlers
 taskRegistry.register('runScriptAction', processRunScriptActionTask);
-taskRegistry.register('runNpcScriptsInBattle', processRunNpcScriptsInBattleTask);
 
 module.exports = {
   processRunScriptActionTask,
-  processRunNpcScriptsInBattleTask
 };
