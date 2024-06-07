@@ -33,4 +33,4 @@ ENV NODE_ENV=production
 RUN npm run build
 
 # Start the app using the startup script
-CMD ["./start-client.sh"]
+CMD ["npm", "start"]

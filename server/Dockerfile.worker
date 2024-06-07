@@ -26,4 +26,4 @@ EXPOSE 3000
 ENV NODE_ENV=production
 
 # Start the application using the startup script
-CMD ["./start-worker.sh"]
+CMD ["npm", "run", "worker"]

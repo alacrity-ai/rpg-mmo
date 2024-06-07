@@ -9,6 +9,11 @@ services:
       - ./redis/volume:/data
     ports:
       - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   database:
     build:
@@ -21,6 +26,11 @@ services:
       - ./database/volume:/var/lib/mysql
     ports:
       - "3306:3306"
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   server:
     build:
@@ -34,8 +44,15 @@ services:
     ports:
       - "3000:3000"
     depends_on:
-      - database
-      - redis
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   worker:
     build:
@@ -47,9 +64,17 @@ services:
     env_file:
       - ./server/.env
     depends_on:
-      - database
-      - redis
-      - server
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      server:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://server:3000"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   client:
     build:
@@ -60,11 +85,11 @@ services:
     ports:
       - "8000:8000"
     depends_on:
-      - server
-      - worker
-      - database
-      - redis
-
-volumes:
-  redis-data:
-  db-data:
+      server:
+        condition: service_healthy
+      worker:
+        condition: service_healthy
+      database:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
