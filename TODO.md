@@ -1,41 +1,18 @@
 # TODOS
 
-
-
-## Battle Tick Commandflow
-
-## GOOD WAY
-1) New service "battleControllerService", On a timer, let's say every 2 seconds, will queue a new "getBattles" task.
-
-2) Our worker sees the task, gets all the Battles currently going on calls (getAllBattleInstances in db/queries/battleInstancesQueries), and publishes the result (a list of BattleInstanceIds).  (getAllBattleInstances returns an array of BattleInstance models, where BattleInstance.id is the id)
-
-3) When the battleControllerService then sees the result, it will queue a task for each individual battleId, the "runNpcScriptsInBattle" task.
-
-4) When a worker picks up a runNpcScriptsInBattle task, it will:
-- query the database to get all the battlers in a battle (calls getBattlerInstancesInBattle in db/queries/battleInstancesQueries to get an array of BattlerInstance models).
-- For each of the BattleInstances, determine if it's an NPC (check if BattleInstance.npcTemplate is not null and scriptPath is not null), and then enqueue a delayed runScriptAction task (using the BattleInstance.scriptSpeed as the delay).
-
-
-
-## BAD WAY
-The server issues a run NPC Scripts task
-
-A worker takes the task, gets all the Battles currently going on, runs all the NPC scripts for all the battles
-
-
-
-
-
-
-
-
-
-TOMORROW (6/2/2024):
-
 - [x] Database Validation:
 
     - Delete the current database and rerun the server to create and populate tables.
     - Verify that the game runs smoothly, including creating a character, entering an area, and engaging in combat.
+
+- [x] Plan Ability System and Enemy Script System:
+
+    - Start planning the structure and implementation of the ability system.
+    - Begin planning the scripting system for enemy behaviors.
+
+- [x] Implement Basic Ability System
+
+- [x] Implement Basic Enemy Scripting System
 
 - [ ] Determine Encounter Completion:
 
@@ -58,10 +35,11 @@ TOMORROW (6/2/2024):
     - Add basic party invite functionality to join characters into one party.
     - Verify that partied characters share the same area instance and combat encounter.
 
-- [ ] Plan Ability System and Enemy Script System:
+- [ ] Redo Hotbar Menu (bottom left) Using menu system
+    - [ ] Leverage the menu system
+    - [ ] Add the tween growth of icons to the menu iconButton class as optional argument
+    - [ ] Add hover sound effect as optional argument
 
-    - Start planning the structure and implementation of the ability system.
-    - Begin planning the scripting system for enemy behaviors.
 
 6/2/2024
 What we Did:
@@ -184,14 +162,14 @@ NOTE: If the player requests access to an area_instance that does not exist, the
     - [x] Integrate basic movement with server/client communication
     - [x] Create Battle Hotbar and Movement Hotbar
     - [x] Create Cooldown Animation
-    - [ ] Create Singleton Class Called "BattleEncounterManager"
-        - [ ] Should have functions to start the encounter scene (with the required data), create BattleInstance in the DB, and BattlerInstances for the party and enemies.
-        - [ ] Integrate character party.  Character is always in a party of at least 1 (Themselves).  Battle encounter targets the party, not a single player, this way all party members will receive the message and go into combat together.
-        - [ ] Add class to BaseAreaScene, and BaseTownScene
-        - [ ] Class will listen for 'startBattleEncounter' message from server
-        - [ ] Upon receiving message from server, Start the encounter
-            - [ ] Message from server contains all required data to start encounter
-        - [ ] Decide what will cause the server to send this message to the client. E.g. a player entering an area instance within a zone, leverages:
+    - [x] Create Singleton Class Called "BattleEncounterManager"
+        - [x] Should have functions to start the encounter scene (with the required data), create BattleInstance in the DB, and BattlerInstances for the party and enemies.
+        - [x] Integrate character party.  Character is always in a party of at least 1 (Themselves).  Battle encounter targets the party, not a single player, this way all party members will receive the message and go into combat together.
+        - [x] Add class to BaseAreaScene, and BaseTownScene
+        - [x] Class will listen for 'startBattleEncounter' message from server
+        - [x] Upon receiving message from server, Start the encounter
+            - [x] Message from server contains all required data to start encounter
+        - [x] Decide what will cause the server to send this message to the client. E.g. a player entering an area instance within a zone, leverages:
             - AreaInstance, EncounterTemplate, NpcTemplate, and Characters tables must be used in order to create the encounter.
 
 
@@ -203,10 +181,7 @@ NOTE: If the player requests access to an area_instance that does not exist, the
     - [ ] If zoomed out, and location clicked on: Zoom in, open a prompt window "Travel to: Location?"
     - [x] Put a star icon or something on the current location    
 
-- Redo Hotbar Menu (bottom left) Using menu system
-    - [ ] Leverage the menu system
-    - [ ] Add the tween growth of icons to the menu iconButton class as optional argument
-    - [ ] Add hover sound effect as optional argument
+
 
 - Redo Party Display Menu using Menu System
 

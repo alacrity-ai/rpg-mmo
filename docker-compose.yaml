@@ -28,7 +28,7 @@ services:
       dockerfile: Dockerfile
     environment:
       DB_HOST: database
-      REDIS_HOST: redis  # Update to use service name
+      REDIS_HOST: redis
     env_file:
       - ./server/.env
     ports:
@@ -43,7 +43,7 @@ services:
       dockerfile: Dockerfile.worker
     environment:
       DB_HOST: database
-      REDIS_HOST: redis  # Update to use service name
+      REDIS_HOST: redis
     env_file:
       - ./server/.env
     depends_on:
