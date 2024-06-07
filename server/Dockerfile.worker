@@ -13,11 +13,17 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
+# Copy the startup script
+COPY start-worker.sh ./
+
+# Make the script executable
+RUN chmod +x start-worker.sh
+
 # Expose the port the app runs on
 EXPOSE 3000
 
 # Set environment variables
 ENV NODE_ENV=production
 
-# Start the application
-CMD ["npm", "run", "worker"]
+# Start the application using the startup script
+CMD ["./start-worker.sh"]

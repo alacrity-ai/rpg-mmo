@@ -1,9 +1,11 @@
-const { redisClient } = require('../../redisClient');
+// workers/processShopTasks.js
+const { getRedisClient } = require('../../redisClient');
 const { getShopTemplateById } = require('../../db/queries/shopTemplatesQueries');
 const { getItemTemplateById } = require('../../db/queries/itemTemplatesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
+const redisClient = getRedisClient();
 
 async function processViewShopInventoryTask(task) {
   const { taskId, data } = task.taskData;
@@ -14,9 +16,9 @@ async function processViewShopInventoryTask(task) {
     const shop = await getShopTemplateById(shopId);
 
     if (!shop) {
-      const result = { error: 'Shop not found.' };
+      const result = { success: false, error: 'Shop not found.' };
       logger.info(`Shop not found for task ${taskId}`);
-      await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+      await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
       return;
     }
 
@@ -41,11 +43,11 @@ async function processViewShopInventoryTask(task) {
 
     const result = { success: true, data: structuredItems };
     logger.info(`View shop inventory successful for task ${taskId}`);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
-    const result = { error: 'Failed to view shop inventory. ' + error.message };
-    logger.info(`View shop inventory failed for task ${taskId}:`, error.message);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    const result = { success: false, error: 'Failed to view shop inventory. ' + error.message };
+    logger.info(`View shop inventory failed for task ${taskId}: ${error.message}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }
 

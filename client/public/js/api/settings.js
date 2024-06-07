@@ -6,10 +6,10 @@ const getServerSettings = () => {
     socketManager.getSocket().emit('getServerSettings', {}, (response) => {
       console.log('Requesting server settings')
       if (response.error) {
-        console.log('Error getting server settings')
+        console.log('Error getting server settings');
         reject(response.error);
       } else {
-        console.log('Got server settings')
+        console.log('Got server settings ', response.data);
         resolve(response.data);
       }
     });

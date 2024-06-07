@@ -1,39 +1,40 @@
-const { redisClient } = require('../../redisClient');
+// workers/processCharacterTasks.js
+const { getRedisClient } = require('../../redisClient');
 const { createCharacter, getCharacterByName, getCharactersByUser } = require('../../db/queries/characterQueries');
-const { getClassTemplateByName, getAllClasses } = require('../../db/queries/classTemplatesQueries');
+const { getAllClasses } = require('../../db/queries/classTemplatesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
+const redisClient = getRedisClient();
+
 async function processClassListTask(task) {
-    const {taskId, data} = task.taskData;
-    try {
-        const classes = await getAllClasses();
-        const result = { success: true, data: classes };
-        logger.info(`Class list retrieval successful for task ${taskId}`);
-        await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
-        const result = { error: 'Failed to retrieve class list. ' + error.message };
-        logger.error(`Class list retrieval failed for task ${taskId}:`, error.message);
-        await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
+  const { taskId, data } = task.taskData;
+  try {
+    const classes = await getAllClasses();
+    const result = { success: true, data: classes };
+    logger.info(`Class list retrieval successful for task ${taskId}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+  } catch (error) {
+    const result = { success: false, error: 'Failed to retrieve class list. ' + error.message };
+    logger.error(`Class list retrieval failed for task ${taskId}: ${error.message}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+  }
 }
 
 async function processCharacterListTask(task) {
-    const { taskId, data } = task.taskData;
-    const { userId } = data;
-  
-    try {
-      // Get the characters for the given user
-      const characters = await getCharactersByUser(userId);
-  
-      const result = { success: true, data: characters };
-      logger.info(`Character list retrieval successful for task ${taskId}`);
-      await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    } catch (error) {
-      const result = { error: 'Failed to retrieve character list. ' + error.message };
-      logger.error(`Character list retrieval failed for task ${taskId}:`, error.message);
-      await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-    }
+  const { taskId, data } = task.taskData;
+  const { userId } = data;
+
+  try {
+    const characters = await getCharactersByUser(userId);
+    const result = { success: true, data: characters };
+    logger.info(`Character list retrieval successful for task ${taskId}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+  } catch (error) {
+    const result = { success: false, error: 'Failed to retrieve character list. ' + error.message };
+    logger.error(`Character list retrieval failed for task ${taskId}: ${error.message}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+  }
 }
 
 async function processCreateCharacterTask(task) {
@@ -41,16 +42,14 @@ async function processCreateCharacterTask(task) {
   const { userId, characterName, characterClass } = data;
 
   try {
-    // Create the character in the database
     const characterId = await createCharacter(userId, characterName, characterClass);
-
     const result = { success: true, data: { characterId } };
     logger.info(`Character creation successful for task ${taskId}`);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
-    const result = { error: 'Failed to create character. ' + error.message };
-    logger.info(`Character creation failed for task ${taskId}:`, error.message);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    const result = { success: false, error: 'Failed to create character. ' + error.message };
+    logger.info(`Character creation failed for task ${taskId}: ${error.message}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }
 
@@ -59,36 +58,33 @@ async function processLoginCharacterTask(task) {
   const { userId, characterName } = data;
 
   try {
-      // Get the character by name from the database
-      const character = await getCharacterByName(characterName);
+    const character = await getCharacterByName(characterName);
 
-      if (!character) {
-          const result = { error: 'Character not found.' };
-          logger.info(`Character not found for task ${taskId}`);
-          await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-          return;
-      }
+    if (!character) {
+      const result = { success: false, error: 'Character not found.' };
+      logger.info(`Character not found for task ${taskId}`);
+      await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+      return;
+    }
 
-      // TODO : If the character has any stale groups that they are in, remove them
+    // TODO : If the character has any stale groups that they are in, remove them
 
-      // Check if the character belongs to the user
-      if (character.userId !== userId) {
-          const result = { error: 'Unauthorized access.' };
-          logger.info(`Unauthorized access for task ${taskId}: User ID ${userId} does not match character owner ID ${character.userId}`);
-          await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
-          return;
-      }
+    if (character.userId !== userId) {
+      const result = { success: false, error: 'Unauthorized access.' };
+      logger.info(`Unauthorized access for task ${taskId}: User ID ${userId} does not match character owner ID ${character.userId}`);
+      await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+      return;
+    }
 
-      const result = { success: true, data: character };
-      logger.info(`Character login successful for task ${taskId}`);
-      await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    const result = { success: true, data: character };
+    logger.info(`Character login successful for task ${taskId}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
-      const result = { error: 'Failed to login character. ' + error.message };
-      logger.error(`Character login failed for task ${taskId}:`, error.message);
-      await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    const result = { success: false, error: 'Failed to login character. ' + error.message };
+    logger.error(`Character login failed for task ${taskId}: ${error.message}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }
-
 
 // Register task handlers
 taskRegistry.register('classList', processClassListTask);

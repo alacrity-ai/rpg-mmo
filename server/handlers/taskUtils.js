@@ -1,19 +1,22 @@
-const { redisClient } = require('../redisClient');
+// handlers/taskUtils.js
+const { getRedisClient } = require('../redisClient');
 const { addTask } = require('./taskQueue');
 const logger = require('../utilities/logger');
 const crypto = require('crypto');
-const { handleTaskResult } = require('./taskResultHandler');
 
-async function enqueueTask(taskType, taskData, callback, io, delay = 0) {
+// Map to store callbacks
+const callbackMap = new Map();
+
+async function enqueueTask(taskType, taskData, callback, delay = 0) {
+  const redisClient = getRedisClient();
+
   try {
     const taskId = crypto.randomUUID(); // Generate a unique task ID
     const fullTaskData = { taskId, data: taskData };
+    console.log('Got fullTaskData:', fullTaskData);
 
-    // Subscribe to a Redis channel for the task result
-    const taskChannel = `task-result:${taskId}`;
-
-    // Handle task result in a separate function
-    handleTaskResult(taskChannel, callback, io);
+    // Store the callback in the map
+    callbackMap.set(taskId, callback);
 
     // Enqueue the task with or without delay
     if (delay > 0) {
@@ -21,6 +24,7 @@ async function enqueueTask(taskType, taskData, callback, io, delay = 0) {
       await redisClient.zadd('delayed-tasks', executeTime, JSON.stringify({ taskType, fullTaskData }));
       logger.info(`Delayed task added to queue: ${taskType}, to be executed in ${delay} ms`);
     } else {
+      console.log('Calling addTask with:', taskType, fullTaskData);
       await addTask(taskType, fullTaskData);
       logger.info(`Task added to queue: ${taskType}`);
     }
@@ -31,5 +35,6 @@ async function enqueueTask(taskType, taskData, callback, io, delay = 0) {
 }
 
 module.exports = {
-  enqueueTask
+  enqueueTask,
+  callbackMap
 };

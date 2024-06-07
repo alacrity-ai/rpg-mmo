@@ -1,7 +1,10 @@
-const { redisClient } = require('../../redisClient');
+// workers/processGetServerSettingsTask.js
+const { getRedisClient } = require('../../redisClient');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
-const config = require('../../config/config'); // Import the config
+const config = require('../../config/config');
+
+const redisClient = getRedisClient();
 
 async function processGetServerSettingsTask(task) {
   const { taskId, data } = task.taskData;
@@ -20,11 +23,11 @@ async function processGetServerSettingsTask(task) {
 
     const result = { success: true, data: serverSettings };
     logger.info(`Successfully completed getServerSettings task: ${taskId}`);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
-    const result = { error: 'Failed to get server settings. ' + error.message };
-    logger.error(`Failed to get server settings in task: ${taskId}:`, error.message);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    const result = { success: false, error: 'Failed to get server settings. ' + error.message };
+    logger.error(`Failed to get server settings in task: ${taskId}: ${error.message}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }
 

@@ -1,9 +1,11 @@
-const { redisClient } = require('../../redisClient');
+// workers/processUserTasks.js
+const { getRedisClient } = require('../../redisClient');
 const { getUserByUsername, createUser } = require('../../db/queries/usersQueries');
 const crypto = require('crypto');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
+const redisClient = getRedisClient();
 
 async function processLoginTask(task) {
   const { taskId, data } = task.taskData;
@@ -15,16 +17,16 @@ async function processLoginTask(task) {
     if (user && user.passwordHash === hash) {
       const result = { success: true, data: user };
       logger.info(`Login successful for task ${taskId}`);
-      await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+      await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
     } else {
-      const result = { error: 'Invalid username or password.' };
+      const result = { success: false, error: 'Invalid username or password.' };
       logger.info(`Login failed for task ${taskId}: Invalid username or password.`);
-      await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+      await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
     }
   } catch (error) {
-    const result = { error: 'Login failed. ' + error.message };
-    logger.info(`Login failed for task ${taskId}:`, error.message);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    const result = { success: false, error: 'Login failed. ' + error.message };
+    logger.info(`Login failed for task ${taskId}: ${error.message}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }
 
@@ -33,9 +35,9 @@ async function processCreateAccountTask(task) {
   const { username, password } = data;
 
   if (typeof password !== 'string') {
-    const result = { error: 'Invalid password format.' };
+    const result = { success: false, error: 'Invalid password format.' };
     logger.info(`Account creation failed for task ${taskId}: Invalid password format.`);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
     return;
   }
 
@@ -45,11 +47,11 @@ async function processCreateAccountTask(task) {
     const user = await createUser(username, hash);
     const result = { success: true, data: user };
     logger.info(`Account creation successful for task ${taskId}`);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
-    const result = { error: 'Failed to create account. ' + error.message };
-    logger.info(`Account creation failed for task ${taskId}:`, error.message);
-    await redisClient.publish(`task-result:${taskId}`, JSON.stringify({ taskId, result }));
+    const result = { success: false, error: 'Failed to create account. ' + error.message };
+    logger.info(`Account creation failed for task ${taskId}: ${error.message}`);
+    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }
 

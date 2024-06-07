@@ -1,12 +1,17 @@
+// workers/worker.js
 const config = require('./config/config');
-const { redisClient } = require('./redisClient');
-const { getTask, addTask } = require('./handlers/taskQueue');
+const { getRedisClient } = require('./redisClient');
+const { getTask } = require('./handlers/taskQueue');
 const taskRegistry = require('./handlers/taskRegistry');
 const logger = require('./utilities/logger');
+
+const redisClient = getRedisClient();
 
 const MIN_POLL_INTERVAL_MS = 50;
 const MAX_POLL_INTERVAL_MS = 100;
 let currentPollInterval = MIN_POLL_INTERVAL_MS;
+
+const LOCK_EXPIRATION_MS = 5000; // Lock expiration time in milliseconds
 
 // Import task modules to ensure they are registered
 require('./services/tasks/scriptTasks');
@@ -35,12 +40,12 @@ async function processTasks() {
         } catch (error) {
           logger.error(`Failed to process task ${taskType}: ${error}`);
           const result = { error: `Failed to process task ${taskType}. ` + error.message };
-          await redisClient.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
+          await redisClient.xadd('task-result-stream', '*', 'taskId', task.taskData.taskId, 'result', JSON.stringify({ taskId: task.taskData.taskId, result }));
         }
       } else {
         logger.error(`No worker task processor found for task type: ${taskType}`);
         const result = { error: `No handler found for task type: ${taskType}` };
-        await redisClient.publish(`task-result:${task.taskData.taskId}`, JSON.stringify({ taskId: task.taskData.taskId, result }));
+        await redisClient.xadd('task-result-stream', '*', 'taskId', task.taskData.taskId, 'result', JSON.stringify({ taskId: task.taskData.taskId, result }));
       }
     } else {
       currentPollInterval = Math.min(currentPollInterval + 50, MAX_POLL_INTERVAL_MS); // Increase interval if no task found
@@ -60,23 +65,35 @@ async function processDelayedTasks() {
 
       if (score <= now) {
         const { taskType, fullTaskData } = task;
+        const lockKey = `lock:${taskType}:${fullTaskData.taskId}`;
+
+        // Attempt to acquire the lock
+        const lockAcquired = await redisClient.set(lockKey, 'locked', 'NX', 'PX', LOCK_EXPIRATION_MS);
+        if (!lockAcquired) {
+          continue; // If lock not acquired, skip to the next task
+        }
+
         const taskHandler = taskRegistry.getHandler(taskType);
 
         if (taskHandler) {
           try {
-            await taskHandler(fullTaskData);
+            // Ensure fullTaskData is in the correct structure
+            await taskHandler({ taskType, taskData: fullTaskData });
             const result = { success: true, data: fullTaskData };
             logger.info(`Delayed task processed successfully: ${taskType}`);
-            await redisClient.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
+            await redisClient.xadd('task-result-stream', '*', 'taskId', fullTaskData.taskId, 'result', JSON.stringify({ taskId: fullTaskData.taskId, result }));
           } catch (error) {
             const result = { error: 'Failed to process delayed task. ' + error.message };
             logger.error(`Failed to process delayed task ${taskType}: ${error.message}`);
-            await redisClient.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
+            await redisClient.xadd('task-result-stream', '*', 'taskId', fullTaskData.taskId, 'result', JSON.stringify({ taskId: fullTaskData.taskId, result }));
+          } finally {
+            // Remove the lock after processing the task
+            await redisClient.del(lockKey);
           }
         } else {
           logger.error(`No worker task processor found for delayed task type: ${taskType}`);
           const result = { error: `No handler found for delayed task type: ${taskType}` };
-          await redisClient.publish(`task-result:${fullTaskData.taskId}`, JSON.stringify({ taskId: fullTaskData.taskId, result }));
+          await redisClient.xadd('task-result-stream', '*', 'taskId', fullTaskData.taskId, 'result', JSON.stringify({ taskId: fullTaskData.taskId, result }));
         }
 
         await redisClient.zrem('delayed-tasks', tasks[i]);

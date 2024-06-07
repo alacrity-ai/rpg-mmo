@@ -1,6 +1,8 @@
 const { updateBattlerPosition, updateBattlerHealth, updateBattlerMana, applyStatusEffect, getBattlerInstanceById } = require('../../../db/queries/battlerInstancesQueries');
 const { getCooldownDuration } = require('../../../utilities/helpers');
-const { redisClient } = require('../../../redisClient');
+const { getRedisClient } = require('../../../redisClient');
+
+const redisClient = getRedisClient();
 
 class BattleActionProcessor {
     /**
