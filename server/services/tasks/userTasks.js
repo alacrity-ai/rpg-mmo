@@ -16,16 +16,15 @@ async function processLoginTask(task) {
     const user = await getUserByUsername(username);
     if (user && user.passwordHash === hash) {
       const result = { success: true, data: user };
-      logger.info(`Login successful for task ${taskId}`);
       await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
     } else {
       const result = { success: false, error: 'Invalid username or password.' };
-      logger.info(`Login failed for task ${taskId}: Invalid username or password.`);
+      logger.error(`Login failed for task ${taskId}: Invalid username or password.`);
       await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
     }
   } catch (error) {
     const result = { success: false, error: 'Login failed. ' + error.message };
-    logger.info(`Login failed for task ${taskId}: ${error.message}`);
+    logger.error(`Login failed for task ${taskId}: ${error.message}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }
@@ -36,7 +35,7 @@ async function processCreateAccountTask(task) {
 
   if (typeof password !== 'string') {
     const result = { success: false, error: 'Invalid password format.' };
-    logger.info(`Account creation failed for task ${taskId}: Invalid password format.`);
+    logger.error(`Account creation failed for task ${taskId}: Invalid password format.`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
     return;
   }
@@ -46,11 +45,10 @@ async function processCreateAccountTask(task) {
   try {
     const user = await createUser(username, hash);
     const result = { success: true, data: user };
-    logger.info(`Account creation successful for task ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to create account. ' + error.message };
-    logger.info(`Account creation failed for task ${taskId}: ${error.message}`);
+    logger.error(`Account creation failed for task ${taskId}: ${error.message}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }

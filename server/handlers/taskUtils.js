@@ -13,7 +13,6 @@ async function enqueueTask(taskType, taskData, callback, delay = 0) {
   try {
     const taskId = crypto.randomUUID(); // Generate a unique task ID
     const fullTaskData = { taskId, data: taskData };
-    console.log('Got fullTaskData:', fullTaskData);
 
     // Store the callback in the map
     callbackMap.set(taskId, callback);
@@ -24,9 +23,7 @@ async function enqueueTask(taskType, taskData, callback, delay = 0) {
       await redisClient.zadd('delayed-tasks', executeTime, JSON.stringify({ taskType, fullTaskData }));
       logger.info(`Delayed task added to queue: ${taskType}, to be executed in ${delay} ms`);
     } else {
-      console.log('Calling addTask with:', taskType, fullTaskData);
       await addTask(taskType, fullTaskData);
-      logger.info(`Task added to queue: ${taskType}`);
     }
   } catch (error) {
     logger.error(`Error enqueuing task: ${error.message}`);

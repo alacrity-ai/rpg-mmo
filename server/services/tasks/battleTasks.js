@@ -28,7 +28,6 @@ async function processGetBattleInstanceTask(task) {
     const response = await battleCreator.execute();
 
     const result = { success: true, data: response };
-    logger.info(`Battle instance retrieval or creation successful for task ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to retrieve or create battle instance. ' + error.message };

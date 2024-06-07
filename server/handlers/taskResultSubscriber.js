@@ -18,7 +18,6 @@ async function subscribeToTaskResultStream(io) {
         const [id, fields] = message;
         const taskId = fields[1]; // Assuming the taskId is stored in the second field
         const taskResult = JSON.parse(fields[3]); // Assuming the result is stored in the fourth field
-        logger.info(`Received task result: ${taskResult} for task ID: ${taskId}`);
 
         // Process the task result
         processTaskResult(io, taskId, taskResult);

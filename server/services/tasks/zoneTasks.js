@@ -44,7 +44,6 @@ async function processRequestZoneTask(task) {
     }
 
     const result = { success: true, data: { areaInstance } };
-    logger.info(`Zone request successful for task ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to request zone. ' + error.message };
@@ -91,7 +90,6 @@ async function processRequestAreaTask(task) {
     }
 
     const result = { success: true, data: { areaInstance: targetAreaInstance } };
-    logger.info(`Area request successful for task ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to request area. ' + error.message };

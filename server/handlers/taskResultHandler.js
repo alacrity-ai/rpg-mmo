@@ -1,9 +1,7 @@
 const logger = require('../utilities/logger');
 const { callbackMap } = require('./taskUtils');
 
-function processTaskResult(io, taskId, taskResult) {
-  logger.info(`Processing result for task ID: ${taskId}`);
-  
+function processTaskResult(io, taskId, taskResult) {  
   // Retrieve the callback from the map
   const callback = callbackMap.get(taskId);
   

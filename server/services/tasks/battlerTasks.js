@@ -27,7 +27,6 @@ async function processGetBattlerAbilitiesTask(task) {
     }
 
     const result = { success: true, data: abilityTemplates };
-    logger.info(`Battler abilities retrieval successful for task ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to retrieve battler abilities. ' + error.message };

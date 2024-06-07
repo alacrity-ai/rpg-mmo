@@ -142,7 +142,7 @@ function generateAreaConnections(areaInstances) {
 async function createExpeditionZone(zoneTemplate) {
   try {
     const zoneInstance = await createZoneInstanceFromTemplate(zoneTemplate);
-    logger.info('Zone instance created:', zoneInstance);
+    logger.info(`Zone instance created: ${zoneInstance.id}`);
     return zoneInstance;
   } catch (error) {
     logger.error('Error creating expedition zone:', error);

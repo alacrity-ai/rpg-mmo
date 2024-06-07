@@ -62,7 +62,6 @@ async function processLoginCharacterTask(task) {
 
     if (!character) {
       const result = { success: false, error: 'Character not found.' };
-      logger.info(`Character not found for task ${taskId}`);
       await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
       return;
     }
@@ -71,17 +70,15 @@ async function processLoginCharacterTask(task) {
 
     if (character.userId !== userId) {
       const result = { success: false, error: 'Unauthorized access.' };
-      logger.info(`Unauthorized access for task ${taskId}: User ID ${userId} does not match character owner ID ${character.userId}`);
+      logger.error(`Unauthorized access for task ${taskId}: User ID ${userId} does not match character owner ID ${character.userId}`);
       await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
       return;
     }
 
     const result = { success: true, data: character };
-    logger.info(`Character login successful for task ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to login character. ' + error.message };
-    logger.error(`Character login failed for task ${taskId}: ${error.message}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }

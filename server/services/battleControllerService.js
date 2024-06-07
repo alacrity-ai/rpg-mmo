@@ -1,14 +1,13 @@
 // services/battleControllerService.js
 const { enqueueTask } = require('../handlers/taskUtils');
-const { getAllBattleInstances } = require('../db/queries/battleInstancesQueries');
+const { getAllCachedBattleInstances } = require('../db/cache/battle');
 const logger = require('../utilities/logger');
 
 class BattleControllerService {
   static async runBattleControllerService() {
     try {
-      const battleInstances = await getAllBattleInstances();
+      const battleInstances = await getAllCachedBattleInstances();
       for (const battleInstance of battleInstances) {
-        console.log('BATTLECONTROLLERSERVICE: RUNNING BATTLE INSTANCE', battleInstance.id)
         await enqueueTask('runNpcScriptsInBattle', { battleInstanceId: battleInstance.id });
       }
     } catch (error) {

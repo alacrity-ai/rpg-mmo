@@ -40,9 +40,7 @@ class BattleCreator {
     }
 
     async createBattle() {
-        console.log('BATTLE CREATOR: Creating player instances')
         const playerBattlerInstances = await createBattlerInstancesFromCharacterIds([this.characterId]);
-        console.log('BATTLE CREATOR: Creating enemy instances')
         const enemyBattlerInstances = await createBattlerInstancesFromNPCTemplateIds(this.npcTemplates.map(npc => npc.id));
         this.battlerInstances = [...playerBattlerInstances, ...enemyBattlerInstances];
 

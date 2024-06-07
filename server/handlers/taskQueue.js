@@ -41,18 +41,13 @@ async function createConsumerGroup() {
  */
 async function addTask(taskType, taskData) {
   const task = { taskType, taskData };
-  console.log('Adding task to stream in addTask function:', task);
-
   try {
     // Ensure the Redis client is connected before attempting to add the task
     if (!redisClient.status || redisClient.status !== 'ready') {
       throw new Error('Redis client is not connected');
     }
 
-    console.log('Attempting to add task to Redis stream...');
     const result = await redisClient.xadd(TASK_STREAM, '*', 'task', JSON.stringify(task));
-    logger.info(`Task added to stream: ${taskType}, result: ${result}`);
-    console.log('Successfully added task to Redis stream.');
   } catch (error) {
     logger.error(`Error adding task to stream: ${error.message}`);
     throw error; // Re-throw the error to handle it in the caller function
@@ -71,7 +66,6 @@ async function getTask() {
       const [id, message] = messages[0];
       const task = JSON.parse(message[1]);
       await redisClient.xack(TASK_STREAM, CONSUMER_GROUP, id);
-      logger.info(`Task retrieved from stream: ${task.taskType}`);
       return task;
     } else {
       return null;

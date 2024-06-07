@@ -38,7 +38,6 @@ async function actionMoveFromEnemy(battlerInstance, battlerInstances) {
     }
 
     if (!nearestEnemy) {
-        console.log('No enemy found');
         return {
             success: false,
             message: 'No enemy found',
@@ -64,13 +63,10 @@ async function actionMoveFromEnemy(battlerInstance, battlerInstances) {
     if (newPosition[1] < moveableArea.y[0]) newPosition[1] = moveableArea.y[0];
     if (newPosition[1] > moveableArea.y[1]) newPosition[1] = moveableArea.y[1];
 
-    console.log(`Attempting to move to position: ${newPosition}`);
-
     if (
         newPosition[0] === battlerInstance.gridPosition[0] &&
         newPosition[1] === battlerInstance.gridPosition[1]
     ) {
-        console.log('No movement occurred, failing action');
         return {
             success: false,
             message: 'No movement occurred',
@@ -101,7 +97,6 @@ async function actionMoveToEnemy(battlerInstance, battlerInstances) {
     }
 
     if (!nearestEnemy) {
-        console.log('No enemy found');
         return {
             success: false,
             message: 'No enemy found',
@@ -127,13 +122,10 @@ async function actionMoveToEnemy(battlerInstance, battlerInstances) {
     if (newPosition[1] < moveableArea.y[0]) newPosition[1] = moveableArea.y[0];
     if (newPosition[1] > moveableArea.y[1]) newPosition[1] = moveableArea.y[1];
 
-    console.log(`Attempting to move to position: ${newPosition}`);
-
     if (
         newPosition[0] === battlerInstance.gridPosition[0] &&
         newPosition[1] === battlerInstance.gridPosition[1]
     ) {
-        console.log('No movement occurred, failing action');
         return {
             success: false,
             message: 'No movement occurred',

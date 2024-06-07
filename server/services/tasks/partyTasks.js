@@ -15,7 +15,6 @@ async function processCreatePartyTask(task) {
     const partyId = await createCharacterParty([{ character_id: characterId, user_id: userId }]);
 
     const result = { success: true, data: { partyId } };
-    logger.info(`Party creation successful for task ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to create party. ' + error.message };
@@ -32,7 +31,6 @@ async function processLeavePartyTask(task) {
     await removeMemberFromParty(partyId, characterId);
 
     const result = { success: true };
-    logger.info(`Party leave successful for task ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to leave party. ' + error.message };

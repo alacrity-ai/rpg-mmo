@@ -15,7 +15,6 @@ async function processAddBattlerActionTask(task) {
     const actionResult = await BattleActionProcessor.processSingleAction({ battleInstanceId, battlerId, actionType, actionData });
     if (actionResult.success) {
       const result = { success: true, data: { battleInstanceId, actionResult } };
-      logger.info(`Battler action processed successfully for task ${taskId}`);
       await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
     } else {
       throw new Error(actionResult.message);

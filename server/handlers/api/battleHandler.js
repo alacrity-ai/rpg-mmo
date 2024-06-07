@@ -1,8 +1,7 @@
-// handlers/api/battleHandler.js
-
 const { enqueueTask } = require('../taskUtils');
 const logger = require('../../utilities/logger');
-const config = require('../../config/config')
+const config = require('../../config/config');
+const { setCacheBattleInstance, setCacheBattlerInstance } = require('../../db/cache/battle');
 
 module.exports = (socket) => {
   socket.on('getBattleInstance', async (data, callback) => {
@@ -11,9 +10,15 @@ module.exports = (socket) => {
       return;
     }
     const taskData = { areaId: data.areaId, characterId: socket.character.id };
-    enqueueTask('getBattleInstance', taskData, (response) => {
+    enqueueTask('getBattleInstance', taskData, async (response) => {
       if (response.success) {
         const { battleInstance, battlerInstances } = response.data;
+
+        // Cache the battle instance and battler instances
+        await setCacheBattleInstance(battleInstance);
+        for (const battlerInstance of battlerInstances) {
+          await setCacheBattlerInstance(battlerInstance, battleInstance.id);
+        }
 
         // Find the battler matching the character ID and bind battlerId and battleId to the socket
         const battler = battlerInstances.find(b => b.characterId === socket.character.id);

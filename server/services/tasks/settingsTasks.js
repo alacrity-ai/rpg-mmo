@@ -22,11 +22,9 @@ async function processGetServerSettingsTask(task) {
     };
 
     const result = { success: true, data: serverSettings };
-    logger.info(`Successfully completed getServerSettings task: ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to get server settings. ' + error.message };
-    logger.error(`Failed to get server settings in task: ${taskId}: ${error.message}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }

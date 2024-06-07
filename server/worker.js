@@ -29,7 +29,7 @@ async function processTasks() {
   while (true) {
     const task = await getTask();
     if (task) {
-      logger.info(`Processing task: ${task}`);
+      logger.info(`Processing task: ${JSON.stringify(task)}`);
       const { taskType } = task;
       const taskHandler = taskRegistry.getHandler(taskType);
 

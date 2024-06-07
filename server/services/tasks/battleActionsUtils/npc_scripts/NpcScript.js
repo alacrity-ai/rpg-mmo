@@ -21,7 +21,6 @@ class NpcScript {
             if (this[phaseMethod]) {
                 const actionResult = await this[phaseMethod]();
                 if (!this.actionFailed(actionResult)) {
-                    console.log('NPCSCRIPT: Action Succeeded:', actionResult);
                     return actionResult;
                 } 
             } else {

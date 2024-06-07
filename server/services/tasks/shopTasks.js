@@ -17,7 +17,7 @@ async function processViewShopInventoryTask(task) {
 
     if (!shop) {
       const result = { success: false, error: 'Shop not found.' };
-      logger.info(`Shop not found for task ${taskId}`);
+      logger.error(`Shop not found for task ${taskId}`);
       await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
       return;
     }
@@ -42,11 +42,10 @@ async function processViewShopInventoryTask(task) {
     });
 
     const result = { success: true, data: structuredItems };
-    logger.info(`View shop inventory successful for task ${taskId}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   } catch (error) {
     const result = { success: false, error: 'Failed to view shop inventory. ' + error.message };
-    logger.info(`View shop inventory failed for task ${taskId}: ${error.message}`);
+    logger.error(`View shop inventory failed for task ${taskId}: ${error.message}`);
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
   }
 }
