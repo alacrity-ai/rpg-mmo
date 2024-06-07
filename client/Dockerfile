@@ -17,12 +17,6 @@ RUN npm install --verbose
 # Copy the rest of the application code
 COPY . .
 
-# Copy the startup script
-COPY start-client.sh ./
-
-# Make the script executable
-RUN chmod +x start-client.sh
-
 # Expose the port the app runs on
 EXPOSE 8000
 

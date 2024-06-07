@@ -13,12 +13,6 @@ RUN npm install
 # Copy the rest of the application code
 COPY . .
 
-# Copy the startup script
-COPY start-server.sh ./
-
-# Make the script executable
-RUN chmod +x start-server.sh
-
 # Expose the port the app runs on
 EXPOSE 3000
 
