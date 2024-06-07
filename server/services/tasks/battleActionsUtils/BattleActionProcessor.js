@@ -214,7 +214,7 @@ class BattleActionProcessor {
         
         // Set cooldown in redisClient
         const cooldownDuration = getCooldownDuration('short'); // Uses the short cooldown duration for movement
-        await redisClient.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
+        await redisClient.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration - 100);
 
         return {
             success: true,

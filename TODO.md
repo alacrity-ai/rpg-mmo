@@ -1,6 +1,35 @@
 # TODOS
 
 
+
+## Battle Tick Commandflow
+
+## GOOD WAY
+1) New service "battleControllerService", On a timer, let's say every 2 seconds, will queue a new "getBattles" task.
+
+2) Our worker sees the task, gets all the Battles currently going on calls (getAllBattleInstances in db/queries/battleInstancesQueries), and publishes the result (a list of BattleInstanceIds).  (getAllBattleInstances returns an array of BattleInstance models, where BattleInstance.id is the id)
+
+3) When the battleControllerService then sees the result, it will queue a task for each individual battleId, the "runNpcScriptsInBattle" task.
+
+4) When a worker picks up a runNpcScriptsInBattle task, it will:
+- query the database to get all the battlers in a battle (calls getBattlerInstancesInBattle in db/queries/battleInstancesQueries to get an array of BattlerInstance models).
+- For each of the BattleInstances, determine if it's an NPC (check if BattleInstance.npcTemplate is not null and scriptPath is not null), and then enqueue a delayed runScriptAction task (using the BattleInstance.scriptSpeed as the delay).
+
+
+
+## BAD WAY
+The server issues a run NPC Scripts task
+
+A worker takes the task, gets all the Battles currently going on, runs all the NPC scripts for all the battles
+
+
+
+
+
+
+
+
+
 TOMORROW (6/2/2024):
 
 - [x] Database Validation:

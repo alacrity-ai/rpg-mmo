@@ -1,4 +1,3 @@
-// handlers/taskResultHandler.js
 const logger = require('../utilities/logger');
 const { callbackMap } = require('./taskUtils');
 
@@ -21,8 +20,9 @@ function processTaskResult(io, taskId, taskResult) {
   }
 
   // Emit to battle room if applicable
-  const battleInstanceId = taskResult.data && taskResult.data.battleInstanceId || false;
-  if (battleInstanceId) {
+  // Only for processRunScriptActionTask (for NPCs actions), and processAddBattlerActionTask (for player actions)
+  if (taskResult.data && taskResult.data.actionResult) {
+    const battleInstanceId = taskResult.data.battleInstanceId;
     io.to(`battle-${battleInstanceId}`).emit('completedBattlerAction', taskResult.data.actionResult);
   }
 }

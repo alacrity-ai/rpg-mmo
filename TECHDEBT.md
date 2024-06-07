@@ -1,5 +1,9 @@
 # TECH DEBT
 
+## Battle Joining
+- Don't start the NPC scripts until at least one player client has successfully joined the room.
+- Right now when you join a room, a battle action already occurs before you get a chance to see it, so it's quite odd.
+
 ## Battle Cleanup
 - Cleanup a battle if all players disconnect.
     - logoutCleanup.js, needs to check if no players in a battle, and delete it

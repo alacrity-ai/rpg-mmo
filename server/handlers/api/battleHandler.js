@@ -25,12 +25,6 @@ module.exports = (socket) => {
 
         // Call back to the client with the results of the getBattleInstance task
         callback(response);
-
-        // Enqueue the startBattlerScripts task with a 3000ms delay
-        const followupTaskData = { data: { battleInstance, battlerInstances } };
-        enqueueTask('startBattlerScripts', followupTaskData, () => {
-          logger.info('Battler scripts task processed');
-        }, null, config.cooldowns.minimum);
       } else {
         callback(response);
       }

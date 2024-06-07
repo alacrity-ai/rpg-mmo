@@ -4,8 +4,8 @@ const encounterTemplates = [
     {
       name: 'Goblin Ambush',
       enemies: JSON.stringify([
-        { npc_template_id: 1, position: [3, 0] },
-        { npc_template_id: 1, position: [3, 2] },
+        // { npc_template_id: 1, position: [3, 0] },
+        // { npc_template_id: 1, position: [3, 2] },
         { npc_template_id: 2, position: [4, 1] }
       ]),
       is_boss: false

@@ -3,8 +3,7 @@ const express = require('express');
 const http = require('http');
 const socketIo = require('socket.io');
 const cors = require('cors');
-const { initTables } = require('./db/database');
-const { populateTables } = require('./db/populateTables');
+const Initializer = require('./services/Initializer');
 const authHandler = require('./handlers/api/authHandler');
 const characterHandler = require('./handlers/api/characterHandler');
 const shopHandler = require('./handlers/api/shopHandler');
@@ -16,9 +15,6 @@ const partyHandler = require('./handlers/api/partyHandler');
 const zoneHandler = require('./handlers/api/zoneHandler');
 const logger = require('./utilities/logger');
 const { handleDisconnect } = require('./services/logoutCleanup');
-const clearRedis = require('./handlers/taskClear');
-const { createStreamIfNotExists, createConsumerGroup } = require('./handlers/taskQueue');
-const { subscribeToTaskResultStream } = require('./handlers/taskResultSubscriber');
 
 const app = express();
 const server = http.createServer(app);
@@ -77,12 +73,7 @@ io.on('connection', (socket) => {
 const PORT = config.server.port;
 
 server.listen(PORT, async () => {
-  await clearRedis();
-  await initTables();
-  await populateTables();
-  await createStreamIfNotExists();
-  await createConsumerGroup();
-  // Initialize NPC task result handling
-  subscribeToTaskResultStream(io);
+  await Initializer.initDatabase();
+  Initializer.startServices(io);
   logger.info(`Server is running on port ${PORT}`);
 });
