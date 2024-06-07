@@ -1,5 +1,5 @@
 // workers/processPartyTasks.js
-const { getRedisClient } = require('../../redisClient');
+const { getRedisClient, addTaskResult } = require('../../redisClient');
 const { createCharacterParty, removeMemberFromParty } = require('../../db/queries/characterPartyQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
@@ -15,11 +15,11 @@ async function processCreatePartyTask(task) {
     const partyId = await createCharacterParty([{ character_id: characterId, user_id: userId }]);
 
     const result = { success: true, data: { partyId } };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   } catch (error) {
     const result = { success: false, error: 'Failed to create party. ' + error.message };
     logger.error(`Party creation failed for task ${taskId}: ${error.message}`);
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   }
 }
 
@@ -31,11 +31,11 @@ async function processLeavePartyTask(task) {
     await removeMemberFromParty(partyId, characterId);
 
     const result = { success: true };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   } catch (error) {
     const result = { success: false, error: 'Failed to leave party. ' + error.message };
     logger.error(`Party leave failed for task ${taskId}: ${error.message}`);
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   }
 }
 

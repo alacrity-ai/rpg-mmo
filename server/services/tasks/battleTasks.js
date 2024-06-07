@@ -1,5 +1,5 @@
 // workers/processBattleTasks.js
-const { getRedisClient } = require('../../redisClient');
+const { getRedisClient, addTaskResult } = require('../../redisClient');
 const BattleCreator = require('../../services/expeditions/battleCreator');
 const { getAreaInstanceById } = require('../../db/queries/areaInstancesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
@@ -28,11 +28,11 @@ async function processGetBattleInstanceTask(task) {
     const response = await battleCreator.execute();
 
     const result = { success: true, data: response };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   } catch (error) {
     const result = { success: false, error: 'Failed to retrieve or create battle instance. ' + error.message };
     logger.error(`Battle instance retrieval or creation failed for task ${taskId}: ${error.message}`);
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   }
 }
 

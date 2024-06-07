@@ -1,5 +1,5 @@
 // workers/processExpeditionTasks.js
-const { getRedisClient } = require('../../redisClient');
+const { getRedisClient, addTaskResult } = require('../../redisClient');
 const { createExpeditionZone } = require('../../services/expeditions/zoneCreator');
 const { getZoneTemplateBySceneKey } = require('../../db/queries/zoneTemplatesQueries');
 const { getAreaInstanceById, updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
@@ -44,11 +44,11 @@ async function processRequestZoneTask(task) {
     }
 
     const result = { success: true, data: { areaInstance } };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   } catch (error) {
     const result = { success: false, error: 'Failed to request zone. ' + error.message };
     logger.error(`Zone request failed for task ${taskId}: ${error.message}`);
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   }
 }
 
@@ -90,11 +90,11 @@ async function processRequestAreaTask(task) {
     }
 
     const result = { success: true, data: { areaInstance: targetAreaInstance } };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   } catch (error) {
     const result = { success: false, error: 'Failed to request area. ' + error.message };
     logger.error(`Area request failed for task ${taskId}: ${error.message}`);
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   }
 }
 

@@ -1,5 +1,5 @@
 // workers/processBattlerTasks.js
-const { getRedisClient } = require('../../redisClient');
+const { getRedisClient, addTaskResult } = require('../../redisClient');
 const { getBattlerInstanceById } = require('../../db/queries/battlerInstancesQueries');
 const { getAbilityTemplatesByShortNames } = require('../../db/queries/abilityTemplatesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
@@ -27,11 +27,11 @@ async function processGetBattlerAbilitiesTask(task) {
     }
 
     const result = { success: true, data: abilityTemplates };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   } catch (error) {
     const result = { success: false, error: 'Failed to retrieve battler abilities. ' + error.message };
     logger.error(`Battler abilities retrieval failed for task ${taskId}: ${error.message}`);
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   }
 }
 

@@ -1,4 +1,4 @@
-const { getRedisClient } = require('../../redisClient');
+const { getRedisClient, addTaskResult } = require('../../redisClient');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const { getBattlerInstancesInBattle } = require('../../db/queries/battleInstancesQueries');
@@ -30,16 +30,15 @@ async function processRunScriptActionTask(task) {
 
       // Publish the results to the task-result-stream with the battleInstanceId so the server will know to transmit to all clients in the battle
       const result = { success: true, data: { battleInstanceId, actionResult } };
-      await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+      await addTaskResult(redisClient, taskId, result);
     } else {
       throw new Error(actionResult.message);
     }
   } catch (error) {
     const result = { success: false, error: 'Failed to process runScriptAction task. ' + error.message };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   }
 }
-
 
 // Register task handlers
 taskRegistry.register('runScriptAction', processRunScriptActionTask);

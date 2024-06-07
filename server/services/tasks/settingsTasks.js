@@ -1,5 +1,5 @@
 // workers/processGetServerSettingsTask.js
-const { getRedisClient } = require('../../redisClient');
+const { getRedisClient, addTaskResult } = require('../../redisClient');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const config = require('../../config/config');
@@ -22,10 +22,10 @@ async function processGetServerSettingsTask(task) {
     };
 
     const result = { success: true, data: serverSettings };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   } catch (error) {
     const result = { success: false, error: 'Failed to get server settings. ' + error.message };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   }
 }
 

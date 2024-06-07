@@ -1,5 +1,5 @@
 // workers/processShopTasks.js
-const { getRedisClient } = require('../../redisClient');
+const { getRedisClient, addTaskResult } = require('../../redisClient');
 const { getShopTemplateById } = require('../../db/queries/shopTemplatesQueries');
 const { getItemTemplateById } = require('../../db/queries/itemTemplatesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
@@ -18,7 +18,7 @@ async function processViewShopInventoryTask(task) {
     if (!shop) {
       const result = { success: false, error: 'Shop not found.' };
       logger.error(`Shop not found for task ${taskId}`);
-      await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+      await addTaskResult(redisClient, taskId, result);
       return;
     }
 
@@ -42,11 +42,11 @@ async function processViewShopInventoryTask(task) {
     });
 
     const result = { success: true, data: structuredItems };
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   } catch (error) {
     const result = { success: false, error: 'Failed to view shop inventory. ' + error.message };
     logger.error(`View shop inventory failed for task ${taskId}: ${error.message}`);
-    await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
+    await addTaskResult(redisClient, taskId, result);
   }
 }
 
