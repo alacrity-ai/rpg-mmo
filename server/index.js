@@ -56,8 +56,15 @@ io.on('connection', (socket) => {
 
 const PORT = config.server.port;
 
-server.listen(PORT, async () => {
-  await Initializer.initDatabase(redisClient);
-  Initializer.startServices(io, redisClient, redisPub);
-  logger.info(`Server is running on port ${PORT}`);
-});
+(async () => {
+  try {
+    await Initializer.initDatabase(redisClient);
+    Initializer.startServices(io, redisClient, redisPub);
+    server.listen(PORT, () => {
+      logger.info(`Server is running on port ${PORT}`);
+    });
+  } catch (error) {
+    logger.error('Error during initialization', error);
+    process.exit(1); // Exit process with failure
+  }
+})();
