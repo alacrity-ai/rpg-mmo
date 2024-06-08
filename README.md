@@ -1,4 +1,5 @@
-# MMO Project
+# Mists of Aldera
+### A Massively Mutliplayer Roleplaying Game
 
 ![MMO Project Image](project.png)
 
