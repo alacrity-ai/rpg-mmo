@@ -1,5 +1,5 @@
 const { enqueueTask } = require('../db/cache/utility/taskUtils');
-const { getAllCachedBattleInstances, getAllCachedBattlerInstancesInBattle } = require('../db/cache/battle');
+const { getAllCachedBattleInstances, getAllCachedBattlerInstancesInBattle } = require('../db/cache/helpers/battleHelper');
 const logger = require('../utilities/logger');
 
 class BattleControllerService {

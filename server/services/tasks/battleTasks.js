@@ -5,7 +5,7 @@ const BattleCreator = require('../../services/expeditions/battleCreator');
 const BattleManager = require('../../services/expeditions/battleManager');
 const { getAreaInstanceById } = require('../../db/queries/areaInstancesQueries');
 const { getBattlerInstancesByCharacterId } = require('../../db/queries/battlerInstancesQueries');
-const { getAllCachedBattleInstances, getAllCachedBattlerInstancesInBattle } = require('../../db/cache/battle');
+const { getAllCachedBattleInstances, getAllCachedBattlerInstancesInBattle } = require('../../db/cache/helpers/battleHelper');
 const logger = require('../../utilities/logger');
 
 

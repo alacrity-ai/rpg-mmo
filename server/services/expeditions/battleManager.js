@@ -1,7 +1,7 @@
 const { getBattleInstanceById, deleteBattleInstance, getBattlerInstancesInBattle, updateBattleInstance } = require('../../db/queries/battleInstancesQueries');
 const { updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
 const { createBattlerInstancesFromCharacterIds } = require('../../db/queries/battlerInstancesQueries');
-const { deleteCacheBattleInstance } = require('../../db/cache/battle');
+const { deleteCacheBattleInstance } = require('../../db/cache/helpers/battleHelper');
 const logger = require('../../utilities/logger');
 
 class BattleManager {

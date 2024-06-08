@@ -1,7 +1,7 @@
 const { enqueueTask } = require('../../db/cache/utility/taskUtils');
 const logger = require('../../utilities/logger');
 const config = require('../../config/config');
-const { setCacheBattleInstance, setCacheBattlerInstance } = require('../../db/cache/battle');
+const { setCacheBattleInstance, setCacheBattlerInstance } = require('../../db/cache/helpers/battleHelper');
 
 module.exports = (socket, io, redisClient) => {
   socket.on('getBattleInstance', async (data, callback) => {
