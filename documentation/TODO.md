@@ -1,5 +1,7 @@
 # TODOS
 
+- [ ] Client docker image is node 18, should be node 20
+
 - [x] Create a cleanup battle taskProcessor
     - in handlers/api/battleHandler if a player leaves battle, check how many players are in that socket battle rooom
     - if no players are in the room, enqueue the cleanupBattle task
