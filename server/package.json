@@ -1,6 +1,6 @@
 {
   "name": "mmo-server",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "MMO Server",
   "main": "index.js",
   "scripts": {
@@ -12,7 +12,7 @@
   "keywords": [
     "MMO",
     "server",
-    "game server",
+    "game server"
   ],
   "author": "Leif Taylor",
   "license": "ISC",
