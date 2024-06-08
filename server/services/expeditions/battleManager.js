@@ -1,11 +1,12 @@
 const { getBattleInstanceById, deleteBattleInstance, getBattlerInstancesInBattle, updateBattleInstance } = require('../../db/queries/battleInstancesQueries');
 const { updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
 const { createBattlerInstancesFromCharacterIds } = require('../../db/queries/battlerInstancesQueries');
+const { deleteCacheBattleInstance } = require('../../db/cache/battle');
 const logger = require('../../utilities/logger');
 
 class BattleManager {
-    constructor() {
-        // Any necessary initialization can go here
+    constructor(redisClient) {
+        this.redisClient = redisClient;
     }
 
     /**
@@ -25,9 +26,21 @@ class BattleManager {
         await updateAreaInstance(areaInstanceId, areaInstanceData);
 
         // Delete the battle instance
+        this.cleanupBattle(battleId);
+    }
+
+    /**
+     * Cleans up a battle
+     * @param {number} battleId - The ID of the battle to clean up.
+     */
+    async cleanupBattle(battleId) {
+        // Delete the battle instance
         await deleteBattleInstance(battleId);
 
-        logger.info(`Completed and cleaned up battle with ID ${battleId}`);
+        // Delete cache information related to battlers in the cache
+        await deleteCacheBattleInstance(this.redisClient, battleId);
+
+        logger.info(`Cleaned up battle with ID ${battleId}`);
     }
 
     /**

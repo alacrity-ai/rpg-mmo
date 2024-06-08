@@ -24,11 +24,22 @@ async function getCacheBattlerInstance(redisClient, battleInstanceId, battlerIns
   return battlerInstance ? JSON.parse(battlerInstance) : null;
 }
 
-// Function to delete a cached battle instance
+// Function to delete a cached battle instance along with all its battler instances
 async function deleteCacheBattleInstance(redisClient, battleInstanceId) {
   const battleInstanceKey = `battleInstance:${battleInstanceId}`;
+  
+  // Delete the battle instance
   await redisClient.del(battleInstanceKey);
+
+  // Get all battler instance keys for the given battle instance
+  const battlerInstanceKeys = await redisClient.keys(`battlerInstance:${battleInstanceId}:*`);
+
+  // Delete all battler instance keys
+  if (battlerInstanceKeys.length > 0) {
+    await redisClient.del(battlerInstanceKeys);
+  }
 }
+
 
 // Function to delete a cached battler instance
 async function deleteCacheBattlerInstance(redisClient, battleInstanceId, battlerInstanceId) {

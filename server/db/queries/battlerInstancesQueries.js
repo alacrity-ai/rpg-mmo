@@ -60,6 +60,18 @@ async function getBattlerInstanceById(id) {
     return null;
 }
 
+async function getBattlerInstancesByCharacterId(characterId) {
+    const sql = 'SELECT * FROM battler_instances WHERE character_id = ?';
+    const params = [characterId];
+    const rows = await query(sql, params);
+    
+    if (rows.length > 0) {
+        return rows.map(battlerInstance => new BattlerInstance(battlerInstance));
+    }
+    
+    return [];
+}
+
 async function updateBattlerInstance(id, updates) {
     const sql = `
         UPDATE battler_instances
@@ -222,5 +234,6 @@ module.exports = {
     updateBattlerPositions,
     updateBattlerHealth,
     updateBattlerMana,
-    applyStatusEffect
+    applyStatusEffect,
+    getBattlerInstancesByCharacterId
 };
