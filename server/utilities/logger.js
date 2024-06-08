@@ -15,11 +15,11 @@ const logger = createLogger({
   ),
   transports: [
     new transports.Console(), // Log to console
-    new transports.File({ filename: 'combined.log' }) // Log to file
+    new transports.File({ filename: './logs/combined.log' }) // Log to file
   ],
 });
 
 // Add error transport to log only errors to a separate file
-logger.add(new transports.File({ filename: 'errors.log', level: 'error' }));
+logger.add(new transports.File({ filename: './logs/errors.log', level: 'error' }));
 
 module.exports = logger;
