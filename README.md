@@ -8,7 +8,8 @@ This project is an MMO (Massively Multiplayer Online) game that combines a graph
 
 1. Clone the repository
 2. Navigate to the repository folder you just cloned
-3. Start the all services with docker-compose, with command: `make up`
+3. Rename .env.example to .env and adjust as necessary (It will work out of the box for dev testing)
+4. Start the all services with docker-compose, with command: `make up`
 
 NOTE: Docker must be installed
 
@@ -47,6 +48,11 @@ The redis cache is used by the server to queue tasks, which are then picked up b
 This project combines a graphical client, server, and database to create a fully functional MMO game. Follow the instructions above to set up the database, run the server, and at least one worker, bootup the redis service, and start the client to begin development or testing.
 
 ## Developer Guide
+
+### Env file
+
+1. Rename .env.example to .env
+2. For local dev testing, the .env.example values will work out of the box
 
 ### Instantiating the Database for Testing
 
