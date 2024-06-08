@@ -7,22 +7,23 @@
 
 This project is an MMO (Massively Multiplayer Online) game that combines a graphical client, a server to handle client connections, workers to handle game logic, and a database for storing game data. The game features a transition from a text-based to a graphical interface, utilizing a 32-bit pixel art style. It includes multiple scenes such as towns, expeditions, and combat encounters.
 
-## Quickstart
+## Quickstart (Linux or WSL)
 
 1. Clone the repository
 2. Navigate to the repository folder you just cloned
 3. (Optional): Rename `.env.example` to `.env` and adjust as necessary (It will work out of the box for dev testing)
 4. Start the all services with docker-compose, with command: `make up`
 
-NOTE: Docker must be installed
+**NOTE**: Docker/Docker Desktop must be installed
 
 ## Repository Structure
 
-- **client**: Contains the graphical interface for the game.
-- **server**: Manages game client connections, enqueues tasks for the workers
-- **workers**: Receives tasks from redis, performs business logic and database interactions, publishes results
-- **redis**: Stores tasks, and task results.  Tasks are handled by worker, results are passed to clients from server.
-- **database**: MySQL 8.0 Database responsible for maintaining game state, user accounts, etc
+- **./documentation**: Contains documentation on all aspects of the project
+- **./client**: Contains the graphical user interface for the game.
+- **./server**: Contains all the server and worker code
+- **./redis**: Contains the redis image and optional config
+- **./database**: Contains the mysql 8.0 image and optional config
+- **./utilities**: Contains various python utilities for generating and manipulating game assets
 
 ## High-Level Description
 
