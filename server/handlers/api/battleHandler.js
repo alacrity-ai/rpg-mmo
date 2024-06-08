@@ -1,4 +1,4 @@
-const { enqueueTask } = require('../taskUtils');
+const { enqueueTask } = require('../../db/cache/utility/taskUtils');
 const logger = require('../../utilities/logger');
 const config = require('../../config/config');
 const { setCacheBattleInstance, setCacheBattlerInstance } = require('../../db/cache/battle');

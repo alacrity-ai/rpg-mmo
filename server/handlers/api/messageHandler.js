@@ -1,4 +1,4 @@
-const logger = require('../../utilities/logger');
+const { enqueueTask } = require('../../db/cache/utility/taskUtils');
 
 const handleMessage = (io, socket, message, zone) => {
   const character = zone.players.find(p => p.socketId === socket.id);

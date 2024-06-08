@@ -1,6 +1,6 @@
 // handlers/taskUtils.js
 const { addTask } = require('./taskQueue');
-const logger = require('../utilities/logger');
+const logger = require('../../../utilities/logger');
 const crypto = require('crypto');
 
 // Map to store callbacks
@@ -34,3 +34,4 @@ module.exports = {
   enqueueTask,
   callbackMap
 };
+

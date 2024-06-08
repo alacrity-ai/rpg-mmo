@@ -1,4 +1,4 @@
-const logger = require('../utilities/logger');
+const logger = require('../../../utilities/logger');
 
 
 async function clearRedis(redisClient) {

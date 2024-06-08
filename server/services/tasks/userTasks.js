@@ -1,8 +1,8 @@
 // workers/processUserTasks.js
-const { addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../db/cache/client/RedisClient');
+const taskRegistry = require('./registry/taskRegistry');
 const { getUserByUsername, createUser } = require('../../db/queries/usersQueries');
 const crypto = require('crypto');
-const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
 

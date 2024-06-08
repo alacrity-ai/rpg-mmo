@@ -1,4 +1,4 @@
-const logger = require('../utilities/logger');
+const logger = require('../../../utilities/logger');
 
 const TASK_STREAM = 'taskQueueStream';
 const CONSUMER_GROUP = 'taskGroup';

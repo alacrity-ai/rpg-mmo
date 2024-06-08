@@ -1,10 +1,10 @@
 // Initializer.js
 const { initTables } = require('../db/database');
 const { populateTables } = require('../db/populateTables');
-const clearRedis = require('../handlers/taskClear');
-const { createStreamIfNotExists, createConsumerGroup } = require('../handlers/taskQueue');
+const clearRedis = require('../db/cache/utility/taskClear');
+const { createStreamIfNotExists, createConsumerGroup } = require('../db/cache/utility/taskQueue');
 const BattleControllerService = require('./battleControllerService');
-const { subscribeToTaskResultStream } = require('../handlers/taskResultSubscriber');
+const { subscribeToTaskResultStream } = require('../db/cache/utility/taskResultSubscriber');
 const logger = require('../utilities/logger');
 
 class Initializer {

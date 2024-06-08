@@ -1,4 +1,4 @@
-const logger = require('../utilities/logger');
+const logger = require('../../../utilities/logger');
 const { callbackMap } = require('./taskUtils');
 
 function processTaskResult(io, taskId, taskResult) {  

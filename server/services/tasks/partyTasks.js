@@ -1,7 +1,7 @@
 // workers/processPartyTasks.js
-const { addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../db/cache/client/RedisClient');
+const taskRegistry = require('./registry/taskRegistry');
 const { createCharacterParty, removeMemberFromParty } = require('../../db/queries/characterPartyQueries');
-const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
 

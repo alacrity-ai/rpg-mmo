@@ -40,6 +40,7 @@ async function resetDatabase() {
     'DROP TABLE IF EXISTS character_equipment;',
     'DROP TABLE IF EXISTS status_templates;',
     'DROP TABLE IF EXISTS npc_status;',
+    'DROP TABLE IF EXISTS ability_templates;',
     'SET FOREIGN_KEY_CHECKS = 1;'
   ];
 

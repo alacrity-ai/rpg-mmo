@@ -1,5 +1,5 @@
 // handlers/api/characterHandler.js
-const { enqueueTask } = require('../taskUtils');
+const { enqueueTask } = require('../../db/cache/utility/taskUtils');
 
 module.exports = (socket, io, redisClient) => {
   socket.on('characterList', async (data, callback) => {

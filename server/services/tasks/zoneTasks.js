@@ -1,9 +1,9 @@
 // workers/processExpeditionTasks.js
-const { addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../db/cache/client/RedisClient');
+const taskRegistry = require('./registry/taskRegistry');
 const { createExpeditionZone } = require('../../services/expeditions/zoneCreator');
 const { getZoneTemplateBySceneKey } = require('../../db/queries/zoneTemplatesQueries');
 const { getAreaInstanceById, updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
-const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
 

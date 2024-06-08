@@ -1,8 +1,8 @@
 // workers/processCharacterTasks.js
-const { addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../db/cache/client/RedisClient');
+const taskRegistry = require('./registry/taskRegistry');
 const { createCharacter, getCharacterByName, getCharactersByUser } = require('../../db/queries/characterQueries');
 const { getAllClasses } = require('../../db/queries/classTemplatesQueries');
-const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
 

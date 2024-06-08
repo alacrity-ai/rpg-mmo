@@ -1,4 +1,3 @@
-const { getZoneTemplateById, getZoneTemplateBySceneKey } = require('../../db/queries/zoneTemplatesQueries');
 const { createZoneInstance } = require('../../db/queries/zoneInstancesQueries');
 const { createAreaInstance, updateAreaInstancesWithZoneInstanceData } = require('../../db/queries/areaInstancesQueries');
 const { createAreaEventInstance } = require('../../db/queries/areaEventInstancesQueries');

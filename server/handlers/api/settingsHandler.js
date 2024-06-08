@@ -1,6 +1,6 @@
 // handlers/api/settingsHandler.js
 
-const { enqueueTask } = require('../taskUtils');
+const { enqueueTask } = require('../../db/cache/utility/taskUtils');
 const logger = require('../../utilities/logger');
 
 module.exports = (socket, io, redisClient) => {

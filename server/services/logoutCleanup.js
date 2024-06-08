@@ -1,6 +1,6 @@
 // services/logoutCleanup.js
 
-const { enqueueTask } = require('../handlers/taskUtils');
+const { enqueueTask } = require('../db/cache/utility/taskUtils');
 const logger = require('../utilities/logger');
 
 const handleDisconnect = (socket, redisClient) => {

@@ -1,8 +1,8 @@
 // workers/processShopTasks.js
-const { addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../db/cache/client/RedisClient');
+const taskRegistry = require('./registry/taskRegistry');
 const { getShopTemplateById } = require('../../db/queries/shopTemplatesQueries');
 const { getItemTemplateById } = require('../../db/queries/itemTemplatesQueries');
-const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
 

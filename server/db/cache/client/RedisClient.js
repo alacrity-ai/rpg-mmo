@@ -1,7 +1,7 @@
-// redisClient.js
+// db/cache/client/RedisClient.js
 const Redis = require('ioredis');
-const config = require('./config/config');
-const logger = require('./utilities/logger');
+const config = require('../../../config/config');
+const logger = require('../../../utilities/logger');
 
 // Function that returns a new redis client
 function getRedisClient() {

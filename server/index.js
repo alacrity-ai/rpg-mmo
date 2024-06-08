@@ -14,8 +14,8 @@ const settingsHandler = require('./handlers/api/settingsHandler');
 const partyHandler = require('./handlers/api/partyHandler');
 const zoneHandler = require('./handlers/api/zoneHandler');
 const logger = require('./utilities/logger');
-const redisClient = require('./redisClient').getRedisClient();
-const redisPub = require('./redisClient').getRedisClient();
+const redisClient = require('./db/cache/client/RedisClient').getRedisClient();
+const redisPub = require('./db/cache/client/RedisClient').getRedisClient();
 
 const app = express();
 const server = http.createServer(app);

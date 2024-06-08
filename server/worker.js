@@ -1,11 +1,9 @@
 // workers/worker.js
 const config = require('./config/config');
-const { getRedisClient } = require('./redisClient');
-const { getTask } = require('./handlers/taskQueue');
-const taskRegistry = require('./handlers/taskRegistry');
+const redisClient = require('./db/cache/client/RedisClient').getRedisClient();
+const { getTask } = require('./db/cache/utility/taskQueue');
+const taskRegistry = require('./services/tasks/registry/taskRegistry');
 const logger = require('./utilities/logger');
-
-const redisClient = getRedisClient();
 
 const MIN_POLL_INTERVAL_MS = 50;
 const MAX_POLL_INTERVAL_MS = 100;

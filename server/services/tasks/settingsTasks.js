@@ -1,6 +1,6 @@
 // workers/processGetServerSettingsTask.js
-const { addTaskResult } = require('../../redisClient');
-const taskRegistry = require('../../handlers/taskRegistry');
+const { addTaskResult } = require('../../db/cache/client/RedisClient');
+const taskRegistry = require('./registry/taskRegistry');
 const logger = require('../../utilities/logger');
 const config = require('../../config/config');
 

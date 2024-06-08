@@ -1,5 +1,5 @@
 // handlers/taskResultSubscriber.js
-const logger = require('../utilities/logger');
+const logger = require('../../../utilities/logger');
 const { processTaskResult } = require('./taskResultHandler');
 
 async function subscribeToTaskResultStream(io, redisClient) {

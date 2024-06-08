@@ -1,4 +1,4 @@
-const { enqueueTask } = require('../taskUtils');
+const { enqueueTask } = require('../../db/cache/utility/taskUtils');
 const { handleDisconnect } = require('../../services/logoutCleanup');
 const logger = require('../../utilities/logger');
 
