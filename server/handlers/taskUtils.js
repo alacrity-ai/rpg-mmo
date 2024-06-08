@@ -21,6 +21,7 @@ async function enqueueTask(redisClient, taskType, taskData, callback, delay = 0)
       await redisClient.zadd('delayed-tasks', executeTime, JSON.stringify({ taskType, fullTaskData }));
       logger.info(`Delayed task added to queue: ${taskType}, to be executed in ${delay} ms`);
     } else {
+      logger.info(`Enqueuing task: ${taskType} with ID: ${taskId}`)
       await addTask(redisClient, taskType, fullTaskData);
     }
   } catch (error) {

@@ -31,7 +31,7 @@ class BattleControllerService {
               // Enqueue the next script action task
               const nextTaskData = { battleInstanceId: battleInstance.id, battlerId: battlerInstance.id };
               await enqueueTask(this.redisClient, 'runScriptAction', nextTaskData, () => {
-                logger.info(`Next script action enqueued for battler ${battlerInstance.id}`);
+                logger.debug(`Next script action enqueued for battler ${battlerInstance.id}`);
               });
             }
           }
