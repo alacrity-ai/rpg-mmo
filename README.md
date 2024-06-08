@@ -1,5 +1,5 @@
 # Mists of Aldera
-### A Massively Mutliplayer Roleplaying Game
+### A Massively-Mutliplayer Retro-Style Roleplaying Game
 
 ![MMO Project Image](project.png)
 
