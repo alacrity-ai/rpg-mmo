@@ -1,6 +1,6 @@
-const { enqueueTask } = require('../../db/cache/utility/taskUtils');
-const { handleDisconnect } = require('../../services/logoutCleanup');
-const logger = require('../../utilities/logger');
+const { enqueueTask } = require('../db/cache/utility/taskUtils');
+const { handleDisconnect } = require('../services/logoutCleanup');
+const logger = require('../utilities/logger');
 
 module.exports = (socket, io, redisClient) => {
   socket.on('login', async (data, callback) => {
