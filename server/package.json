@@ -1,7 +1,7 @@
 {
-  "name": "mud-server",
+  "name": "mmo-server",
   "version": "1.0.0",
-  "description": "A multi-user dungeon (MUD) server",
+  "description": "MMO Server",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -10,12 +10,11 @@
     "test": "jest --runInBand --silent=false --forceExit"
   },
   "keywords": [
-    "MUD",
-    "multi-user dungeon",
+    "MMO",
+    "server",
     "game server",
-    "text-based game"
   ],
-  "author": "Your Name",
+  "author": "Leif Taylor",
   "license": "ISC",
   "dependencies": {
     "cors": "^2.8.5",
