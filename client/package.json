@@ -17,9 +17,10 @@
     "http-server": "^14.1.1",
     "phaser": "^3.80.1",
     "phaser3-rex-plugins": "^1.80.3",
-    "socket.io-client": "^4.7.5"
+    "socket.io-client": "^4.7.5",
+    "vite": "^5.2.13"
   },
-  "devDependencies": {
-    "vite": "^5.2.11"
+  "engines": {
+    "node": ">=20.9.0"
   }
 }
