@@ -11,8 +11,7 @@ This project is an MMO (Massively Multiplayer Online) game that combines a graph
 
 1. Clone the repository
 2. Navigate to the repository folder you just cloned
-3. (Optional): Rename `.env.example` to `.env` and adjust as necessary (It will work out of the box for dev testing)
-4. Start the all services with docker-compose, with command: `make up`
+3. Start the all services with docker-compose, with command: `make up`
 
 **NOTE**: Docker/Docker Desktop must be installed
 
