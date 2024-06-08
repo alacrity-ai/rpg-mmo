@@ -1,6 +1,7 @@
 // redisClient.js
 const Redis = require('ioredis');
 const config = require('./config/config');
+const logger = require('./utilities/logger');
 
 // Function that returns a new redis client
 function getRedisClient() {
@@ -10,11 +11,11 @@ function getRedisClient() {
   });
 
   redisClient.on('connect', () => {
-    console.log('Redis client connected');
+    logger.info('Redis client connected');
   });
 
   redisClient.on('error', (err) => {
-    console.error('Redis client error:', err);
+    logger.error(`Redis client error: ${err.message}`);
   });
 
   return redisClient;
@@ -23,15 +24,15 @@ function getRedisClient() {
 // Wrapper function for xadd
 async function addTaskResult(redisClient, taskId, result) {
   if (!redisClient || !redisClient.status || redisClient.status !== 'ready') {
-    console.error('Redis client is not connected');
-    throw new Error('Redis client is not connected');
+    logger.error(`Redis client is not connected`);
+    throw new Error(`Redis client is not connected`);
   }
 
   try {
     await redisClient.xadd('task-result-stream', '*', 'taskId', taskId, 'result', JSON.stringify(result));
-    console.log('Task added to stream successfully');
+    logger.info(`Result added to stream for task ID: ${taskId}`);
   } catch (err) {
-    console.error('Error adding task to stream:', err);
+    console.error(`Error adding result to stream for task ID: ${taskId}, error: ${err.message}`);
     throw err;
   }
 }
