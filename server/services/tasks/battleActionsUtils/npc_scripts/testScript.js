@@ -1,8 +1,8 @@
 const NpcScript = require('./NpcScript');
 
 class TestScript extends NpcScript {
-    constructor(battlerInstance, battlerInstances, battleInstanceId) {
-        super(battlerInstance, battlerInstances, battleInstanceId);
+    constructor(battleActionProcessor, battlerInstance, battlerInstances, battleInstanceId) {
+        super(battleActionProcessor, battlerInstance, battlerInstances, battleInstanceId);
     }
 
     async phase0() {

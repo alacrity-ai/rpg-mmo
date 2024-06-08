@@ -1,13 +1,12 @@
 // workers/processShopTasks.js
-const { getRedisClient, addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../redisClient');
 const { getShopTemplateById } = require('../../db/queries/shopTemplatesQueries');
 const { getItemTemplateById } = require('../../db/queries/itemTemplatesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
-const redisClient = getRedisClient();
 
-async function processViewShopInventoryTask(task) {
+async function processViewShopInventoryTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { shopId } = data;
 

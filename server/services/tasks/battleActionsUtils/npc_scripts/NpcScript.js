@@ -1,8 +1,9 @@
 const { updateBattlerPhase } = require('../../../../db/queries/battlerInstancesQueries');
-const { actionMove, actionMoveToEnemy, actionMoveFromEnemy, moveToDestination, moveToBattler } = require('./npc_actions/moveActions');
+const { actionMove, actionMoveToEnemy, actionMoveFromEnemy, actionMoveToDestination, actionMoveToBattler } = require('./npc_actions/moveActions');
 
 class NpcScript {
-    constructor(battlerInstance, battlerInstances, battleInstanceId) {
+    constructor(battleActionProcessor, battlerInstance, battlerInstances, battleInstanceId) {
+        this.battleActionProcessor = battleActionProcessor;
         this.battlerInstance = battlerInstance;
         this.battlerInstances = battlerInstances;
         this.battleInstanceId = battleInstanceId;

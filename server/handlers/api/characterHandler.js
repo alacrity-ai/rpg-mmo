@@ -1,10 +1,10 @@
 // handlers/api/characterHandler.js
 const { enqueueTask } = require('../taskUtils');
 
-module.exports = (socket) => {
+module.exports = (socket, io, redisClient) => {
   socket.on('characterList', async (data, callback) => {
     const userId = socket.user.id;
-    enqueueTask('characterList', { userId }, callback);
+    enqueueTask(redisClient, 'characterList', { userId }, callback);
   });
 
   socket.on('createCharacter', async (data, callback) => {
@@ -13,7 +13,7 @@ module.exports = (socket) => {
       return;
     }
     const taskData = { userId: socket.user.id, ...data };
-    enqueueTask('createCharacter', taskData, callback);
+    enqueueTask(redisClient, 'createCharacter', taskData, callback);
   });
 
 
@@ -23,7 +23,7 @@ module.exports = (socket) => {
       return;
     }
     const taskData = { userId: socket.user.id, ...data };
-    enqueueTask('loginCharacter', taskData, (response) => {
+    enqueueTask(redisClient, 'loginCharacter', taskData, (response) => {
       if (response.success) {
         socket.character = {
           id: response.data.id,
@@ -35,6 +35,6 @@ module.exports = (socket) => {
   });
 
   socket.on('classList', async (data, callback) => {
-    enqueueTask('classList', {}, callback);
+    enqueueTask(redisClient, 'classList', {}, callback);
   });
 };

@@ -1,12 +1,11 @@
 // workers/processGetServerSettingsTask.js
-const { getRedisClient, addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../redisClient');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const config = require('../../config/config');
 
-const redisClient = getRedisClient();
 
-async function processGetServerSettingsTask(task) {
+async function processGetServerSettingsTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   try {
     // Organize the items into a structure that is usable by the client

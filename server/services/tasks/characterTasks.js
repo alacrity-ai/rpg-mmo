@@ -1,13 +1,12 @@
 // workers/processCharacterTasks.js
-const { getRedisClient, addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../redisClient');
 const { createCharacter, getCharacterByName, getCharactersByUser } = require('../../db/queries/characterQueries');
 const { getAllClasses } = require('../../db/queries/classTemplatesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
-const redisClient = getRedisClient();
 
-async function processClassListTask(task) {
+async function processClassListTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   try {
     const classes = await getAllClasses();
@@ -21,7 +20,7 @@ async function processClassListTask(task) {
   }
 }
 
-async function processCharacterListTask(task) {
+async function processCharacterListTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { userId } = data;
 
@@ -37,7 +36,7 @@ async function processCharacterListTask(task) {
   }
 }
 
-async function processCreateCharacterTask(task) {
+async function processCreateCharacterTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { userId, characterName, characterClass } = data;
 
@@ -53,7 +52,7 @@ async function processCreateCharacterTask(task) {
   }
 }
 
-async function processLoginCharacterTask(task) {
+async function processLoginCharacterTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { userId, characterName } = data;
 

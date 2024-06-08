@@ -14,7 +14,8 @@ const settingsHandler = require('./handlers/api/settingsHandler');
 const partyHandler = require('./handlers/api/partyHandler');
 const zoneHandler = require('./handlers/api/zoneHandler');
 const logger = require('./utilities/logger');
-const { handleDisconnect } = require('./services/logoutCleanup');
+const redisClient = require('./redisClient').getRedisClient();
+const redisPub = require('./redisClient').getRedisClient();
 
 const app = express();
 const server = http.createServer(app);
@@ -42,38 +43,21 @@ io.on('connection', (socket) => {
   logger.info(`A user connected`);
 
   // Use imported event handlers
-  authHandler(socket, io);
-  characterHandler(socket, io);
-  shopHandler(socket, io);
-  battleHandler(socket, io);
-  battlerHandler(socket, io);
-  battlerActionHandler(socket, io);
-  settingsHandler(socket, io);
-  partyHandler(socket, io);
-  zoneHandler(socket, io);
-
-  // Handle joining a battle room
-  socket.on('joinBattle', (battleInstanceId) => {
-    socket.join(`battle-${battleInstanceId}`);
-    logger.info(`User joined battle ${battleInstanceId}`);
-  });
-
-  // Handle leaving a battle room
-  socket.on('leaveBattle', (battleInstanceId) => {
-    socket.leave(`battle-${battleInstanceId}`);
-    logger.info(`User left battle ${battleInstanceId}`);
-  });
-
-  socket.on('disconnect', () => {
-    logger.info('A user disconnected');
-    handleDisconnect(socket);
-  });
+  authHandler(socket, io, redisPub);
+  characterHandler(socket, io, redisPub);
+  shopHandler(socket, io, redisPub);
+  battleHandler(socket, io, redisPub);
+  battlerHandler(socket, io, redisPub);
+  battlerActionHandler(socket, io, redisPub);
+  settingsHandler(socket, io, redisPub);
+  partyHandler(socket, io, redisPub);
+  zoneHandler(socket, io, redisPub);
 });
 
 const PORT = config.server.port;
 
 server.listen(PORT, async () => {
-  await Initializer.initDatabase();
-  Initializer.startServices(io);
+  await Initializer.initDatabase(redisClient);
+  Initializer.startServices(io, redisClient, redisPub);
   logger.info(`Server is running on port ${PORT}`);
 });

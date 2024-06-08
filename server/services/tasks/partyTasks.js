@@ -1,12 +1,11 @@
 // workers/processPartyTasks.js
-const { getRedisClient, addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../redisClient');
 const { createCharacterParty, removeMemberFromParty } = require('../../db/queries/characterPartyQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
-const redisClient = getRedisClient();
 
-async function processCreatePartyTask(task) {
+async function processCreatePartyTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { characterId, userId } = data;
 
@@ -23,7 +22,7 @@ async function processCreatePartyTask(task) {
   }
 }
 
-async function processLeavePartyTask(task) {
+async function processLeavePartyTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { partyId, characterId } = data;
 

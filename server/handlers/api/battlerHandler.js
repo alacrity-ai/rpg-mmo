@@ -1,6 +1,6 @@
 const { enqueueTask } = require('../taskUtils');
 
-module.exports = (socket) => {
+module.exports = (socket, io, redisClient) => {
   socket.on('getBattlerAbilities', async (data, callback) => {
     if (!socket.character || !socket.character.id) {
       callback({ error: 'Character not logged in.' });
@@ -13,7 +13,7 @@ module.exports = (socket) => {
     }
 
     const taskData = { battlerId: socket.battler.id };
-    enqueueTask('getBattlerAbilities', taskData, (response) => {
+    enqueueTask(redisClient, 'getBattlerAbilities', taskData, (response) => {
       if (response.success) {
         callback({ success: true, data: response.data });
       } else {

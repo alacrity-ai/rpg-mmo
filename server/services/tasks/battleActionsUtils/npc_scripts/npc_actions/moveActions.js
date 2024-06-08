@@ -1,5 +1,3 @@
-const BattleActionProcessor = require('../../BattleActionProcessor');
-
 async function actionMove(battlerInstance, x, y) {
     const newPosition = [battlerInstance.gridPosition[0] + x, battlerInstance.gridPosition[1] + y];
     const actionData = {
@@ -13,7 +11,7 @@ async function actionMove(battlerInstance, x, y) {
         actionType: 'move',
         actionData
     };
-    const result = await BattleActionProcessor.processSingleAction(action);
+    const result = await battlerInstance.battleActionProcessor.processSingleAction(action);
     if (result.success) {
         battlerInstance.gridPosition = newPosition;
     }

@@ -1,12 +1,9 @@
-const { getRedisClient } = require('../redisClient');
 const logger = require('../utilities/logger');
-
-const redisClient = getRedisClient();
 
 const TASK_STREAM = 'taskQueueStream';
 const CONSUMER_GROUP = 'taskGroup';
 
-async function createStreamIfNotExists() {
+async function createStreamIfNotExists(redisClient) {
   try {
     await redisClient.xadd(TASK_STREAM, '*', 'init', 'init');
     logger.info(`Stream ${TASK_STREAM} initialized`);
@@ -17,7 +14,7 @@ async function createStreamIfNotExists() {
   }
 }
 
-async function createConsumerGroup() {
+async function createConsumerGroup(redisClient) {
   try {
     await redisClient.xgroup('CREATE', TASK_STREAM, CONSUMER_GROUP, '$', 'MKSTREAM');
     logger.info(`Consumer group ${CONSUMER_GROUP} created for stream ${TASK_STREAM}`);
@@ -39,7 +36,7 @@ async function createConsumerGroup() {
  * @param {string} taskType - The type of the task.
  * @param {object} taskData - The data associated with the task.
  */
-async function addTask(taskType, taskData) {
+async function addTask(redisClient, taskType, taskData) {
   const task = { taskType, taskData };
   try {
     // Ensure the Redis client is connected before attempting to add the task
@@ -58,7 +55,7 @@ async function addTask(taskType, taskData) {
  * Retrieves a task from the Redis stream.
  * @returns {object|null} - The retrieved task or null if no tasks are available.
  */
-async function getTask() {
+async function getTask(redisClient) {
   try {
     const tasks = await redisClient.xreadgroup('GROUP', CONSUMER_GROUP, 'consumer1', 'COUNT', 1, 'BLOCK', 0, 'STREAMS', TASK_STREAM, '>');
     if (tasks.length > 0) {

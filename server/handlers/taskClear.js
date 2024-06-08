@@ -1,9 +1,7 @@
-const { getRedisClient } = require('../redisClient');
 const logger = require('../utilities/logger');
 
-const redisClient = getRedisClient();
 
-async function clearRedis() {
+async function clearRedis(redisClient) {
   try {
     await redisClient.flushall();
     logger.info('Redis database cleared successfully.');

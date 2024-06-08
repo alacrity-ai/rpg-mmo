@@ -1,47 +1,43 @@
-const { getRedisClient } = require('../../redisClient');
-
-const redisClient = getRedisClient();
-
 // Function to cache a battle instance
-async function setCacheBattleInstance(battleInstance) {
+async function setCacheBattleInstance(redisClient, battleInstance) {
   const battleInstanceKey = `battleInstance:${battleInstance.id}`;
   await redisClient.set(battleInstanceKey, JSON.stringify(battleInstance));
 }
 
 // Function to cache a battler instance
-async function setCacheBattlerInstance(battlerInstance, battleInstanceId) {
+async function setCacheBattlerInstance(redisClient, battlerInstance, battleInstanceId) {
   const battlerInstanceKey = `battlerInstance:${battleInstanceId}:${battlerInstance.id}`;
   await redisClient.set(battlerInstanceKey, JSON.stringify(battlerInstance));
 }
 
 // Function to get a cached battle instance
-async function getCacheBattleInstance(battleInstanceId) {
+async function getCacheBattleInstance(redisClient, battleInstanceId) {
   const battleInstanceKey = `battleInstance:${battleInstanceId}`;
   const battleInstance = await redisClient.get(battleInstanceKey);
   return battleInstance ? JSON.parse(battleInstance) : null;
 }
 
 // Function to get a cached battler instance
-async function getCacheBattlerInstance(battleInstanceId, battlerInstanceId) {
+async function getCacheBattlerInstance(redisClient, battleInstanceId, battlerInstanceId) {
   const battlerInstanceKey = `battlerInstance:${battleInstanceId}:${battlerInstanceId}`;
   const battlerInstance = await redisClient.get(battlerInstanceKey);
   return battlerInstance ? JSON.parse(battlerInstance) : null;
 }
 
 // Function to delete a cached battle instance
-async function deleteCacheBattleInstance(battleInstanceId) {
+async function deleteCacheBattleInstance(redisClient, battleInstanceId) {
   const battleInstanceKey = `battleInstance:${battleInstanceId}`;
   await redisClient.del(battleInstanceKey);
 }
 
 // Function to delete a cached battler instance
-async function deleteCacheBattlerInstance(battleInstanceId, battlerInstanceId) {
+async function deleteCacheBattlerInstance(redisClient, battleInstanceId, battlerInstanceId) {
   const battlerInstanceKey = `battlerInstance:${battleInstanceId}:${battlerInstanceId}`;
   await redisClient.del(battlerInstanceKey);
 }
 
 // Function to get all cached battle instances
-async function getAllCachedBattleInstances() {
+async function getAllCachedBattleInstances(redisClient) {
   const keys = await redisClient.keys('battleInstance:*');
   const battleInstances = await Promise.all(keys.map(async (key) => {
     const instance = await redisClient.get(key);
@@ -50,7 +46,7 @@ async function getAllCachedBattleInstances() {
   return battleInstances;
 }
 
-async function getAllCachedBattlerInstancesInBattle(battleInstanceId) {
+async function getAllCachedBattlerInstancesInBattle(redisClient, battleInstanceId) {
     const keys = await redisClient.keys(`battlerInstance:${battleInstanceId}:*`);
     const battlerInstances = await Promise.all(keys.map(async (key) => {
       const instance = await redisClient.get(key);

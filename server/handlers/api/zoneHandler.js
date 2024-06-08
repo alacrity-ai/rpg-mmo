@@ -1,6 +1,6 @@
 const { enqueueTask } = require('../taskUtils');
 
-module.exports = (socket) => {
+module.exports = (socket, io, redisClient) => {
   socket.on('requestZone', async (data, callback) => {
     if (!socket.character || !socket.character.id) {
       callback({ error: 'Character not logged in.' });
@@ -19,7 +19,7 @@ module.exports = (socket) => {
       sceneKey 
     };
     
-    enqueueTask('requestZone', taskData, (response) => {
+    enqueueTask(redisClient, 'requestZone', taskData, (response) => {
       if (response.error) {
         callback({ error: response.error });
       } else {
@@ -47,7 +47,7 @@ module.exports = (socket) => {
       targetAreaId
     };
 
-    enqueueTask('requestArea', taskData, (response) => {
+    enqueueTask(redisClient, 'requestArea', taskData, (response) => {
       if (response.error) {
         callback({ error: response.error });
       } else {

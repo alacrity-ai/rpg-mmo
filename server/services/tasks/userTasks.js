@@ -1,13 +1,12 @@
 // workers/processUserTasks.js
-const { getRedisClient, addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../redisClient');
 const { getUserByUsername, createUser } = require('../../db/queries/usersQueries');
 const crypto = require('crypto');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
-const redisClient = getRedisClient();
 
-async function processLoginTask(task) {
+async function processLoginTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { username, password } = data;
   const hash = crypto.createHash('sha256').update(password).digest('hex');
@@ -29,7 +28,7 @@ async function processLoginTask(task) {
   }
 }
 
-async function processCreateAccountTask(task) {
+async function processCreateAccountTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { username, password } = data;
 

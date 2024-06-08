@@ -1,5 +1,9 @@
 # TODOS
 
+- [x] Create a cleanup battle taskProcessor
+    - in handlers/api/battleHandler if a player leaves battle, check how many players are in that socket battle rooom
+    - if no players are in the room, enqueue the cleanupBattle task
+
 - [x] Database Validation:
 
     - Delete the current database and rerun the server to create and populate tables.

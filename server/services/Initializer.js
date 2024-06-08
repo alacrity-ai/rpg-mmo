@@ -8,18 +8,19 @@ const { subscribeToTaskResultStream } = require('../handlers/taskResultSubscribe
 const logger = require('../utilities/logger');
 
 class Initializer {
-  static async initDatabase() {
-    await clearRedis();
+  static async initDatabase(redisClient) {
+    await clearRedis(redisClient);
     await initTables();
     await populateTables();
-    await createStreamIfNotExists();
-    await createConsumerGroup();
+    await createStreamIfNotExists(redisClient);
+    await createConsumerGroup(redisClient);
     logger.info('Database initialization completed');
   }
 
-  static startServices(io) {
-    BattleControllerService.init();
-    subscribeToTaskResultStream(io);
+  static startServices(io, redisClient, redisPub) {
+    const battleControllerService = new BattleControllerService(redisPub);
+    battleControllerService.start();
+    subscribeToTaskResultStream(io, redisClient);
     logger.info('Services started');
   }
 }

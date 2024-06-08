@@ -1,5 +1,4 @@
 // handlers/taskUtils.js
-const { getRedisClient } = require('../redisClient');
 const { addTask } = require('./taskQueue');
 const logger = require('../utilities/logger');
 const crypto = require('crypto');
@@ -7,8 +6,7 @@ const crypto = require('crypto');
 // Map to store callbacks
 const callbackMap = new Map();
 
-async function enqueueTask(taskType, taskData, callback, delay = 0) {
-  const redisClient = getRedisClient();
+async function enqueueTask(redisClient, taskType, taskData, callback, delay = 0) {
 
   try {
     const taskId = crypto.randomUUID(); // Generate a unique task ID
@@ -23,7 +21,7 @@ async function enqueueTask(taskType, taskData, callback, delay = 0) {
       await redisClient.zadd('delayed-tasks', executeTime, JSON.stringify({ taskType, fullTaskData }));
       logger.info(`Delayed task added to queue: ${taskType}, to be executed in ${delay} ms`);
     } else {
-      await addTask(taskType, fullTaskData);
+      await addTask(redisClient, taskType, fullTaskData);
     }
   } catch (error) {
     logger.error(`Error enqueuing task: ${error.message}`);

@@ -1,14 +1,13 @@
 // workers/processExpeditionTasks.js
-const { getRedisClient, addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../redisClient');
 const { createExpeditionZone } = require('../../services/expeditions/zoneCreator');
 const { getZoneTemplateBySceneKey } = require('../../db/queries/zoneTemplatesQueries');
 const { getAreaInstanceById, updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
-const redisClient = getRedisClient();
 
-async function processRequestZoneTask(task) {
+async function processRequestZoneTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { userId, characterId, partyId, sceneKey } = data;
 
@@ -52,7 +51,7 @@ async function processRequestZoneTask(task) {
   }
 }
 
-async function processRequestAreaTask(task) {
+async function processRequestAreaTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { userId, characterId, partyId, currentAreaId, targetAreaId } = data;
 

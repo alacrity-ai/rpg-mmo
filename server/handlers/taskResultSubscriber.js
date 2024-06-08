@@ -1,10 +1,8 @@
 // handlers/taskResultSubscriber.js
-const { getRedisClient } = require('../redisClient');
 const logger = require('../utilities/logger');
 const { processTaskResult } = require('./taskResultHandler');
 
-async function subscribeToTaskResultStream(io) {
-  const redisClient = getRedisClient();
+async function subscribeToTaskResultStream(io, redisClient) {
   const streamName = 'task-result-stream';
   let lastId = '0';  // Start from the beginning of the stream
 

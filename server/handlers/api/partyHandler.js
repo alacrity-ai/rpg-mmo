@@ -1,13 +1,13 @@
 const { enqueueTask } = require('../taskUtils');
 
-module.exports = (socket) => {
+module.exports = (socket, io, redisClient) => {
   socket.on('createParty', async (data, callback) => {
     if (!socket.character || !socket.character.id) {
       callback({ error: 'Character not logged in.' });
       return;
     }
     const taskData = { userId: socket.user.id, characterId: socket.character.id };
-    enqueueTask('createParty', taskData, (response) => {
+    enqueueTask(redisClient, 'createParty', taskData, (response) => {
       if (response.success) {
         socket.party = { id: response.data.partyId };
       }
@@ -25,7 +25,7 @@ module.exports = (socket) => {
       return;
     }
     const taskData = { characterId: socket.character.id, partyId: socket.party.id };
-    enqueueTask('leaveParty', taskData, (response) => {
+    enqueueTask(redisClient, 'leaveParty', taskData, (response) => {
       if (response.success) {
         delete socket.party;
       }

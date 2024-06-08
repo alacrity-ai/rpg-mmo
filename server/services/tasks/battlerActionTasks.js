@@ -1,18 +1,17 @@
 // workers/processBattlerActionTasks.js
-const { getRedisClient, addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../redisClient');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const BattleActionProcessor = require('./battleActionsUtils/BattleActionProcessor');
 
-const redisClient = getRedisClient();
-
-async function processAddBattlerActionTask(task) {
+async function processAddBattlerActionTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { battleInstanceId, battlerId, actionType, actionData } = data;
 
   try {
     // Process the action immediately
-    const actionResult = await BattleActionProcessor.processSingleAction({ battleInstanceId, battlerId, actionType, actionData });
+    const battleActionProcessor = new BattleActionProcessor(redisClient);
+    const actionResult = await battleActionProcessor.processSingleAction({ battleInstanceId, battlerId, actionType, actionData });
     if (actionResult.success) {
       const result = { success: true, data: { battleInstanceId, actionResult } };
       await addTaskResult(redisClient, taskId, result);

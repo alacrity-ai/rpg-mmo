@@ -1,7 +1,7 @@
 const { enqueueTask } = require('../taskUtils');
 
-module.exports = (socket) => {
+module.exports = (socket, io, redisClient) => {
   socket.on('viewShopInventory', async (data, callback) => {
-    enqueueTask('viewShopInventory', data, callback);
+    enqueueTask(redisClient, 'viewShopInventory', data, callback);
   });
 };

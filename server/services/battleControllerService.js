@@ -1,20 +1,23 @@
 const { enqueueTask } = require('../handlers/taskUtils');
 const { getAllCachedBattleInstances, getAllCachedBattlerInstancesInBattle } = require('../db/cache/battle');
 const logger = require('../utilities/logger');
-const redisClient = require('../redisClient').getRedisClient();
 
 class BattleControllerService {
-  static async runBattleControllerService() {
+  constructor(redisClient) {
+    this.redisClient = redisClient;
+  }
+
+  async runBattleControllerService() {
     try {
-      const battleInstances = await getAllCachedBattleInstances();
+      const battleInstances = await getAllCachedBattleInstances(this.redisClient);
       for (const battleInstance of battleInstances) {
         
         // Process NPC scripts in battle
-        const battlerInstances = await getAllCachedBattlerInstancesInBattle(battleInstance.id);
+        const battlerInstances = await getAllCachedBattlerInstancesInBattle(this.redisClient, battleInstance.id);
         for (const battlerInstance of battlerInstances) {
           if (battlerInstance.npcTemplateId && battlerInstance.scriptPath) {
             const nextActionTimeKey = `nextActionTime:${battleInstance.id}:${battlerInstance.id}`;
-            const nextActionTime = await redisClient.get(nextActionTimeKey);
+            const nextActionTime = await this.redisClient.get(nextActionTimeKey);
             const currentTime = Date.now();
             
             // Ensure at least 5 seconds have passed since the timeCreated
@@ -27,7 +30,7 @@ class BattleControllerService {
             if (!nextActionTime || currentTime >= nextActionTime) {              
               // Enqueue the next script action task
               const nextTaskData = { battleInstanceId: battleInstance.id, battlerId: battlerInstance.id };
-              await enqueueTask('runScriptAction', nextTaskData, () => {
+              await enqueueTask(this.redisClient, 'runScriptAction', nextTaskData, () => {
                 logger.info(`Next script action enqueued for battler ${battlerInstance.id}`);
               });
             }
@@ -39,8 +42,8 @@ class BattleControllerService {
     }
   }
 
-  static init() {
-    setInterval(BattleControllerService.runBattleControllerService, 1000);
+  start() {
+    setInterval(() => this.runBattleControllerService(), 1000);
     logger.info('BattleControllerService started');
   }
 }

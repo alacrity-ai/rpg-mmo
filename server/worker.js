@@ -27,7 +27,7 @@ require('./services/tasks/zoneTasks');
 
 async function processTasks() {
   while (true) {
-    const task = await getTask();
+    const task = await getTask(redisClient);
     if (task) {
       logger.info(`Processing task: ${JSON.stringify(task)}`);
       const { taskType } = task;
@@ -35,7 +35,7 @@ async function processTasks() {
 
       if (taskHandler) {
         try {
-          await taskHandler(task);
+          await taskHandler(task, redisClient);
           currentPollInterval = MIN_POLL_INTERVAL_MS; // Reset interval after successful task processing
         } catch (error) {
           logger.error(`Failed to process task ${taskType}: ${error}`);

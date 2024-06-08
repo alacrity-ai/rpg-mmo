@@ -1,12 +1,11 @@
-const { getRedisClient, addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../redisClient');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 const { getBattlerInstancesInBattle } = require('../../db/queries/battleInstancesQueries');
 const NPCScriptExecutor = require('./battleActionsUtils/NpcScriptExecutor');
+const BattleActionProcessor = require('./battleActionsUtils/BattleActionProcessor');
 
-const redisClient = getRedisClient();
-
-async function processRunScriptActionTask(task) {
+async function processRunScriptActionTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { battleInstanceId, battlerId } = data;
 
@@ -17,7 +16,8 @@ async function processRunScriptActionTask(task) {
       throw new Error(`Battler instance with ID ${battlerId} not found in battle instance ${battleInstanceId}`);
     }
 
-    const npcScriptExecutor = new NPCScriptExecutor(battlerInstance, battlerInstances, battleInstanceId);
+    const battleActionProcessor = new BattleActionProcessor(redisClient);
+    const npcScriptExecutor = new NPCScriptExecutor(battleActionProcessor, battlerInstance, battlerInstances, battleInstanceId);
 
     // Run the script and get the result
     const actionResult = await npcScriptExecutor.runScript();

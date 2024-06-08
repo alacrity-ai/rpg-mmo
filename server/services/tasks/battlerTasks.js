@@ -1,13 +1,11 @@
 // workers/processBattlerTasks.js
-const { getRedisClient, addTaskResult } = require('../../redisClient');
+const { addTaskResult } = require('../../redisClient');
 const { getBattlerInstanceById } = require('../../db/queries/battlerInstancesQueries');
 const { getAbilityTemplatesByShortNames } = require('../../db/queries/abilityTemplatesQueries');
 const taskRegistry = require('../../handlers/taskRegistry');
 const logger = require('../../utilities/logger');
 
-const redisClient = getRedisClient();
-
-async function processGetBattlerAbilitiesTask(task) {
+async function processGetBattlerAbilitiesTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { battlerId } = data;
 

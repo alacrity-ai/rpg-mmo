@@ -1,16 +1,18 @@
 const { updateBattlerPosition, updateBattlerHealth, updateBattlerMana, applyStatusEffect, getBattlerInstanceById } = require('../../../db/queries/battlerInstancesQueries');
 const { getCooldownDuration } = require('../../../utilities/helpers');
-const { getRedisClient } = require('../../../redisClient');
-
-const redisClient = getRedisClient();
 
 class BattleActionProcessor {
+    // Constructor which takes a redisClient as an argument
+    constructor(redisClient) {
+        this.redisClient = redisClient;
+    }
+
     /**
      * Process a single battler action.
      * @param {Object} action - The action to process.
      * @returns {Object} The result of processing the action.
      */
-    static async processSingleAction(action) {
+    async processSingleAction(action) {
         switch (action.actionType) {
             case 'ability':
                 return this.processAbilityAction(action);
@@ -28,7 +30,7 @@ class BattleActionProcessor {
      * @param {Object} action - The ability action to process.
      * @returns {Object} The result of processing the ability action.
      */
-    static async processAbilityAction(action) {
+    async processAbilityAction(action) {
         const { actionData } = action;
 
         // Deduct mana cost
@@ -42,7 +44,7 @@ class BattleActionProcessor {
         const currentTime = Date.now();
         const cooldownDuration = getCooldownDuration(actionData.cooldownDuration);
 
-        const cooldownEndTime = await redisClientClient.get(cooldownKey);
+        const cooldownEndTime = await this.redisClient.get(cooldownKey);
         if (cooldownEndTime && currentTime < cooldownEndTime) {
             return {
                 success: false,
@@ -53,7 +55,7 @@ class BattleActionProcessor {
             };
         }
 
-        await redisClient.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
+        await this.redisClient.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
 
         actionData.results = actionData.results || [];
 
@@ -86,7 +88,7 @@ class BattleActionProcessor {
      * @param {number} manaCost - The amount of mana to deduct.
      * @returns {Object} The result of the mana deduction.
      */
-    static async useMana(battlerId, manaCost) {
+    async useMana(battlerId, manaCost) {
         let battler = await getBattlerInstanceById(battlerId);
         if (!battler) {
             return {
@@ -117,7 +119,7 @@ class BattleActionProcessor {
      * @param {number} damage - The amount of damage to apply.
      * @returns {Object} The result of applying the damage.
      */
-    static async doDamage(targetId, damage) {
+    async doDamage(targetId, damage) {
         let target = await getBattlerInstanceById(targetId);
         if (!target) {
             return {
@@ -140,7 +142,7 @@ class BattleActionProcessor {
      * @param {number} healing - The amount of healing to apply.
      * @returns {Object} The result of applying the healing.
      */
-    static async doHealing(targetId, healing) {
+    async doHealing(targetId, healing) {
         let target = await getBattlerInstanceById(targetId);
         if (!target) {
             return {
@@ -163,7 +165,7 @@ class BattleActionProcessor {
      * @param {string} status - The status effect to apply.
      * @returns {Object} The result of applying the status effect.
      */
-    static async applyStatus(targetId, status) {
+    async applyStatus(targetId, status) {
         await applyStatusEffect(targetId, status); // Assume this function applies the status effect to the battler in the database
 
         return {
@@ -177,13 +179,13 @@ class BattleActionProcessor {
      * @param {Object} action - The move action to process.
      * @returns {Object} The result of processing the move action.
      */
-    static async processMoveAction(action) {
+    async processMoveAction(action) {
         const team = action.actionData.team || 'enemy';
         const cooldownKey = `cooldown:${action.battlerId}`;
         const currentTime = Date.now();
 
         // Check cooldown from redisClient
-        const cooldownEndTime = await redisClient.get(cooldownKey);
+        const cooldownEndTime = await this.redisClient.get(cooldownKey);
 
         if (cooldownEndTime && currentTime < cooldownEndTime) {
             return {
@@ -214,7 +216,7 @@ class BattleActionProcessor {
         
         // Set cooldown in redisClient
         const cooldownDuration = getCooldownDuration('short'); // Uses the short cooldown duration for movement
-        await redisClient.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration - 100);
+        await this.redisClient.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration - 100);
 
         return {
             success: true,
@@ -230,7 +232,7 @@ class BattleActionProcessor {
      * @param {Object} action - The item action to process.
      * @returns {Object} The result of processing the item action.
      */
-    static async processItemAction(action) {
+    async processItemAction(action) {
         // Simulate processing item action
         // TODO: Implement the actual business logic
         return {
