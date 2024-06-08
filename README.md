@@ -52,11 +52,6 @@ This project combines a graphical client, server, and database to create a fully
 
 ## Developer Guide
 
-### Env file
-
-1. Rename .env.example to .env
-2. For local dev testing, the .env.example values will work out of the box
-
 ### Instantiating the Database for Testing
 
 1. Navigate to the `database` folder: `cd database`
@@ -88,6 +83,26 @@ This project combines a graphical client, server, and database to create a fully
 
 **Note**: Ensure you have Docker installed on your system.
 
+
+### Running the Server
+
+1. Navigate to the `server` folder:
+    
+    `cd server`
+    
+2. Install the necessary dependencies:
+    
+    `npm install` or for docker `make build`
+    
+4. Reference the .env.example file (rename to .env)
+
+    The .env.example file will work out of the box if renamed to .env
+     
+5. Start the server:
+    
+    `npm start` or for docker `make start`
+
+
 ### Running the worker service
 
 At least one instance of the worker service must be running in order for any backend jobs to get done.
@@ -100,32 +115,14 @@ At least one instance of the worker service must be running in order for any bac
 
    `npm install`
 
-3. Start the worker.
+3. Reference the .env.example file (rename to .env)
+
+    The .env.example file will work out of the box if renamed to .env
+
+4. Start the worker.
 
    `npm run worker` or for docker, `make start-worker`
 
-### Running the Server
-
-1. Navigate to the `server` folder:
-    
-    `cd server`
-    
-2. Install the necessary dependencies:
-    
-    `npm install` or for docker `make build`
-    
-3. Ensure you have a `.env` file in the `server` directory with the following content:
-    
-```
-DB_HOST=127.0.0.1
-DB_USER=root
-DB_PASSWORD=rootpassword
-DB_NAME=testdb
-```
-    
-4. Start the server:
-    
-    `npm start` or for docker `make start`
 
 ### Running the Client
 
@@ -137,11 +134,11 @@ DB_NAME=testdb
     
     `npm install` or for docker `make build`
     
-3. Ensure you have a `.env` file in the `client` directory with the following content:
+4. Reference the .env.example file (rename to .env)
+
+    The .env.example file will work out of the box if renamed to .env
     
-    `VITE_SERVER_URL=http://localhost:3000`
-    
-4. Start the client:
+5. Start the client:
     
     `npm start` or for docker `make start`
     
