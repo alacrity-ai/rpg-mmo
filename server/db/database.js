@@ -176,9 +176,12 @@ async function initTables() {
       current_stats JSON,
       abilities JSON,
       current_area_id INT,
+      previous_area_id INT,
+      current_town_key VARCHAR(255),
       flags JSON,
       FOREIGN KEY (user_id) REFERENCES users(id),
-      FOREIGN KEY (current_area_id) REFERENCES area_instances(id)
+      FOREIGN KEY (current_area_id) REFERENCES area_instances(id),
+      FOREIGN KEY (previous_area_id) REFERENCES area_instances(id)
     )`,
     `CREATE TABLE IF NOT EXISTS npc_dialogue_instances (
       id INT AUTO_INCREMENT PRIMARY KEY,

@@ -48,6 +48,8 @@ async function getCharacterById(id) {
       currentStats: rows[0].current_stats,
       abilities: rows[0].abilities,
       current_area_id: rows[0].current_area_id,
+      previous_area_id: rows[0].previous_area_id,
+      current_town_key: rows[0].current_town_key,
       flags: rows[0].flags
     });
   }
@@ -68,6 +70,8 @@ async function getCharacterByName(name) {
       currentStats: rows[0].current_stats,
       abilities: rows[0].abilities,
       current_area_id: rows[0].current_area_id,
+      previous_area_id: rows[0].previous_area_id,
+      current_town_key: rows[0].current_town_key,
       flags: rows[0].flags
     });
   }
@@ -89,6 +93,8 @@ async function getCharacter(userId, characterName) {
       currentStats: rows[0].current_stats,
       abilities: rows[0].abilities,
       current_area_id: rows[0].current_area_id,
+      previous_area_id: rows[0].previous_area_id,
+      current_town_key: rows[0].current_town_key,
       flags: rows[0].flags
     });
   }
@@ -110,6 +116,8 @@ async function getCharactersByUser(userId) {
         currentStats: row.current_stats,
         abilities: row.abilities,
         current_area_id: row.current_area_id,
+        previous_area_id: row.previous_area_id,
+        current_town_key: row.current_town_key,
         flags: row.flags
       });
     } catch (err) {
@@ -158,6 +166,8 @@ async function getCharactersByIds(characterIds) {
     currentStats: row.current_stats,
     abilities: row.abilities,
     current_area_id: row.current_area_id,
+    previous_area_id: row.previous_area_id,
+    current_town_key: row.current_town_key,
     flags: row.flags
   }));
 }

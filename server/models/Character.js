@@ -15,9 +15,11 @@ class Character {
    * @param {Object} params.currentStats - The current stats of the character.
    * @param {Array} params.abilities - The list of abilities the character has.
    * @param {number} params.current_area_id - The ID of the current area the character is in.
+   * @param {number} params.previous_area_id - The ID of the previous area the character was in.
+   * @param {string} params.current_town_key - The key of the current town the character is in.
    * @param {Object} params.flags - An object representing the flags with key-value pairs.
    */
-  constructor({ id, user_id, name, characterClass, baseStats, currentStats, abilities, current_area_id, flags }) {
+  constructor({ id, user_id, name, characterClass, baseStats, currentStats, abilities, current_area_id, previous_area_id, current_town_key, flags }) {
     this.id = id;
     this.userId = user_id;
     this.name = name;
@@ -26,6 +28,8 @@ class Character {
     this.currentStats = currentStats;
     this.abilities = abilities;
     this.currentAreaId = current_area_id;
+    this.previousAreaId = previous_area_id;
+    this.currentTownKey = current_town_key;
     this.flags = flags;
   }
 }
@@ -44,6 +48,8 @@ module.exports = Character;
  *   currentStats: { strength: 10, wisdom: 15, intelligence: 8, health: 100, mana: 50 },
  *   abilities: ['rogueAttack', 'backstab', 'shadowDance'],
  *   current_area_id: 1,
+ *   previous_area_id: 0,
+ *   current_town_key: 'Eldergrove',
  *   flags: { Boss1: '1', QuestXYZProgress: '3', SwordofTruthQuest: '3' }
  * });
  */
