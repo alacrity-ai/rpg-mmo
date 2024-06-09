@@ -68,7 +68,13 @@ class SocketManager {
     console.log(inviteMessage);
 
     if (this.currentScene) {
+      // if an invitationMenu is already open, do not create a new one
+      if (this.currentScene.partyInvitationMenu) {
+        console.log('Party invitation menu already open.');
+        return;
+      } 
       const invitationMenu = new PartyInvitationMenu(this.currentScene, data.invitedBy, data.partyId);
+      this.currentScene.partyInvitationMenu = invitationMenu;
     } else {
       console.warn('No current scene set. Unable to show party invite menu.');
     }

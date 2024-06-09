@@ -6,6 +6,9 @@
     - [ ] Character can join an in progress battle instance
     - [ ] Characters movements are updated across all the clients in battle instance
     - [ ] Character leaving a party updates the party list in realtime.
+    - [ ] Characters disconnect in battle, Plan how to handle this.
+        - [ ] We can redo party logic to reconstitute the party on disconnect?
+    - [ ] Fix party leave so that not only the healthbars dissappear on party member leaving/disconnecting
 
 - [ ] Redo Hotbar Menu (bottom left) Using menu system
     - [ ] Leverage the menu system

@@ -21,11 +21,20 @@ module.exports = (socket, io, redisClient) => {
       callback({ error: 'User not logged in.' });
       return;
     }
+
     const taskData = { userId: socket.user.id, ...data };
     enqueueTask(redisClient, 'loginCharacter', taskData, (response) => {
       if (response.success) {
+        const characterId = response.data.id;
+        
+        // Check if the character is already logged in
+        if (socketManager.getSocketByCharacterId(characterId)) {
+          callback({ error: 'Character already logged in.' });
+          return;
+        }
+
         socket.character = {
-          id: response.data.id,
+          id: characterId,
           name: response.data.name
         };
         // Register the socket with the character ID in SocketManager
