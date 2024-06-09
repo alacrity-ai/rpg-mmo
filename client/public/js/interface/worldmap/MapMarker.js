@@ -56,8 +56,15 @@ export default class MapMarker {
         this.marker.on('pointerdown', () => {
             SoundFXManager.playSound('assets/sounds/footstep_chain.wav');
             if (this.type === 'blue' || this.type === 'gold') {
-                // Transition to the specified scene
-                fadeTransition(this.scene, sceneKey);
+                api.zone.requestTownAccess(this.sceneKey)
+                    .then((response) => {
+                        console.log('Town access response:', response);
+                        // Transition to the specified scene
+                        fadeTransition(this.scene, sceneKey);
+                    })
+                    .catch((error) => {
+                        console.error('Error requesting town access:', error);
+                    });
             } else if (this.type === 'green') {
                 // Call the requestZone api endpoint
                 api.zone.requestZone(this.sceneKey)

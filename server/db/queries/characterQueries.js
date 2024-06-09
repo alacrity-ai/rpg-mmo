@@ -1,7 +1,7 @@
 const { query } = require('../database');
 const Character = require('../../models/Character');
 const { getClassTemplateByName } = require('./classTemplatesQueries');
-const { classStartingAbilitiesMap } = require('../data/characterStartingAbilities');
+const { classStartingAbilitiesMap, characterStartingFlagsMap } = require('../data/initial_values/characterStartingValues');
 
 async function createCharacter(userId, characterName, characterClass) {
   const lowerCaseCharacterName = characterName.toLowerCase();
@@ -26,10 +26,12 @@ async function createCharacter(userId, characterName, characterClass) {
     throw new Error(`Abilities not found for class: ${lowerCaseCharacterClass}`);
   }
 
+  const flags = characterStartingFlagsMap;
+
   const baseStats = JSON.stringify(classTemplate.baseStats);
 
   const sql = 'INSERT INTO characters (user_id, name, class, base_stats, current_stats, abilities, flags) VALUES (?, ?, ?, ?, ?, ?, ?)';
-  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats, JSON.stringify(abilities), JSON.stringify({})];
+  const params = [userId, lowerCaseCharacterName, lowerCaseCharacterClass, baseStats, baseStats, JSON.stringify(abilities), JSON.stringify(flags)];
   const result = await query(sql, params);
   return result.insertId;
 }
@@ -178,6 +180,30 @@ async function updateCharacterFlags(characterId, flags) {
   await query(sql, params);
 }
 
+async function updateCharacterCurrentAreaId(characterId, areaId) {
+  const sql = 'UPDATE characters SET current_area_id = ? WHERE id = ?';
+  const params = [areaId, characterId];
+  await query(sql, params);
+}
+
+async function updateCharacterPreviousAreaId(characterId, areaId) {
+  const sql = 'UPDATE characters SET previous_area_id = ? WHERE id = ?';
+  const params = [areaId, characterId];
+  await query(sql, params);
+}
+
+async function updateCharacterCurrentTownKey(characterId, townKey) {
+  const sql = 'UPDATE characters SET current_town_key = ? WHERE id = ?';
+  const params = [townKey, characterId];
+  await query(sql, params);
+}
+
+async function updateCharacterAreas(characterId, currentAreaId, previousAreaId) {
+  const sql = 'UPDATE characters SET current_area_id = ?, previous_area_id = ? WHERE id = ?';
+  const params = [currentAreaId, previousAreaId, characterId];
+  await query(sql, params);
+}
+
 async function updateCharacterFlag(characterId, flag, value) {
   const character = await getCharacterById(characterId);
   if (!character) throw new Error(`Character with ID ${characterId} not found`);
@@ -225,5 +251,9 @@ module.exports = {
   addCharacterFlag,
   removeCharacterFlag,
   updateCharacterFlag,
-  getCharacterFlags
+  getCharacterFlags,
+  updateCharacterCurrentAreaId,
+  updateCharacterPreviousAreaId,
+  updateCharacterCurrentTownKey,
+  updateCharacterAreas
 };

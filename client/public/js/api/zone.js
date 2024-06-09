@@ -36,8 +36,34 @@ const requestArea = (currentAreaId, targetAreaId) => {
   });
 };
 
+const requestTownAccess = (sceneKey) => {
+  return new Promise((resolve, reject) => {
+    socketManager.getSocket().emit('requestTownAccess', { sceneKey }, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
+const requestWorldmap = () => {
+  return new Promise((resolve, reject) => {
+    socketManager.getSocket().emit('requestWorldmap', {}, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
 export default {
   requestZone,
   requestArea,
+  requestTownAccess,
   getCurrentZone,
+  requestWorldmap
 };

@@ -2,10 +2,57 @@
 const { addTaskResult } = require('../../db/cache/client/RedisClient');
 const taskRegistry = require('./registry/taskRegistry');
 const { createExpeditionZone } = require('../../services/expeditions/zoneCreator');
+const { updateCharacterCurrentAreaId, updateCharacterAreas, getCharacterFlags } = require('../../db/queries/characterQueries');
 const { getZoneTemplateBySceneKey } = require('../../db/queries/zoneTemplatesQueries');
+const { mapMarkers } = require('../../db/data/worldmap_locations/worldMapLocations')
 const { getAreaInstanceById, updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
 const logger = require('../../utilities/logger');
 
+
+async function processRequestWorldmapTask(task, redisClient) {
+  const { taskId, data } = task.taskData;
+  const { userId, characterId } = data;
+
+  try {
+    // Fetch the character's flags
+    const characterFlags = await getCharacterFlags(characterId);
+
+    // Filter the mapMarkersMap to only include the markers that the character has unlocked
+    const filteredMapMarkersMap = mapMarkers.filter(marker => {
+      const unlockFlag = `${marker.sceneKey}Unlocked`;
+      return characterFlags[unlockFlag] === 1;
+    });
+
+    const result = { success: true, data: { filteredMapMarkersMap } };
+    await addTaskResult(redisClient, taskId, result);
+  } catch (error) {
+    const result = { success: false, error: 'Failed to request worldmap. ' + error.message };
+    logger.error(`Worldmap request failed for task ${taskId}: ${error.message}`);
+    await addTaskResult(redisClient, taskId, result);
+  }
+}
+
+async function processRequestTownAccess(task, redisClient) {
+  const { taskId, data } = task.taskData;
+  const { userId, characterId, sceneKey } = data;
+
+  try {
+    // Fetch the character's flags
+    const characterFlags = await getCharacterFlags(characterId);
+
+    // Check the town access flag
+    if (!characterFlags[`${sceneKey}Unlocked`]) {
+      throw new Error(`Character ${characterId} does not have access to town ${sceneKey}.`);
+    }
+
+    const result = { success: true, data: { sceneKey } };
+    await addTaskResult(redisClient, taskId, result);
+  } catch (error) {
+    const result = { success: false, error: 'Failed to request town access. ' + error.message };
+    logger.error(`Town access request failed for task ${taskId}: ${error.message}`);
+    await addTaskResult(redisClient, taskId, result);
+  }
+}
 
 async function processRequestZoneTask(task, redisClient) {
   const { taskId, data } = task.taskData;
@@ -41,6 +88,9 @@ async function processRequestZoneTask(task, redisClient) {
     if (!areaInstance) {
       throw new Error(`Area instance with ID ${firstAreaId} not found.`);
     }
+
+    // Update the player's current area ID
+    updateCharacterCurrentAreaId(characterId, firstAreaId);
 
     const result = { success: true, data: { areaInstance } };
     await addTaskResult(redisClient, taskId, result);
@@ -82,11 +132,15 @@ async function processRequestAreaTask(task, redisClient) {
 
     // Mark the current area as explored
     currentAreaInstance.explored = true;
+
     try {
       await updateAreaInstance(currentAreaId, currentAreaInstance);
     } catch (error) {
       throw new Error(`Failed to update current area instance with ID ${currentAreaId}. ${error.message}`);
     }
+
+    // Update character with current and previous area ids
+    updateCharacterAreas(characterId, targetAreaId, currentAreaId);
 
     const result = { success: true, data: { areaInstance: targetAreaInstance } };
     await addTaskResult(redisClient, taskId, result);
@@ -100,8 +154,12 @@ async function processRequestAreaTask(task, redisClient) {
 // Register task handlers
 taskRegistry.register('requestZone', processRequestZoneTask);
 taskRegistry.register('requestArea', processRequestAreaTask);
+taskRegistry.register('requestTownAccess', processRequestTownAccess);
+taskRegistry.register('requestWorldmap', processRequestWorldmapTask);
 
 module.exports = {
   processRequestZoneTask,
   processRequestAreaTask,
+  processRequestTownAccess,
+  processRequestWorldmapTask
 };

@@ -1,12 +1,13 @@
 // scenes/WorldmapScene.js
 import Phaser from 'phaser';
-import { mapMarkers, indexFromSceneKey } from '../interface/worldmap/MapMarkers.js';
+import { indexFromSceneKey } from '../interface/worldmap/MapMarkers.js';
 import MapMarker from '../interface/worldmap/MapMarker.js';
 import CustomCursor from '../interface/CustomCursor.js';
 import WorldmapZoomMenu from '../interface/menu/WorldmapZoomMenu.js';
 import Debug from '../interface/Debug.js';
 import FogEffect from '../graphics/FogEffect.js';
 import SoundFXManager from '../audio/SoundFXManager.js';
+import api from '../api';
 
 export default class WorldmapScene extends Phaser.Scene {
     constructor() {
@@ -17,6 +18,7 @@ export default class WorldmapScene extends Phaser.Scene {
         this.mapOffsetY = 0;
         this.innerPadding = 0; // Adjust padding as needed
         this.currentState = 'zoomed'; // Default state
+        this.mapMarkers = [];
     }
 
     init(data) {
@@ -31,6 +33,16 @@ export default class WorldmapScene extends Phaser.Scene {
         this.load.image('mapmarker_blue', 'assets/images/ui/worldmap/mapmarker_blue.png');
         this.load.image('mapmarker_red', 'assets/images/ui/worldmap/mapmarker_red.png');
         this.load.image('mapmarker_gold', 'assets/images/ui/worldmap/mapmarker_gold.png');
+
+        // Load server settings
+        api.zone.requestWorldmap()
+        .then((response) => {
+            this.mapMarkers = response.filteredMapMarkersMap;
+            console.log(this.mapMarkers);
+        })
+        .catch((error) => {
+            console.error('Error getting server settings:', error);
+        });
     }
 
     create() {
@@ -50,11 +62,11 @@ export default class WorldmapScene extends Phaser.Scene {
         this.markers = [];
 
         // Calculate initial position for zooming in on the user's current location
-        const marker = mapMarkers[this.currentLocationIndex];
+        const marker = this.mapMarkers[this.currentLocationIndex];
         this.zoomToLocation(marker.x, marker.y);
 
         // Render map markers
-        this.markers = mapMarkers.map(markerData => {
+        this.markers = this.mapMarkers.map(markerData => {
             if (markerData.sceneKey === this.registry.get('currentSceneKey')) {
                 return new MapMarker(this, markerData.x, markerData.y, 'gold', markerData.text, markerData.sceneKey);
             } else {
@@ -177,7 +189,7 @@ export default class WorldmapScene extends Phaser.Scene {
         this.fogEffect.hide();
 
         // Zoom in on the user's current location
-        const marker = mapMarkers[this.currentLocationIndex];
+        const marker = this.mapMarkers[this.currentLocationIndex];
         this.zoomToLocation(marker.x, marker.y);
     }
 

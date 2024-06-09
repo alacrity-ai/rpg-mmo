@@ -55,4 +55,46 @@ module.exports = (socket, io, redisClient) => {
       }
     });
   });
+
+  socket.on('requestTownAccess', async (data, callback) => {
+    if (!socket.character || !socket.character.id) {
+      callback({ error: 'Character not logged in.' });
+      return;
+    }
+
+    const { sceneKey } = data;
+    const taskData = { 
+      userId: socket.user.id, 
+      characterId: socket.character.id, 
+      sceneKey
+    };
+
+    enqueueTask(redisClient, 'requestTownAccess', taskData, (response) => {
+      if (response.error) {
+        callback({ error: response.error });
+      } else {
+        callback({ data: response.data });
+      }
+    });
+  });
+
+  socket.on('requestWorldmap', async (data, callback) => {
+    if (!socket.character || !socket.character.id) {
+      callback({ error: 'Character not logged in.' });
+      return;
+    }
+
+    const taskData = { 
+      userId: socket.user.id, 
+      characterId: socket.character.id
+    };
+
+    enqueueTask(redisClient, 'requestWorldmap', taskData, (response) => {
+      if (response.error) {
+        callback({ error: response.error });
+      } else {
+        callback({ data: response.data });
+      }
+    });
+  });
 };
