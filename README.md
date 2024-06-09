@@ -12,6 +12,7 @@ This project is an MMO (Massively Multiplayer Online) game that combines a graph
 1. Clone the repository
 2. Navigate to the repository folder you just cloned
 3. Start the all services with docker-compose, with command: `make up`
+4. Open your preferred browser and navigate to `localhost:8000`
 
 **NOTE**: Docker/Docker Desktop must be installed
 
