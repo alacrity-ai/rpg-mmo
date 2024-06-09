@@ -2,12 +2,48 @@
 const { addTaskResult } = require('../../db/cache/client/RedisClient');
 const taskRegistry = require('./registry/taskRegistry');
 const { createExpeditionZone } = require('../../services/expeditions/zoneCreator');
-const { updateCharacterCurrentAreaId, updateCharacterAreas, getCharacterFlags } = require('../../db/queries/characterQueries');
+const { getCharacterById, updateCharacterCurrentAreaId, updateCharacterAreas, getCharacterFlags } = require('../../db/queries/characterQueries');
 const { getZoneTemplateBySceneKey } = require('../../db/queries/zoneTemplatesQueries');
 const { mapMarkers } = require('../../db/data/worldmap_locations/worldMapLocations')
 const { getAreaInstanceById, updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
 const logger = require('../../utilities/logger');
 
+
+async function processRequestRetreatTask(task, redisClient) {
+  const { taskId, data } = task.taskData;
+  const { zoneId, userId, characterId, partyId } = data;
+
+  try {
+    // Fetch the character's previous area ID
+    const character = await getCharacterById(characterId);
+    if (!character) {
+      throw new Error(`Character with ID ${characterId} not found.`);
+    }
+
+    const previousAreaId = character.previousAreaId;
+    if (!previousAreaId) {
+      throw new Error(`Character with ID ${characterId} does not have a previous area ID.`);
+    }
+
+    const currentAreaId = character.currentAreaId;
+    if (!currentAreaId) {
+      throw new Error(`Character with ID ${characterId} does not have a current area ID.`);
+    }
+
+    // Update the character's current area ID to the previous area ID
+    updateCharacterAreas(characterId, previousAreaId, currentAreaId)
+
+    // Get the area instance data for the previous area
+    const areaInstance = await getAreaInstanceById(previousAreaId);
+
+    const result = { success: true, data: { previousAreaId, zoneId, areaInstance } };
+    await addTaskResult(redisClient, taskId, result);
+  } catch (error) {
+    const result = { success: false, error: 'Failed to request retreat. ' + error.message };
+    logger.error(`Retreat request failed for task ${taskId}: ${error.message}`);
+    await addTaskResult(redisClient, taskId, result);
+  }
+}
 
 async function processRequestWorldmapTask(task, redisClient) {
   const { taskId, data } = task.taskData;
@@ -156,10 +192,12 @@ taskRegistry.register('requestZone', processRequestZoneTask);
 taskRegistry.register('requestArea', processRequestAreaTask);
 taskRegistry.register('requestTownAccess', processRequestTownAccess);
 taskRegistry.register('requestWorldmap', processRequestWorldmapTask);
+taskRegistry.register('requestRetreat', processRequestRetreatTask);
 
 module.exports = {
   processRequestZoneTask,
   processRequestAreaTask,
   processRequestTownAccess,
-  processRequestWorldmapTask
+  processRequestWorldmapTask,
+  processRequestRetreatTask
 };

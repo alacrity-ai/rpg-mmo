@@ -60,10 +60,23 @@ const requestWorldmap = () => {
   });
 };
 
+const requestRetreat = () => {
+  return new Promise((resolve, reject) => {
+    socketManager.getSocket().emit('requestRetreat', {}, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+};
+
 export default {
   requestZone,
   requestArea,
   requestTownAccess,
   getCurrentZone,
-  requestWorldmap
+  requestWorldmap,
+  requestRetreat
 };

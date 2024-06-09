@@ -2,6 +2,7 @@ import { BaseMenu } from './BaseMenu.js';
 import api from '../../api';
 import { fadeTransition } from '../../scenes/utils/SceneTransitions.js';
 import BattleScene from '../../scenes/BattleScene.js';
+import AreaScene from '../../scenes/AreaScene.js';
 
 export default class EncounterPromptMenu extends BaseMenu {
     constructor(scene, areaInstanceId, width = 400, height = 300) {
@@ -55,6 +56,23 @@ export default class EncounterPromptMenu extends BaseMenu {
     retreat() {
         // Placeholder function for retreating
         console.log('Retreating from this area:', this.areaInstanceId);
+        api.zone.requestRetreat()
+        .then((response) => {
+            // Construct the areaKey from the response
+            console.log(response);
+            const { zoneId, previousAreaId, areaInstance } = response;
+            const areaKey = `AreaScene_${zoneId}_${previousAreaId}`;
+            // const areaInstanceData = response.areaInstance;
+
+            const areaScene = new AreaScene(areaKey, areaInstance);
+            this.scene.scene.add(areaKey, areaScene, false);
+
+            // Use the fadeTransition to go to the new scene
+            fadeTransition(this.scene, areaKey);
+        })
+        .catch((error) => {
+            console.error('Error requesting zone:', error);
+        });
         this.hide();
     }
 }

@@ -23,6 +23,7 @@ module.exports = (socket, io, redisClient) => {
       if (response.error) {
         callback({ error: response.error });
       } else {
+        socket.character.zoneId = response.data.zoneInstanceId;
         callback({ data: response.data });
       }
     });
@@ -90,6 +91,28 @@ module.exports = (socket, io, redisClient) => {
     };
 
     enqueueTask(redisClient, 'requestWorldmap', taskData, (response) => {
+      if (response.error) {
+        callback({ error: response.error });
+      } else {
+        callback({ data: response.data });
+      }
+    });
+  });
+
+  socket.on('requestRetreat', async (data, callback) => {
+    if (!socket.character || !socket.character.id) {
+      callback({ error: 'Character not logged in.' });
+      return;
+    }
+
+    const taskData = { 
+      userId: socket.user.id, 
+      characterId: socket.character.id, 
+      partyId: socket.party.id,
+      zoneId: socket.character.zoneId
+    };
+
+    enqueueTask(redisClient, 'requestRetreat', taskData, (response) => {
       if (response.error) {
         callback({ error: response.error });
       } else {
