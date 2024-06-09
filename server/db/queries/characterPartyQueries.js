@@ -67,10 +67,26 @@ async function getCharactersInParty(partyId) {
   return characters;
 }
 
+async function getPartyByCharacterId(characterId) {
+  const sql = 'SELECT * FROM character_parties';
+  const rows = await query(sql);
+  for (const row of rows) {
+    const party = new CharacterParty({
+      id: row.id,
+      members: row.party_members.members,
+    });
+    if (party.members.some(member => member.character_id === characterId)) {
+      return party;
+    }
+  }
+  return null;
+}
+
 module.exports = {
   createCharacterParty,
   getCharacterParty,
   addMemberToParty,
   removeMemberFromParty,
-  getCharactersInParty
+  getCharactersInParty,
+  getPartyByCharacterId
 };

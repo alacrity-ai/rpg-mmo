@@ -24,9 +24,9 @@ const getParty = () => {
   });
 };
 
-const inviteToParty = (playerId) => {
+const inviteToParty = (invitedCharacterName) => {
   return new Promise((resolve, reject) => {
-    socketManager.socket.emit('inviteToParty', { playerId }, (response) => {
+    socketManager.socket.emit('inviteToParty', { invitedCharacterName }, (response) => {
       if (response.error) {
         reject(response.error);
       } else {
@@ -36,8 +36,21 @@ const inviteToParty = (playerId) => {
   });
 };
 
+const respondToPartyInvite = (partyId, accept) => {
+  return new Promise((resolve, reject) => {
+    socketManager.socket.emit('respondToPartyInvite', { partyId, accept }, (response) => {
+      if (response.error) {
+        reject(response.error);
+      } else {
+        resolve(response.data);
+      }
+    });
+  });
+}
+
 export default {
   createParty,
   getParty,
   inviteToParty,
+  respondToPartyInvite
 };

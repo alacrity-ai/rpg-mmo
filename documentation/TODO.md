@@ -1,13 +1,22 @@
 # TODOS
 
+- [ ] Multiplayer Testing
+    - [ ] Characters in same party should go to same area instance
+    - [ ] Characters in same party should go to same battle instance
+    - [ ] Character can join an in progress battle instance
+    - [ ] Characters movements are updated across all the clients in battle instance
+    - [ ] Character leaving a party updates the party list in realtime.
+
 - [ ] Redo Hotbar Menu (bottom left) Using menu system
     - [ ] Leverage the menu system
     - [ ] Add the tween growth of icons to the menu iconButton class as optional argument
     - [ ] Add hover sound effect as optional argument
 
+- [x] Implement Party Invites
+
 - [x] Redo Character Portrait Menu
 
-- [ ] Create Battler "Portrait" Menu.
+- [x] Create Battler "Portrait" Menu.
     - Take a battler.
     - Determines if player or npc
     - Displays npc sprite, or player portrait
@@ -47,11 +56,10 @@
     - Implement any additional cleanup logic needed for battle instances.
     - Ensure proper health and mana updates for characters after a battle.
 
-- [ ] Basic Multiplayer Testing:
+- [x] Basic Multiplayer Testing:
 
     - Ensure that two separate accounts can have their own instances and combat scenarios.
     - Add basic party invite functionality to join characters into one party.
-    - Verify that partied characters share the same area instance and combat encounter.
 
 
 6/2/2024

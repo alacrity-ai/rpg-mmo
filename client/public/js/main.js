@@ -39,7 +39,7 @@ const config = {
     audio: {
         disableWebAudio: false
     },
-    pixelArt: false, // Ensures pixel art is rendered without smoothing
+    pixelArt: false // Ensures pixel art is rendered without smoothing
 };
 
 // Disable the context menu on right-click
@@ -60,6 +60,12 @@ socketManager.connect(url).then(async () => {
     
     // Create a new Phaser game instance after the socket connection is established
     const game = new Phaser.Game(config);
+
+    game.events.on('changeScene', (sceneKey) => {
+        // Get the scene object by key
+        const scene = game.scene.getScene(sceneKey);
+        socketManager.setCurrentScene(scene);
+    });
 
 }).catch((err) => {
     console.error('Failed to connect to the server, cannot start the game.', err);

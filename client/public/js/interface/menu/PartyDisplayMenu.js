@@ -23,7 +23,8 @@ export default class PartyDisplayMenu extends BaseMenu {
     async loadPartyData() {
         // Fetch the party data
         try {
-            this.characters = await api.party.getParty();
+            const response = await api.party.getParty();
+            this.characters = response.characters;
             this.renderParty();
         } catch (error) {
             console.error('Error loading party data:', error);
@@ -43,7 +44,7 @@ export default class PartyDisplayMenu extends BaseMenu {
         this.resourceBars = [];
 
         // Calculate spacing based on the number of characters
-        const portraitSpacing = 70; // Adjust this value as needed for spacing between portraits
+        const portraitSpacing = 110; // Adjust this value as needed for spacing between portraits
         const barSpacing = 10; // Spacing between the portrait and the bars
         this.characters.forEach((character, index) => {
             const atlasImagePath = `assets/images/characters/${character.characterClass}/portrait/atlas.png`;
@@ -53,7 +54,7 @@ export default class PartyDisplayMenu extends BaseMenu {
 
             // Calculate positions for the resource bars to be centered to the right of the portrait
             const barX = posX + 50; // Adjust as needed for positioning to the right of the portrait
-            const barY = posY + portraitSpacing - 106; // Center the bars vertically against the portrait
+            const barY = posY - 36; // Center the bars vertically against the portrait
 
             // Display resource bars
             const resourceBars = new ResourceBars(this.scene, barX, barY, character.baseStats.health, character.baseStats.mana);

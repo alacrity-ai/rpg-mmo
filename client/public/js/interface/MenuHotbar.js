@@ -1,5 +1,6 @@
 import SoundFXManager from '../audio/SoundFXManager.js';
 import { fadeTransition } from '../scenes/utils/SceneTransitions.js';
+import PartyInviteMenu from './menu/PartyInviteMenu.js';
 
 export function createHotbar(scene, iconHelper) {
     // Define a list of icon names to be used in the hotbar with corresponding sound paths
@@ -12,6 +13,7 @@ export function createHotbar(scene, iconHelper) {
     ];
 
     const hoverSound = 'assets/sounds/menu/highlight.wav';
+    let partyInviteMenu; // Declare partyInviteMenu variable
 
     // Create hotbar buttons with icons
     icons.forEach((icon, index) => {
@@ -27,6 +29,18 @@ export function createHotbar(scene, iconHelper) {
             // Check if the icon has a sceneKey and start the scene if it does
             if (icon.sceneKey) {
                 fadeTransition(scene, icon.sceneKey);
+            }
+
+            // Check if the 'speech-bubbles' icon is clicked
+            if (icon.name === 'speech-bubbles') {
+                // If partyInviteMenu already exists, just show it
+                if (partyInviteMenu) {
+                    partyInviteMenu.show();
+                } else {
+                    // Instantiate PartyInviteMenu
+                    partyInviteMenu = new PartyInviteMenu(scene);
+                    // scene.add.existing(partyInviteMenu);
+                }
             }
 
             // Implement additional submenu logic here

@@ -1,5 +1,5 @@
-// handlers/api/characterHandler.js
 const { enqueueTask } = require('../db/cache/utility/taskUtils');
+const socketManager = require('./utils/SocketManager'); // Adjust the import path if necessary
 
 module.exports = (socket, io, redisClient) => {
   socket.on('characterList', async (data, callback) => {
@@ -16,7 +16,6 @@ module.exports = (socket, io, redisClient) => {
     enqueueTask(redisClient, 'createCharacter', taskData, callback);
   });
 
-
   socket.on('loginCharacter', async (data, callback) => {
     if (!socket.user || !socket.user.id) {
       callback({ error: 'User not logged in.' });
@@ -29,6 +28,8 @@ module.exports = (socket, io, redisClient) => {
           id: response.data.id,
           name: response.data.name
         };
+        // Register the socket with the character ID in SocketManager
+        socketManager.registerSocket(socket, socket.character.id);
       }
       callback(response);
     });
@@ -36,5 +37,12 @@ module.exports = (socket, io, redisClient) => {
 
   socket.on('classList', async (data, callback) => {
     enqueueTask(redisClient, 'classList', {}, callback);
+  });
+
+  socket.on('disconnect', () => {
+    if (socket.character && socket.character.id) {
+      // Unregister the socket from SocketManager when the socket disconnects
+      socketManager.unregisterSocket(socket.character.id);
+    }
   });
 };

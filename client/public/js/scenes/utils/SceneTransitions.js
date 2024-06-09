@@ -16,6 +16,9 @@ export function fadeTransition(currentScene, newSceneKey, speed = 500, color = 0
             // Run the previous scene cleanup logic
             currentScene.cleanup();
 
+            // Emit a global event to notify scene change including the new scene key
+            currentScene.game.events.emit('changeScene', newSceneKey);
+
             // When the fade out is complete, start the new scene
             currentScene.scene.start(newSceneKey);
             // Add the fade-in effect to the new scene
