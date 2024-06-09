@@ -16,7 +16,7 @@ export default class CharacterRenderer {
             idle: 20,
             attack: 4,
             cast: 5,
-            death: 7,
+            die: 7,
             hit: 2,
             talk: 44
         };

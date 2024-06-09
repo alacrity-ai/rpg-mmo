@@ -181,7 +181,7 @@ async function createBattlerInstancesFromCharacterIds(characterIds) {
                 abilities: character.abilities,
                 script_path: null,
                 script_speed: null,
-                sprite_path: `assets/images/characters/${character.characterClass}/combat/atlas.png`,
+                sprite_path: `assets/images/characters/${character.characterClass}`,
                 grid_position: [1, 1],
                 last_action_time: new Date(),
                 time_created: new Date(),

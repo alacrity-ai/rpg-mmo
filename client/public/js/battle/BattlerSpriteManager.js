@@ -1,27 +1,24 @@
 import { atlasToSprite } from '../graphics/AtlasTools.js';
 
 class BattlerSpriteManager {
-    static async loadSprite(scene, battlerData) {
-        const spritePath = battlerData.spritePath;
-        if (spritePath.endsWith('atlas.png')) {
+    static async loadSprites(scene, battlerData) {
+        const basePath = battlerData.spritePath;
+        const animationTypes = ['attack', 'cast', 'combat', 'die', 'hit', 'idle', 'run'];
+        const spriteConfigs = {};
+
+        for (const animationType of animationTypes) {
+            const spritePath = `${basePath}/${animationType}/atlas.png`;
             // Use AtlasTools to load the atlas and create an animation
-            return await atlasToSprite(scene, spritePath);
-        } else {
-            // Load the image normally
-            if (!scene.textures.exists(spritePath)) {
-                await new Promise((resolve, reject) => {
-                    scene.load.image(spritePath, spritePath);
-                    scene.load.once('complete', resolve);
-                    scene.load.once('loaderror', reject);
-                    scene.load.start();
-                });
-            }
-            return null; // No special config needed for single image sprites
+            const spriteConfig = await atlasToSprite(scene, spritePath);
+            spriteConfigs[animationType] = spriteConfig;
         }
+
+        return spriteConfigs;
     }
 
-    static createSprite(scene, battlerData, position, spriteConfig) {
+    static createSprite(scene, battlerData, position, spriteConfigs, animationType = 'combat') {
         const { x, y } = position;
+        const spriteConfig = spriteConfigs[animationType];
 
         if (spriteConfig) {
             // Create the sprite using the atlas animation
@@ -29,19 +26,10 @@ class BattlerSpriteManager {
             sprite.play(spriteConfig.animKey);
             return sprite;
         } else {
-            // Create the sprite using a normal image
-            const sprite = scene.add.sprite(x, y, battlerData.spritePath);
-
-            // Create a 1-frame animation for consistency
-            if (!scene.anims.exists(`${battlerData.spritePath}_anim`)) {
-                scene.anims.create({
-                    key: `${battlerData.spritePath}_anim`,
-                    frames: [{ key: battlerData.spritePath }],
-                    frameRate: 1,
-                    repeat: -1
-                });
-            }
-            sprite.play(`${battlerData.spritePath}_anim`);
+            // Fallback to combat animation if the requested animation type does not exist
+            const fallbackSpriteConfig = spriteConfigs['combat'];
+            const sprite = scene.add.sprite(x, y, fallbackSpriteConfig.key);
+            sprite.play(fallbackSpriteConfig.animKey);
             return sprite;
         }
     }

@@ -13,7 +13,7 @@ export default class CharacterRenderer {
             idle: 20,
             attack: 4,
             cast: 5,
-            death: 7,
+            die: 7,
             hit: 2,
             talk: 44
         };
@@ -47,7 +47,7 @@ export default class CharacterRenderer {
                 key: `${this.characterNumber}_${this.hero}_${action}`,
                 frames: frames,
                 frameRate: this.frameRate,
-                repeat: action === 'death' ? 0 : -1
+                repeat: action === 'die' ? 0 : -1
             });
         }
     }

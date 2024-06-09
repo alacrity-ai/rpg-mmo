@@ -99,8 +99,8 @@ def create_texture_atlas_in_folder(folder_path):
 
 def process_all_subfolders(input_folder):
     for root, dirs, files in os.walk(input_folder):
-        if root != input_folder:
-            create_texture_atlas_in_folder(root)
+        # if root != input_folder:
+        create_texture_atlas_in_folder(root)
 
 if __name__ == "__main__":
     # Add getting the folder path from the command line

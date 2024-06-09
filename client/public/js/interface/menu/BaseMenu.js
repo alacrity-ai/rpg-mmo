@@ -44,9 +44,15 @@ class BaseMenu {
             this.addElementToTab(tab, sprite);
     
             // Create a rounded white border above the sprite
-            const spriteWidth = sprite.displayWidth;
-            const spriteHeight = sprite.displayHeight;
+            // const spriteWidth = sprite.displayWidth;
+            // const spriteHeight = sprite.displayHeight;
+            const spriteWidth = 75;
+            const spriteHeight = 100;
             const borderRadius = 10;
+
+            // If the spriteWidth is above 75, reduce the spriteWidth to 75
+            // If the spriteHeight is above 100, reduce the spriteHeight to 100
+
     
             // Create the mask shape (rounded rectangle)
             const maskShape = this.scene.add.graphics();
