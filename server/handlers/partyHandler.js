@@ -37,7 +37,6 @@ module.exports = (socket, io, redisClient) => {
     
     enqueueTask(redisClient, 'leaveParty', taskData, (response) => {
       if (response.success) {
-        console.log('Response successful. Unregistering socket from party.');
         // Unregister the socket from the current party
         socketManager.unregisterSocket(socket.character.id);
   
@@ -149,7 +148,6 @@ module.exports = (socket, io, redisClient) => {
       callback({ error: 'Character not logged in.' });
       return;
     }
-    console.log('Got DATA: ', data);
     const taskData = { characterId: socket.character.id, partyId: data.partyId, userId: socket.user.id, accept: data.accept };
     enqueueTask(redisClient, 'respondToPartyInvite', taskData, (response) => {
       if (response.success && data.accept) {
