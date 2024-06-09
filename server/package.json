@@ -1,6 +1,6 @@
 {
   "name": "mmo-server",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "MMO Server",
   "main": "index.js",
   "scripts": {
