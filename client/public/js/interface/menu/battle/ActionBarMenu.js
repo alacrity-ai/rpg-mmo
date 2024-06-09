@@ -1,6 +1,6 @@
-import { BaseMenu } from './BaseMenu.js';
-import SoundFXManager from '../../audio/SoundFXManager.js';
-import api from '../../api/battler';
+import { BaseMenu } from '../BaseMenu.js';
+import SoundFXManager from '../../../audio/SoundFXManager.js';
+import api from '../../../api/battler';
 
 export default class ActionBarMenu extends BaseMenu {
     constructor(scene, battleInstanceId, battlerId, battleGrid) {

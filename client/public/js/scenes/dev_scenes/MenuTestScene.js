@@ -1,6 +1,5 @@
 import Phaser from 'phaser';
 import { createHotbar } from '../../interface/MenuHotbar.js';
-import PartyDisplayManager from '../../interface/PartyDisplayManager.js';
 import IconHelper from '../../interface/IconHelper.js';
 import TutorialMenu from '../../interface/menu/TutorialMenu.js';
 import DialogueMenu from '../../interface/menu/DialogueMenu.js';
@@ -32,9 +31,6 @@ export default class MenuTestScene extends Phaser.Scene {
     create() {
         // Add the background image and ensure it fits the canvas
         const background = this.add.image(0, 0, 'background').setOrigin(0, 0);
-
-        // Initialize PartyDisplayManager
-        this.partyDisplayManager = new PartyDisplayManager(this, this.party);
 
         // Initialize the IconHelper
         this.iconHelper = new IconHelper(this, 'icons');

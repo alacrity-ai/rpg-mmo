@@ -1,4 +1,4 @@
-import { BaseMenu } from './BaseMenu.js';
+import { BaseMenu } from '../BaseMenu.js';
 
 export default class StatsMenu extends BaseMenu {
     constructor(scene, currentHealth, maxHealth, currentMana, maxMana) {

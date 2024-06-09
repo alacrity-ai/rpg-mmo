@@ -21,4 +21,20 @@ module.exports = (socket, io, redisClient) => {
       }
     });
   });
+
+  socket.on('getBattlers', async (data, callback) => {
+    if (!socket.character || !socket.character.id) {
+      callback({ error: 'Character not logged in.' });
+      return;
+    }
+
+    const taskData = { characterId: socket.character.id, battleId: data.battleId };
+    enqueueTask(redisClient, 'getBattlers', taskData, (response) => {
+      if (response.success) {
+        callback({ success: true, data: response.data });
+      } else {
+        callback({ success: false, error: response.error });
+      }
+    });
+  });
 };

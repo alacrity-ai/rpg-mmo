@@ -7,8 +7,8 @@ import SoundFXManager from '../audio/SoundFXManager.js';
 import BattleGrid from '../battle/BattleGrid.js';
 import BattleActionClientInputHandler from './handlers/BattleActionClientInputHandler.js';
 import CustomCursor from '../interface/CustomCursor.js';
-import ActionBarMenu from '../interface/menu/ActionBarMenu.js';
-import PartyDisplayMenu from '../interface/menu/PartyDisplayMenu.js';
+import ActionBarMenu from '../interface/menu/battle/ActionBarMenu.js';
+import BattlerDisplayMenu from '../interface/menu/battle/BattlerDisplayMenu.js';
 import SocketManager from '../SocketManager.js';
 import { addBackgroundImage } from '../graphics/BackgroundManager.js';
 import FogEffect from '../graphics/FogEffect.js';
@@ -56,7 +56,7 @@ export default class BattleScene extends Phaser.Scene {
         this.fogEffect = new FogEffect(this, 0.5, 0.5, 2, 0);
 
         // Initialize the party display menu
-        this.partyDisplayMenu = new PartyDisplayMenu(this);
+        this.battlerDisplayMenu = new BattlerDisplayMenu(this, this.battlerInstancesData);
 
         // Get the battlerId for the current character
         this.battler = this.battlerInstancesData.find(battler => battler.characterId === this.registry.get('characterId'));
