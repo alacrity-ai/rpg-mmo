@@ -6,13 +6,14 @@ const { getNPCTemplateById } = require('./npcTemplatesQueries');
 async function createBattlerInstance(battlerInstanceData) {
     const sql = `
         INSERT INTO battler_instances (
-            character_id, npc_template_id, base_stats, current_stats, abilities, script_path, script_speed,
+            character_id, npc_template_id, class, base_stats, current_stats, abilities, script_path, script_speed,
             sprite_path, grid_position, last_action_time, time_created, status_effects, team, phase
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
         battlerInstanceData.characterId,
         battlerInstanceData.npcTemplateId,
+        battlerInstanceData.battlerClass,
         JSON.stringify(battlerInstanceData.baseStats),
         JSON.stringify(battlerInstanceData.currentStats),
         JSON.stringify(battlerInstanceData.abilities),
@@ -34,6 +35,7 @@ async function createBattlerInstance(battlerInstanceData) {
         id,
         character_id: battlerInstanceData.characterId,
         npc_template_id: battlerInstanceData.npcTemplateId,
+        battlerClass: battlerInstanceData.battlerClass,
         base_stats: battlerInstanceData.baseStats,
         current_stats: battlerInstanceData.currentStats,
         abilities: battlerInstanceData.abilities,
@@ -173,6 +175,7 @@ async function createBattlerInstancesFromCharacterIds(characterIds) {
             const battlerInstance = new BattlerInstance({
                 character_id: character.id,
                 npc_template_id: null,
+                battlerClass: character.characterClass,
                 base_stats: character.baseStats,
                 current_stats: character.currentStats,
                 abilities: character.abilities,
@@ -201,6 +204,7 @@ async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
             const battlerInstance = new BattlerInstance({
                 character_id: null,
                 npc_template_id: npcTemplate.id,
+                battlerClass: null,
                 base_stats: npcTemplate.baseStats,
                 current_stats: npcTemplate.baseStats, // NPCs start with base stats as current stats
                 abilities: [], // Add abilities if applicable

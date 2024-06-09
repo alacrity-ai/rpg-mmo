@@ -5,7 +5,12 @@
     - [ ] Add the tween growth of icons to the menu iconButton class as optional argument
     - [ ] Add hover sound effect as optional argument
 
-- [ ] Redo Character Portrait Menu
+- [x] Redo Character Portrait Menu
+
+- [ ] Create Battler "Portrait" Menu.
+    - Take a battler.
+    - Determines if player or npc
+    - Displays npc sprite, or player portrait
 
 - [x] Client docker image is node 18, should be node 20
 

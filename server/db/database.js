@@ -238,6 +238,7 @@ async function initTables() {
       id INT AUTO_INCREMENT PRIMARY KEY,
       character_id INT,
       npc_template_id INT,
+      class VARCHAR(32),
       base_stats JSON NOT NULL,
       current_stats JSON NOT NULL,
       abilities JSON,
