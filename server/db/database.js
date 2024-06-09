@@ -172,6 +172,7 @@ async function initTables() {
         'elementalist',
         'necromancer'
       ) NOT NULL,
+      level INT DEFAULT 1,
       base_stats JSON,
       current_stats JSON,
       abilities JSON,

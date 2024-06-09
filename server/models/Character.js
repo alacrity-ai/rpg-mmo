@@ -11,6 +11,7 @@ class Character {
    * @param {number} params.user_id - The ID of the user who owns the character.
    * @param {string} params.name - The name of the character.
    * @param {string} params.characterClass - The class of the character.
+   * @param {number} params.level - The level of the character.
    * @param {Object} params.baseStats - The base stats of the character.
    * @param {Object} params.currentStats - The current stats of the character.
    * @param {Array} params.abilities - The list of abilities the character has.
@@ -19,11 +20,12 @@ class Character {
    * @param {string} params.current_town_key - The key of the current town the character is in.
    * @param {Object} params.flags - An object representing the flags with key-value pairs.
    */
-  constructor({ id, user_id, name, characterClass, baseStats, currentStats, abilities, current_area_id, previous_area_id, current_town_key, flags }) {
+  constructor({ id, user_id, name, characterClass, level, baseStats, currentStats, abilities, current_area_id, previous_area_id, current_town_key, flags }) {
     this.id = id;
     this.userId = user_id;
     this.name = name;
     this.characterClass = characterClass;
+    this.level = level;
     this.baseStats = baseStats;
     this.currentStats = currentStats;
     this.abilities = abilities;
@@ -44,6 +46,7 @@ module.exports = Character;
  *   user_id: 1,
  *   name: 'Thalion',
  *   characterClass: 'ranger',
+ *   level: 1,
  *   baseStats: { strength: 10, wisdom: 15, intelligence: 8, health: 100, mana: 50 },
  *   currentStats: { strength: 10, wisdom: 15, intelligence: 8, health: 100, mana: 50 },
  *   abilities: ['rogueAttack', 'backstab', 'shadowDance'],
