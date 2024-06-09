@@ -12,6 +12,7 @@ import FogEffect from '../graphics/FogEffect.js';
 import AreaNavigationMenu from '../interface/menu/AreaNavigationMenu.js';
 import AreaMapMenu from '../interface/menu/AreaMapMenu.js';
 import EncounterPromptMenu from '../interface/menu/EncounterPromptMenu.js';
+import PartyDisplayMenu from '../interface/menu/PartyDisplayMenu.js'
 
 /* ExpeditionScene.js
  * Base class for all Expedition Area Scenes
@@ -33,14 +34,6 @@ export default class AreaScene extends Phaser.Scene {
     }
 
     preload() {
-        // Example party data (Replace this with API call to get party data)
-        this.party = [
-            { frameCount: 20, prefix: 'priest', maxHealth: 80, maxMana: 100 },
-            // { frameCount: 20, prefix: 'mage', maxHealth: 70, maxMana: 120 },
-            // { frameCount: 20, prefix: 'knight', maxHealth: 120, maxMana: 40 },
-            // { frameCount: 20, prefix: 'rogue', maxHealth: 90, maxMana: 60 }
-        ];
-
         this.load.image(this.backgroundImage, this.backgroundImage);
         if (this.musicPath) {
             this.load.audio(this.musicPath, this.musicPath);
@@ -71,6 +64,9 @@ export default class AreaScene extends Phaser.Scene {
         // Initialize the IconHelper
         this.iconHelper = new IconHelper(this, 'icons');
         createHotbar(this, this.iconHelper);
+
+        // Initialize the party display menu
+        this.partyDisplayMenu = new PartyDisplayMenu(this);
 
         // Initialize the InteractiveZoneManager
         this.interactiveZoneManager = new InteractiveZoneManager(this);

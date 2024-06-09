@@ -8,7 +8,7 @@ import BattleGrid from '../battle/BattleGrid.js';
 import BattleActionClientInputHandler from './handlers/BattleActionClientInputHandler.js';
 import CustomCursor from '../interface/CustomCursor.js';
 import ActionBarMenu from '../interface/menu/ActionBarMenu.js';
-import StatsMenu from '../interface/menu/BattleStatbarsMenu.js';
+import PartyDisplayMenu from '../interface/menu/PartyDisplayMenu.js';
 import SocketManager from '../SocketManager.js';
 import { addBackgroundImage } from '../graphics/BackgroundManager.js';
 import FogEffect from '../graphics/FogEffect.js';
@@ -54,6 +54,9 @@ export default class BattleScene extends Phaser.Scene {
 
         // Initialize the fog effect
         this.fogEffect = new FogEffect(this, 0.5, 0.5, 2, 0);
+
+        // Initialize the party display menu
+        this.partyDisplayMenu = new PartyDisplayMenu(this);
 
         // Get the battlerId for the current character
         this.battler = this.battlerInstancesData.find(battler => battler.characterId === this.registry.get('characterId'));

@@ -8,8 +8,8 @@ export default class AreaNavigationMenu extends BaseMenu {
     constructor(scene, currentAreaId, x = null, y = null, scale = 1) {
         const width = 112 * scale;
         const height = 112 * scale;
-        x = x || scene.sys.game.config.width / 14 + 5;
-        y = y || scene.sys.game.config.height / 1.4 + 30;
+        x = x || scene.sys.game.config.width / 1.1 + 10;
+        y = y || scene.sys.game.config.height / 1.4 + 60;
         super(scene, x, y, width, height, 0x000000, 0.8, 24 * scale, null, null, false, false);
         
         const window = this.addWindow(x, y, width, height, 0x000000, 0.8, 24 * scale);

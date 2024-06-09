@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { createHotbar } from '../../interface/MenuHotbar.js';
 import IconHelper from '../../interface/IconHelper.js';
-import PartyDisplayManager from '../../interface/PartyDisplayManager.js';
+import PartyDisplayMenu from '../../interface/menu/PartyDisplayMenu.js';
 import SoundFXManager from '../../audio/SoundFXManager.js';
 import InteractiveZoneManager from '../../interface/InteractiveZoneManager.js';
 import PointLightManager from '../../graphics/PointLight.js';
@@ -71,9 +71,6 @@ export default class BaseTownScene extends Phaser.Scene {
         this.iconHelper = new IconHelper(this, 'icons');
         createHotbar(this, this.iconHelper);
 
-        // Initalize the Party Display Manager
-        this.partyDisplayManager = new PartyDisplayManager(this, this.party);
-
         // Initialize the Navigation Menu
         // Correct the below if statement because This condition will always return 'true' since JavaScript compares objects by reference, not value
         if (Object.keys(this.navigationMenuScenes).length > 0) {
@@ -84,6 +81,9 @@ export default class BaseTownScene extends Phaser.Scene {
 
         // Initialize the InteractiveZoneManager
         this.interactiveZoneManager = new InteractiveZoneManager(this);
+
+        // Initialize the party display menu
+        this.partyDisplayMenu = new PartyDisplayMenu(this);
 
         // Initialize the CustomCursor
         CustomCursor.getInstance(this);

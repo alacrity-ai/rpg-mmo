@@ -1,7 +1,7 @@
 // workers/processPartyTasks.js
 const { addTaskResult } = require('../../db/cache/client/RedisClient');
 const taskRegistry = require('./registry/taskRegistry');
-const { createCharacterParty, removeMemberFromParty } = require('../../db/queries/characterPartyQueries');
+const { createCharacterParty, removeMemberFromParty, getCharactersInParty } = require('../../db/queries/characterPartyQueries');
 const logger = require('../../utilities/logger');
 
 
@@ -38,11 +38,31 @@ async function processLeavePartyTask(task, redisClient) {
   }
 }
 
+async function processGetPartyTask(task, redisClient) {
+  const { taskId, data } = task.taskData;
+  const { characterId, partyId } = data;
+
+  try {
+    // Fetch the party data
+    const characters = await getCharactersInParty(partyId);
+
+    const result = { success: true, data: characters };
+    await addTaskResult(redisClient, taskId, result);
+  } catch (error) {
+    const result = { success: false, error: 'Failed to get party data. ' + error.message };
+    logger.error(`Party data retrieval failed for task ${taskId}: ${error.message}`);
+    await addTaskResult(redisClient, taskId, result);
+  }
+}
+
+
 // Register task handlers
 taskRegistry.register('createParty', processCreatePartyTask);
 taskRegistry.register('leaveParty', processLeavePartyTask);
+taskRegistry.register('getParty', processGetPartyTask);
 
 module.exports = {
   processCreatePartyTask,
   processLeavePartyTask,
+  processGetPartyTask
 };

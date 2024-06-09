@@ -1,5 +1,12 @@
 # TODOS
 
+- [ ] Redo Hotbar Menu (bottom left) Using menu system
+    - [ ] Leverage the menu system
+    - [ ] Add the tween growth of icons to the menu iconButton class as optional argument
+    - [ ] Add hover sound effect as optional argument
+
+- [ ] Redo Character Portrait Menu
+
 - [x] Client docker image is node 18, should be node 20
 
 - [x] Create a cleanup battle taskProcessor
@@ -25,12 +32,12 @@
     - Implement API calls to verify and update when an encounter is finished.
     - Create a debug command to drop enemy health to zero for testing purposes.
 
-- [ ] Handle Retreat Option:
+- [x] Handle Retreat Option:
 
     - Ensure that retreating from an encounter sends the player back to the previous area.
     - Address any necessary cleanup when a player retreats.
 
-- [ ] Cleanup Scenarios for Battle Instances:
+- [x] Cleanup Scenarios for Battle Instances:
 
     - Implement any additional cleanup logic needed for battle instances.
     - Ensure proper health and mana updates for characters after a battle.
@@ -40,11 +47,6 @@
     - Ensure that two separate accounts can have their own instances and combat scenarios.
     - Add basic party invite functionality to join characters into one party.
     - Verify that partied characters share the same area instance and combat encounter.
-
-- [ ] Redo Hotbar Menu (bottom left) Using menu system
-    - [ ] Leverage the menu system
-    - [ ] Add the tween growth of icons to the menu iconButton class as optional argument
-    - [ ] Add hover sound effect as optional argument
 
 
 6/2/2024
