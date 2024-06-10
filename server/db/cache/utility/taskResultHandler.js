@@ -23,6 +23,16 @@ function processTaskResult(io, taskId, taskResult) {
     const battleInstanceId = taskResult.data.battleInstanceId;
     io.to(`battle-${battleInstanceId}`).emit('completedBattlerAction', taskResult.data.actionResult);
   }
+
+  // Emit battlerJoined event if a new battler has joined
+  if (taskResult.data && taskResult.data.newBattlerJoined) {
+    const battleInstanceId = taskResult.data.battleInstance.id;
+    io.to(`battle-${battleInstanceId}`).emit('battlerJoined', {
+      battlerId: taskResult.data.newBattlerInstance.id,
+      battleInstanceData: taskResult.data.battleInstance,
+      battlerInstancesData: taskResult.data.battlerInstances
+    });
+  }
 }
 
 module.exports = {

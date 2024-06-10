@@ -34,6 +34,11 @@ export default class BattleScene extends Phaser.Scene {
 
         // Load background image (testing)
         this.load.image(this.backgroundImage, this.backgroundImage);
+
+        // Console logging
+        console.log('DEBUGGING: this.battleInstanceData:', this.battleInstanceData);
+        console.log('DEBUGGING: this.battlerInstancesData:', this.battlerInstancesData);
+        console.log('DEBUGGING: this.battleInstanceId:', this.battleInstanceId);
     }
 
     async create() {

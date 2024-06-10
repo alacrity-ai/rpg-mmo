@@ -4,6 +4,7 @@ const taskRegistry = require('./registry/taskRegistry');
 const { createExpeditionZone } = require('../../services/expeditions/zoneCreator');
 const { getCharacterById, updateCharacterCurrentAreaId, updateCharacterAreas, getCharacterFlags } = require('../../db/queries/characterQueries');
 const { getZoneTemplateBySceneKey } = require('../../db/queries/zoneTemplatesQueries');
+const { setCacheAreaInstanceForParty, getCacheAreaInstanceForParty } = require('../../db/cache/helpers/partyHelper');
 const { mapMarkers } = require('../../db/data/worldmap_locations/worldMapLocations')
 const { getAreaInstanceById, updateAreaInstance } = require('../../db/queries/areaInstancesQueries');
 const logger = require('../../utilities/logger');
@@ -95,17 +96,22 @@ async function processRequestZoneTask(task, redisClient) {
   const { userId, characterId, partyId, sceneKey } = data;
 
   try {
+    // Check if there is an existing area instance for the party and sceneKey
+    const cachedAreaInstance = await getCacheAreaInstanceForParty(redisClient, partyId, sceneKey);
+
+    if (cachedAreaInstance) {
+      // Return the cached area instance
+      console.log('Cached Area Instance: ', cachedAreaInstance) // Added logging here
+      const result = { success: true, data: { areaInstance: cachedAreaInstance } };
+      await addTaskResult(redisClient, taskId, result);
+      return;
+    }
+
     // Fetch the zone template by scene key
     const zoneTemplate = await getZoneTemplateBySceneKey(sceneKey);
     if (!zoneTemplate) {
       throw new Error(`Zone template with scene key ${sceneKey} not found.`);
     }
-
-    // TODO : Uncomment this after handling initial flags / gaining new flags
-    // const characterFlags = await getCharacterFlags(characterId);
-    // if (!characterFlags[`${sceneKey}Unlocked`]) {
-    //   throw new Error(`Character ${characterId} does not have access to zone ${sceneKey}.`);
-    // }
 
     // Create the expedition zone
     const zoneInstance = await createExpeditionZone(zoneTemplate);
@@ -124,9 +130,12 @@ async function processRequestZoneTask(task, redisClient) {
     if (!areaInstance) {
       throw new Error(`Area instance with ID ${firstAreaId} not found.`);
     }
-
+    console.log('Non-cached Area Instance: ', areaInstance) // Added logging here
     // Update the player's current area ID
     updateCharacterCurrentAreaId(characterId, firstAreaId);
+
+    // Cache the newly created area instance for the party and sceneKey
+    await setCacheAreaInstanceForParty(redisClient, partyId, sceneKey, areaInstance);
 
     const result = { success: true, data: { areaInstance } };
     await addTaskResult(redisClient, taskId, result);

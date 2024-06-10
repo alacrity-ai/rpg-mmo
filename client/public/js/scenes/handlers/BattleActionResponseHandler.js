@@ -1,5 +1,3 @@
-// BattleActionResponseHandler.js
-
 import SocketManager from "../../SocketManager.js";
 
 export default class BattleActionResponseHandler {
@@ -12,7 +10,7 @@ export default class BattleActionResponseHandler {
     handleCompletedBattlerAction(data) {
         try {
             if (data.actionType === 'move') {
-                console.log('Handling completed battler move action:', data)
+                console.log('Handling completed battler move action:', data);
                 // if the data.battlerId is the same as the current player's battlerId, trigger the global cooldown
                 if (data.battlerId === this.battleGrid.scene.battlerId) {
                     this.actionBarMenu.triggerGlobalCooldown(this.settings.cooldowns.short);
@@ -32,18 +30,41 @@ export default class BattleActionResponseHandler {
             }
             // Handle other action types as needed
 
-
         } catch (error) {
             console.error('Error handling completed battler action:', error);
         }
     }
-    
+
+    handleBattlerJoined(data) {
+        try {
+            console.log('Handling battler joined:', data);
+
+            // Update scene data
+            this.battleGrid.scene.battlerInstancesData = data.battlerInstancesData;
+            this.battleGrid.scene.battleInstanceData = data.battleInstanceData;
+
+            // Add the new battler to the battle grid
+            const newBattlerInstance = data.battlerInstancesData.find(b => b.id === data.battlerId);
+            if (newBattlerInstance) {
+                this.battleGrid.addBattler(newBattlerInstance, newBattlerInstance.gridPosition, false);
+            } else {
+                console.warn(`Battler instance data not found for id: ${data.battlerId}`);
+            }
+
+        } catch (error) {
+            console.error('Error handling battler joined:', error);
+        }
+    }
 
     initialize() {
-        SocketManager.getSocket().on('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));
+        const socket = SocketManager.getSocket();
+        socket.on('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));
+        socket.on('battlerJoined', this.handleBattlerJoined.bind(this));
     }
 
     cleanup() {
-        SocketManager.getSocket().off('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));
+        const socket = SocketManager.getSocket();
+        socket.off('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));
+        socket.off('battlerJoined', this.handleBattlerJoined.bind(this));
     }
 }

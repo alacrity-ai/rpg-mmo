@@ -123,6 +123,7 @@ async function getBattlerInstancesInBattle(battleId) {
       id: row.id,
       character_id: row.character_id,
       npc_template_id: row.npc_template_id,
+      battlerClass: row.class,
       base_stats: row.base_stats,
       current_stats: row.current_stats,
       abilities: row.abilities,

@@ -5,15 +5,41 @@ const BattleCreator = require('../../services/expeditions/battleCreator');
 const BattleManager = require('../../services/expeditions/battleManager');
 const { getAreaInstanceById } = require('../../db/queries/areaInstancesQueries');
 const { getBattlerInstancesByCharacterId } = require('../../db/queries/battlerInstancesQueries');
-const { getAllCachedBattleInstances, getAllCachedBattlerInstancesInBattle } = require('../../db/cache/helpers/battleHelper');
+const { getAllCachedBattleInstances, getCacheBattleInstance, getAllCachedBattlerInstancesInBattle, setCacheBattleInstance, setCacheBattlerInstance, getBattleInstanceIdByAreaId } = require('../../db/cache/helpers/battleHelper');
+const { getBattlerInstancesInBattle } = require('../../db/queries/battleInstancesQueries');
 const logger = require('../../utilities/logger');
-
 
 async function processGetBattleInstanceTask(task, redisClient) {
   const { taskId, data } = task.taskData;
   const { areaId, characterId } = data;
 
   try {
+    // Check if there's an existing battle instance for the areaId
+    const battleInstanceId = await getBattleInstanceIdByAreaId(redisClient, areaId);
+    if (battleInstanceId) {
+      // Add the new character to the battle
+      const battleManager = new BattleManager(redisClient);
+      const newBattlerInstance = await battleManager.addCharacterToBattle(battleInstanceId, characterId);
+
+      // Get the most recent state of the battler instance from the database
+      const battlerInstances = await getBattlerInstancesInBattle(battleInstanceId);
+      // Get state of current battle from the cache
+      const cachedBattleInstance = await getCacheBattleInstance(redisClient, battleInstanceId);
+
+      // Include information that a new battler has joined
+      const result = { 
+        success: true, 
+        data: { 
+          battleInstance: cachedBattleInstance, 
+          battlerInstances: battlerInstances,
+          newBattlerJoined: true,
+          newBattlerInstance: newBattlerInstance
+        } 
+      };
+      await addTaskResult(redisClient, taskId, result);
+      return;
+    }
+
     // Fetch the area instance to get the encounter template ID
     const areaInstance = await getAreaInstanceById(areaId);
     if (!areaInstance) {
@@ -29,6 +55,12 @@ async function processGetBattleInstanceTask(task, redisClient) {
     const battleCreator = new BattleCreator(characterId, encounterTemplateId, areaId);
     const response = await battleCreator.execute();
 
+    // Cache the new battle instance and battler instances
+    await setCacheBattleInstance(redisClient, response.battleInstance);
+    for (const battlerInstance of response.battlerInstances) {
+      await setCacheBattlerInstance(redisClient, battlerInstance, response.battleInstance.id);
+    }
+
     const result = { success: true, data: response };
     await addTaskResult(redisClient, taskId, result);
   } catch (error) {
@@ -37,6 +69,7 @@ async function processGetBattleInstanceTask(task, redisClient) {
     await addTaskResult(redisClient, taskId, result);
   }
 }
+
 
 // Cleanup battle task
 async function processCleanupBattleTask(task, redisClient) {

@@ -1,5 +1,8 @@
 # TECH DEBT
 
+## Text Input
+- We need to make sure to turn off all movement key shortcuts when a menu is open, e.g. when making a character invite within an area instance, if there is a W in the name, you will move north.
+
 ## Battle Joining
 - Don't start the NPC scripts until at least one player client has successfully joined the room.
 - Right now when you join a room, a battle action already occurs before you get a chance to see it, so it's quite odd.
