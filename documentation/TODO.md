@@ -7,6 +7,8 @@
     - [ ] Make sure healthbars are properly updated when damage is taken
     - [ ] Add death state
 
+- [ ] Render portraits as pixel art.
+
 - [ ] Portrait tile selection
     - [ ] When clicking a portrait in battle, should select the tile the battler is on
 
