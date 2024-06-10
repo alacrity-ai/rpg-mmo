@@ -73,6 +73,28 @@ async function deleteCacheBattlerInstance(redisClient, battleInstanceId, battler
   await redisClient.del(battlerInstanceKey);
 }
 
+// Function to delete all cached battler instances by their IDs
+async function deleteAllBattlerInstancesByIds(redisClient, battlerInstanceIds) {
+  if (!Array.isArray(battlerInstanceIds) || battlerInstanceIds.length === 0) {
+    throw new Error('battlerInstanceIds must be a non-empty array');
+  }
+
+  // Build the keys for all battler instances to be deleted
+  const battlerInstanceKeys = battlerInstanceIds.map(id => `battlerInstance:*:${id}`);
+
+  // Fetch all matching keys
+  const matchingKeys = [];
+  for (const pattern of battlerInstanceKeys) {
+    const keys = await redisClient.keys(pattern);
+    matchingKeys.push(...keys);
+  }
+
+  // Delete all matching keys
+  if (matchingKeys.length > 0) {
+    await redisClient.del(matchingKeys);
+  }
+}
+
 // Function to get all cached battler instances in a battle
 async function getAllCachedBattlerInstancesInBattle(redisClient, battleInstanceId) {
   const keys = await redisClient.keys(`battlerInstance:${battleInstanceId}:*`);
@@ -92,5 +114,6 @@ module.exports = {
   deleteCacheBattleInstance,
   deleteCacheBattlerInstance,
   getAllCachedBattleInstances,
-  getAllCachedBattlerInstancesInBattle
+  getAllCachedBattlerInstancesInBattle,
+  deleteAllBattlerInstancesByIds
 };

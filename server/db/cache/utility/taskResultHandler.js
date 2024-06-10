@@ -33,6 +33,20 @@ function processTaskResult(io, taskId, taskResult) {
       battlerInstancesData: taskResult.data.battlerInstances
     });
   }
+
+  // Emit battlerLeft event if a battler has left
+  if (taskResult.data && taskResult.data.battlerLeft) {
+    const { leftBattlerIds, battleInstanceIds, battleInstances } = taskResult.data;
+    
+    battleInstanceIds.forEach((battleInstanceId, index) => {
+      io.to(`battle-${battleInstanceId}`).emit('battlerLeft', {
+        battlerIds: leftBattlerIds,
+        battleInstanceData: battleInstances[index],
+        battlerInstancesData: battleInstances[index].battlerIds
+      });
+    });
+  }
+
 }
 
 module.exports = {

@@ -15,7 +15,6 @@ module.exports = (socket, io, redisClient) => {
         const { battleInstance, battlerInstances } = response.data;
 
         // Cache the battle instance and battler instances
-        console.log('Battle instance:', battleInstance)
         await setCacheBattleInstance(redisClient, battleInstance);
         for (const battlerInstance of battlerInstances) {
           await setCacheBattlerInstance(redisClient, battlerInstance, battleInstance.id);

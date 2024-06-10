@@ -6,7 +6,6 @@ class Battler {
         this.battlerData = battlerData;
         this.initialTile = initialTile;
         this.sprite = null;
-        this.renderAboveOthers = isThisPlayer;
         if (battlerData.team === 'player') {
             this.yOffset = -20;
         } else {
@@ -27,33 +26,43 @@ class Battler {
             y: tile.sprite.y + this.yOffset - 32
         };
         this.sprite = BattlerSpriteManager.createSprite(this.scene, this.battlerData, position, this.spriteConfigs);
-        // If renderAboveOthers is true, set the depth to a higher value
-        if (this.renderAboveOthers) {
-            this.sprite.setDepth(10); // Ensure this battler is rendered above others
-        }
+
         battleGrid.addBattlerToTile(this.battlerData.id, this.initialTile);
     }
 
-    playAnimation(animationName) {
+    playAnimation(animationName, reverse = false) {
         const validAnimations = ['attack', 'cast', 'combat', 'die', 'hit', 'idle', 'run'];
         if (this.sprite && validAnimations.includes(animationName)) {
-            console.log(`Playing animation: ${animationName}, animKey: ${this.spriteConfigs[animationName].animKey}, spriteConfigs: ${this.spriteConfigs}`)
-            this.sprite.play(this.spriteConfigs[animationName].animKey);
+            const animKey = this.spriteConfigs[animationName].animKey;
+            console.log(`Playing animation: ${animationName}, animKey: ${animKey}, spriteConfigs: ${this.spriteConfigs}`);
+            
+            if (reverse) {
+                this.sprite.anims.playReverse(animKey);
+            } else {
+                this.sprite.play(animKey);
+            }
         }
     }
-
+    
     moveToTile(newTile, battleGrid) {
-        const [x, y] = newTile;
-        const tile = battleGrid.grid[y][x];
+        const [newX, newY] = newTile;
+        const tile = battleGrid.grid[newY][newX];
+        
         // Calculate the position to center the sprite in the tile
         const position = {
             x: tile.sprite.x + tile.sprite.width / 2 - 4,
             y: tile.sprite.y + this.yOffset - 32
         };
         
-        // Play the 'run' animation
-        this.playAnimation('run');
-
+        // Get the current tile position of the sprite using battleGrid.getBattlerPosition
+        const [currentX, currentY] = battleGrid.getBattlerPosition(this.battlerData.id);
+    
+        // Check if we are moving left
+        const isMovingLeft = newX < currentX;
+    
+        // Play the 'run' animation, reversed if moving left
+        this.playAnimation('run', isMovingLeft);
+    
         this.scene.tweens.add({
             targets: this.sprite,
             x: position.x,

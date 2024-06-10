@@ -1,4 +1,5 @@
 import SocketManager from "../../SocketManager.js";
+import api from '../../api';
 
 export default class BattleActionResponseHandler {
     constructor(battleGrid, actionBarMenu, settings) {
@@ -47,12 +48,33 @@ export default class BattleActionResponseHandler {
             const newBattlerInstance = data.battlerInstancesData.find(b => b.id === data.battlerId);
             if (newBattlerInstance) {
                 this.battleGrid.addBattler(newBattlerInstance, newBattlerInstance.gridPosition, false);
-            } else {
-                console.warn(`Battler instance data not found for id: ${data.battlerId}`);
             }
 
+            // Update the battlerDisplayMenu
+            this.battleGrid.scene.battlerDisplayMenu.updateBattlers(data.battlerInstancesData);
         } catch (error) {
             console.error('Error handling battler joined:', error);
+        }
+    }
+
+    async handleBattlerLeft(data) {
+        try {
+          console.log('Handling battler left:', data);
+    
+          // Update battleGrid data
+          this.battleGrid.scene.battlerInstancesData = data.battlerInstancesData;
+          this.battleGrid.scene.battleInstanceData = data.battleInstanceData;
+    
+          // Remove each battler from the battle grid
+          data.battlerIds.forEach(battlerId => {
+            this.battleGrid.removeBattler(battlerId);
+          });
+
+          // Update the battlerDisplayMenu
+          const battlerInstances = await api.battler.getBattlers(this.battleGrid.scene.battleInstanceId);
+          this.battleGrid.scene.battlerDisplayMenu.updateBattlers(battlerInstances);
+        } catch (error) {
+          console.error('Error handling battler left:', error);
         }
     }
 
@@ -60,11 +82,13 @@ export default class BattleActionResponseHandler {
         const socket = SocketManager.getSocket();
         socket.on('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));
         socket.on('battlerJoined', this.handleBattlerJoined.bind(this));
+        socket.on('battlerLeft', this.handleBattlerLeft.bind(this));
     }
 
     cleanup() {
         const socket = SocketManager.getSocket();
         socket.off('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));
         socket.off('battlerJoined', this.handleBattlerJoined.bind(this));
+        socket.off('battlerLeft', this.handleBattlerLeft.bind(this));
     }
 }

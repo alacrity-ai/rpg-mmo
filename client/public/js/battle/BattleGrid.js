@@ -51,23 +51,6 @@ class BattleGrid {
         this.renderGrid();
     }
 
-    generateTileTextures() {
-        // Generate each possible tile texture
-        generateGradientTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.4, false, 0xFFFFFF, 'unoccupied_green', this.tileWidth, this.tileHeight);
-        generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.8, false, 0xFFFFFF, 'occupied_green', this.tileWidth, this.tileHeight);
-        generateGradientTexture(this.scene, 0x582C2C, 0xB47F7F, 0.4, false, 0xFFFFFF, 'unoccupied_red', this.tileWidth, this.tileHeight);
-        generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.8, false, 0xFFFFFF, 'occupied_red', this.tileWidth, this.tileHeight);
-        generateGradientTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, false, 0xFFFFFF, 'telegraph', this.tileWidth, this.tileHeight);
-        generateBorderTexture(this.scene, 0x2E4A2E, 0x00FF00, 1, 'selected_green', 0xFFFFFF, this.tileWidth, this.tileHeight);
-        generateBorderTexture(this.scene, 0xA63D1D, 0xFF0000, 1, 'selected_red', 0xFFFFFF, this.tileWidth, this.tileHeight);
-        generateBorderTexture(this.scene, 0x582C2C, 0x582C2C, 0.5, 'selected_inactive', 0x808080, this.tileWidth, this.tileHeight);
-        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, 'telegraph_selected_gold', 0xFFD700, this.tileWidth, this.tileHeight);
-        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, 'telegraph_selected_red', 0xFF0000, this.tileWidth, this.tileHeight);
-        // Added new hovered_green and hovered_red textures
-        generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.8, false, 0xFFFFFF, 'hovered_green', this.tileWidth, this.tileHeight);
-        generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.8, false, 0xFFFFFF, 'hovered_red', this.tileWidth, this.tileHeight);
-    }
-
     renderGrid() {
         const gridWidth = 6;
         const gridHeight = 3;
@@ -121,15 +104,6 @@ class BattleGrid {
         return this.battlerPositions.get(battlerId);
     }
 
-    positionInBounds(position, team) {
-        if (team === 'player') {
-            return position[0] >= 0 && position[0] < 3 && position[1] >= 0 && position[1] < 3;
-        } else if (team === 'enemy') {
-            return position[0] >= 3 && position[0] < 6 && position[1] >= 0 && position[1] < 3;
-        }
-        return false;
-    }
-
     moveBattler(battlerId, newTile) {
         // Logic to move the battler to the new tile
         const oldTile = this.battlerPositions.get(battlerId);
@@ -139,7 +113,7 @@ class BattleGrid {
         this.addBattlerToTile(battlerId, newTile);
         this.battlerPositions.set(battlerId, newTile);
     }
-
+    
     addBattlerToTile(battlerId, tile) {
         // Add battler to the specified tile
         const [x, y] = tile;
@@ -147,31 +121,138 @@ class BattleGrid {
         tileObject.addBattler(battlerId);
         this.battlerPositions.set(battlerId, tile);
 
+        // Reposition battlers on the tile
+        this.repositionBattlersOnTile(tileObject);
+
         // Update the tile texture
         tileObject.updateTexture();
+    }
 
-        // If there are other battlers on the same tile, render the current battler above them
-        const battlerInstance = this.getBattlerInstance(battlerId);
-        if (tileObject.battlers.length > 1) {
-            if (battlerInstance && battlerInstance.renderAboveOthers) {
-                battlerInstance.sprite.setDepth(y + 1);
-            }
-        } else {
+    repositionBattlersOnTile(tileObject) {
+        const battlers = tileObject.battlers;
+        const battlerCount = battlers.length;
+    
+        battlers.forEach((battlerId, index) => {
+            const battlerInstance = this.getBattlerInstance(battlerId);
             if (battlerInstance) {
-                battlerInstance.sprite.setDepth(y);
+                const { x: baseX, y: baseY } = this.getTileCenterPosition(tileObject, battlerInstance);
+    
+                let offsetX = 0;
+                let offsetY = 0;
+                let depth = 0;
+    
+                const [, y] = this.getBattlerPosition(battlerId);
+                let baseDepth;
+                if (y === 0) {
+                    baseDepth = 1;
+                } else if (y === 1) {
+                    baseDepth = 5;
+                } else if (y === 2) {
+                    baseDepth = 9;
+                }
+    
+                if (battlerCount === 1) {
+                    // One battler, default position and depth
+                    offsetX = 0;
+                    offsetY = 0;
+                    depth = baseDepth;
+                } else if (battlerCount === 2) {
+                    // Two battlers, top-left and bottom-right
+                    offsetX = index === 0 ? -10 : 10;
+                    offsetY = index === 0 ? -10 : 10;
+                    depth = baseDepth + index;
+                } else if (battlerCount === 3) {
+                    // Three battlers, top-left, center, bottom-right
+                    if (index === 0) {
+                        offsetX = -10;
+                        offsetY = -10;
+                        depth = baseDepth;
+                    } else if (index === 1) {
+                        offsetX = 0;
+                        offsetY = 0;
+                        depth = baseDepth + 1;
+                    } else if (index === 2) {
+                        offsetX = 10;
+                        offsetY = 10;
+                        depth = baseDepth + 2;
+                    }
+                } else if (battlerCount === 4) {
+                    // Four battlers, top-left, top-right, bottom-left, bottom-right
+                    if (index === 0) {
+                        offsetX = -10;
+                        offsetY = -10;
+                        depth = baseDepth;
+                    } else if (index === 1) {
+                        offsetX = 10;
+                        offsetY = -10;
+                        depth = baseDepth + 1;
+                    } else if (index === 2) {
+                        offsetX = -10;
+                        offsetY = 10;
+                        depth = baseDepth + 2;
+                    } else if (index === 3) {
+                        offsetX = 10;
+                        offsetY = 10;
+                        depth = baseDepth + 3;
+                    }
+                }
+    
+                battlerInstance.sprite.setPosition(baseX + offsetX, baseY + offsetY);
+                battlerInstance.sprite.setDepth(depth);
             }
-        }
+        });
+    }     
+
+    getTileCenterPosition(tileObject, battlerInstance) {
+        return {
+            x: tileObject.sprite.x + tileObject.sprite.width / 2 - 4,
+            y: tileObject.sprite.y + battlerInstance.yOffset - 32
+        };
     }
 
     removeBattlerFromTile(battlerId, tile) {
-        // Remove battler from the specified tile
         const [x, y] = tile;
         const tileObject = this.grid[y][x];
         tileObject.removeBattler(battlerId);
-        this.battlerPositions.delete(battlerId);
 
-        // Update the tile texture
-        tileObject.updateTexture();
+        // Reposition remaining battlers on the tile
+        this.repositionBattlersOnTile(tileObject);
+    }
+
+    async removeBattler(battlerId) {
+        // Get the battler instance
+        const battler = this.battlerInstanceMap.get(battlerId);
+
+        if (!battler) {
+            console.warn(`Battler with ID ${battlerId} not found.`);
+            return;
+        }
+
+        // Get the position of the battler
+        const position = this.battlerPositions.get(battlerId);
+
+        if (position) {
+            // Remove the battler from the tile
+            this.removeBattlerFromTile(battlerId, position);
+        }
+
+        // Remove the battler from the instance map
+        this.battlerInstanceMap.delete(battlerId);
+
+        // Hide the battler sprite
+        if (battler.sprite) {
+            battler.sprite.setVisible(false);
+            battler.sprite.setActive(false);
+        }
+    }
+
+    positionInBounds(position, team) {
+        if (team === 'player') {
+            return position[0] >= 0 && position[0] < 3 && position[1] >= 0 && position[1] < 3;
+        } else if (team === 'enemy') {
+            return position[0] >= 3 && position[0] < 6 && position[1] >= 0 && position[1] < 3;
+        }
+        return false;
     }
 
     hoverTile(x, y) {
@@ -252,6 +333,23 @@ class BattleGrid {
                 tile.hideTelegraph();
             });
         });
+    }
+
+    generateTileTextures() {
+        // Generate each possible tile texture
+        generateGradientTexture(this.scene, 0x2E4A2E, 0x6E8B6E, 0.4, false, 0xFFFFFF, 'unoccupied_green', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.8, false, 0xFFFFFF, 'occupied_green', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0x582C2C, 0xB47F7F, 0.4, false, 0xFFFFFF, 'unoccupied_red', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.8, false, 0xFFFFFF, 'occupied_red', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, false, 0xFFFFFF, 'telegraph', this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0x2E4A2E, 0x00FF00, 1, 'selected_green', 0xFFFFFF, this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0xA63D1D, 0xFF0000, 1, 'selected_red', 0xFFFFFF, this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0x582C2C, 0x582C2C, 0.5, 'selected_inactive', 0x808080, this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 1, 'telegraph_selected_gold', 0xFFD700, this.tileWidth, this.tileHeight);
+        generateBorderTexture(this.scene, 0xA63D1D, 0xCC8A45, 0.4, 'telegraph_selected_red', 0xFF0000, this.tileWidth, this.tileHeight);
+        // Added new hovered_green and hovered_red textures
+        generateGradientTexture(this.scene, 0x3C6B3C, 0x7CAF7C, 0.8, false, 0xFFFFFF, 'hovered_green', this.tileWidth, this.tileHeight);
+        generateGradientTexture(this.scene, 0x703838, 0xC27F7F, 0.8, false, 0xFFFFFF, 'hovered_red', this.tileWidth, this.tileHeight);
     }
 }
 

@@ -101,7 +101,6 @@ async function processRequestZoneTask(task, redisClient) {
 
     if (cachedAreaInstance) {
       // Return the cached area instance
-      console.log('Cached Area Instance: ', cachedAreaInstance) // Added logging here
       const result = { success: true, data: { areaInstance: cachedAreaInstance } };
       await addTaskResult(redisClient, taskId, result);
       return;
@@ -130,7 +129,6 @@ async function processRequestZoneTask(task, redisClient) {
     if (!areaInstance) {
       throw new Error(`Area instance with ID ${firstAreaId} not found.`);
     }
-    console.log('Non-cached Area Instance: ', areaInstance) // Added logging here
     // Update the player's current area ID
     updateCharacterCurrentAreaId(characterId, firstAreaId);
 

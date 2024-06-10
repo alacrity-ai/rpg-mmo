@@ -4,8 +4,8 @@ const taskRegistry = require('./registry/taskRegistry');
 const BattleCreator = require('../../services/expeditions/battleCreator');
 const BattleManager = require('../../services/expeditions/battleManager');
 const { getAreaInstanceById } = require('../../db/queries/areaInstancesQueries');
-const { getBattlerInstancesByCharacterId } = require('../../db/queries/battlerInstancesQueries');
-const { getAllCachedBattleInstances, getCacheBattleInstance, getAllCachedBattlerInstancesInBattle, setCacheBattleInstance, setCacheBattlerInstance, getBattleInstanceIdByAreaId } = require('../../db/cache/helpers/battleHelper');
+const { getBattlerInstancesByCharacterId, deleteBattlerInstancesByIds } = require('../../db/queries/battlerInstancesQueries');
+const { getAllCachedBattleInstances, getCacheBattleInstance, getAllCachedBattlerInstancesInBattle, setCacheBattleInstance, setCacheBattlerInstance, getBattleInstanceIdByAreaId, deleteAllBattlerInstancesByIds } = require('../../db/cache/helpers/battleHelper');
 const { getBattlerInstancesInBattle } = require('../../db/queries/battleInstancesQueries');
 const logger = require('../../utilities/logger');
 
@@ -71,7 +71,6 @@ async function processGetBattleInstanceTask(task, redisClient) {
 }
 
 
-// Cleanup battle task
 async function processCleanupBattleTask(task, redisClient) {
   // Extract values:
   const { taskId, data } = task.taskData;
@@ -82,12 +81,13 @@ async function processCleanupBattleTask(task, redisClient) {
     const battlerInstances = await getBattlerInstancesByCharacterId(characterId);
     // Return if battlerInstances is empty array
     if (!battlerInstances || !battlerInstances.length) {
-      console.log('Got battler instances: ', battlerInstances)
-      console.log('No battler instances found for characterId:', characterId)
       const result = { success: true };
       await addTaskResult(redisClient, taskId, result);
       return;
     }
+
+    // Get a list of all the battler instance ids
+    const battlerInstanceIds = battlerInstances.map(battler => battler.id);
 
     // Get all battle instances in the game
     const battleInstances = await getAllCachedBattleInstances(redisClient);
@@ -120,7 +120,21 @@ async function processCleanupBattleTask(task, redisClient) {
     for (const battleInstance of filteredBattleInstances) {
       await battleManager.cleanupBattle(battleInstance.id);
     }
-    const result = { success: true };
+
+    // Delete all battler instances for the character that may be leftover in any other in-progress battles from the database
+    await deleteBattlerInstancesByIds(battlerInstanceIds);
+    // Delete all battler instances for the character from the cache
+    await deleteAllBattlerInstancesByIds(redisClient, battlerInstanceIds);
+
+    const result = { 
+      success: true, 
+      data: {
+        battlerLeft: true,
+        leftBattlerIds: battlerInstanceIds,
+        battleInstanceIds: characterBattleInstances.map(battleInstance => battleInstance.id),
+        battleInstances: characterBattleInstances
+      }
+    };
     await addTaskResult(redisClient, taskId, result);
   } catch (error) {
     const result = { success: false, error: 'Failed to cleanup battle. ' + error.message };
@@ -128,6 +142,7 @@ async function processCleanupBattleTask(task, redisClient) {
     await addTaskResult(redisClient, taskId, result);
   }
 }
+
 
 // Register task handlers
 taskRegistry.register('getBattleInstance', processGetBattleInstanceTask);

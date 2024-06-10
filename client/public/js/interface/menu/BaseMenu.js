@@ -43,16 +43,9 @@ class BaseMenu {
             const sprite = this.scene.add.sprite(x, y, spriteConfig.key).play(spriteConfig.animKey);
             this.addElementToTab(tab, sprite);
     
-            // Create a rounded white border above the sprite
-            // const spriteWidth = sprite.displayWidth;
-            // const spriteHeight = sprite.displayHeight;
             const spriteWidth = 75;
             const spriteHeight = 100;
             const borderRadius = 10;
-
-            // If the spriteWidth is above 75, reduce the spriteWidth to 75
-            // If the spriteHeight is above 100, reduce the spriteHeight to 100
-
     
             // Create the mask shape (rounded rectangle)
             const maskShape = this.scene.add.graphics();
@@ -95,10 +88,24 @@ class BaseMenu {
                     });
             }
     
-            // Return an object containing the created elements
-            return { sprite, maskShape, border };
+            // Create a container to group all elements
+            const container = this.scene.add.container(0, 0, [sprite, maskShape, border]);
+            this.addElementToTab(tab, container);
+    
+            // Return the container
+            return container;
         } catch (error) {
             console.error('Error loading portrait:', error);
+        }
+    }
+
+    removePortrait(container, tab = 0) {
+        if (container && container.list) {
+            container.list.forEach(element => {
+                element.destroy();
+            });
+            container.destroy();
+            this.tabs[tab] = this.tabs[tab].filter(item => item !== container);
         }
     }    
 
