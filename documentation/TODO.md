@@ -1,5 +1,20 @@
 # TODOS
 
+- [ ] Add first damaging ability
+    - [ ] Render damage numbers on the target
+    - [ ] Use hit animation
+    - [ ] Create a flash animation while taking damage
+    - [ ] Make sure healthbars are properly updated when damage is taken
+    - [ ] Add death state
+
+- [ ] Portrait tile selection
+    - [ ] When clicking a portrait in battle, should select the tile the battler is on
+
+- [ ] Determine Encounter Completion:
+
+    - Implement API calls to verify and update when an encounter is finished.
+    - Create a debug command to drop enemy health to zero for testing purposes.
+
 - [ ] Multiplayer Testing
     - [x] Characters in same party should go to same area instance
     - [x] Characters in same party should go to same battle instance
@@ -7,16 +22,17 @@
     - [x] Characters movements are updated across all the clients in battle instance
     - [x] Player DCing from a battle instance removes player from the battle
     - [x] Verify cleanup code, when no players in a battle instance should cleanup the battle
-    - [ ] Character leaving a party updates the party list in realtime.
+    - [x] Character leaving a party updates the party list in realtime.
     - [x] Characters disconnect in battle, Plan how to handle this.
         - [ ] We can redo party logic to reconstitute the party on disconnect?
-    - [ ] Fix PartyDisplayMenu party leave so that not only the healthbars dissappear on party member leaving/disconnecting
+    - [x] Fix PartyDisplayMenu party leave so that not only the healthbars dissappear on party member leaving/disconnecting
 
-- [ ] Create character regression.
-    - [ ] Update the class select to compensate for the new removePortrait functionality (it's using destroy right now)
+- [x] Create character regression.
+    - [x] Update the class select to compensate for the new removePortrait functionality (it's using destroy right now)
 
-- [ ] Invite regression
-    - If reject invite, it breaks the invite menu for future invites.  Need to make sure if you reject an invite, you will get a new one.  This will require deleting the existing invite menu entirely (because the check is not checking if it's hidden, it's checking if it exists)
+- [x] Invite regression
+    - [x] If reject invite, it breaks the invite menu for future invites.  Need to make sure if you reject an invite, you will get a new one.  This will require deleting the existing invite menu entirely (because the check is not checking if it's hidden, it's checking if it exists)
+    - [x] Clear invite text input on close
 
 - [ ] Redo Hotbar Menu (bottom left) Using menu system
     - [ ] Leverage the menu system
@@ -51,11 +67,6 @@
 - [x] Implement Basic Ability System
 
 - [x] Implement Basic Enemy Scripting System
-
-- [ ] Determine Encounter Completion:
-
-    - Implement API calls to verify and update when an encounter is finished.
-    - Create a debug command to drop enemy health to zero for testing purposes.
 
 - [x] Handle Retreat Option:
 

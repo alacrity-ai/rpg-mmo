@@ -38,6 +38,7 @@ export default class PartyInviteMenu extends BaseMenu {
             .then(response => {
                 console.log('Got response: ', response);
                 console.log('Invited character:', response.character);
+                this.clearTextInput(0, 0);
                 this.hide();
             })
             .catch(error => {
@@ -46,6 +47,7 @@ export default class PartyInviteMenu extends BaseMenu {
     }
 
     handleCancel() {
+        this.clearTextInput(0, 0);
         this.hide();
     }
 

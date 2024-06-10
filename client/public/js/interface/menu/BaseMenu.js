@@ -350,7 +350,7 @@ class BaseMenu {
         // Store the text input reference for future access
         this.textInputs[tab] = this.textInputs[tab] || [];
         const inputIndex = this.textInputs[tab].length;
-        this.textInputs[tab].push({ container, text, currentText, background, width, height });
+        this.textInputs[tab].push({ container, text, currentText, background, width, height, placeholder });
     
         // Handle focus and blur
         container.setSize(width, height); // Set the container size for interaction
@@ -360,6 +360,7 @@ class BaseMenu {
                 SoundFXManager.playSound('assets/sounds/menu/ui_2.wav');
                 this.focusedInput = { tab, inputIndex };
                 this.updateInputBorders();
+                currentText = this.textInputs[tab][inputIndex].currentText; // Ensure currentText is synchronized on focus
             }
         });
     
@@ -407,9 +408,29 @@ class BaseMenu {
         // Add the container to the specified tab
         this.addElementToTab(tab, container);
     
-        return container;
-    }      
+        return this.textInputs[tab][inputIndex]; // Return the text input reference
+    }
     
+    
+       
+    clearTextInput(tab = 0, index = 0) {
+        const textInput = this.textInputs[tab][index];
+    
+        if (!textInput) {
+            console.error('Invalid text input provided to clearTextInput:', textInput);
+            return;
+        }
+    
+        // Clear the current text
+        textInput.currentText = '';
+    
+        // Update the displayed text to show the placeholder
+        textInput.text.setText(textInput.placeholder);
+        textInput.text.setStyle({ fill: '#888888' }); // Change text color to placeholder color
+    }
+    
+    
+      
     focusNextInput() {
         if (this.focusedInput) {
             const { tab, inputIndex } = this.focusedInput;

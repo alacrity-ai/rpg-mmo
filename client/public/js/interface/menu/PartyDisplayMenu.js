@@ -17,6 +17,7 @@ export default class PartyDisplayMenu extends BaseMenu {
 
         this.characters = [];
         this.resourceBars = [];
+        this.portraits = [];
         this.loadPartyData();
     }
 
@@ -25,14 +26,14 @@ export default class PartyDisplayMenu extends BaseMenu {
         try {
             const response = await api.party.getParty();
             this.characters = response.characters;
-            this.renderParty();
+            await this.renderParty();
         } catch (error) {
             console.error('Error loading party data:', error);
         }
     }
 
-    renderParty() {
-        // Clear previous resource bars
+    async renderParty() {
+        // Clear previous resource bars and portraits
         this.resourceBars.forEach(resourceBar => {
             resourceBar.healthBar.destroy();
             resourceBar.manaBar.destroy();
@@ -42,15 +43,22 @@ export default class PartyDisplayMenu extends BaseMenu {
             resourceBar.manaBorder.destroy();
         });
         this.resourceBars = [];
+        
+        this.portraits.forEach(portrait => {
+            this.removePortrait(portrait);
+        });
+        this.portraits = [];
 
         // Calculate spacing based on the number of characters
         const portraitSpacing = 110; // Adjust this value as needed for spacing between portraits
         const barSpacing = 10; // Spacing between the portrait and the bars
-        this.characters.forEach((character, index) => {
+        
+        for (const [index, character] of this.characters.entries()) {
             const atlasImagePath = `assets/images/characters/${character.characterClass}/portrait/atlas.png`;
             const posX = this.x + 20; // Adjust X position if needed
             const posY = this.y + 20 + index * (portraitSpacing + barSpacing * 2); // Stack portraits vertically with spacing
-            this.addPortrait(posX, posY, atlasImagePath, 0);
+            const portrait = await this.addPortrait(posX, posY, atlasImagePath, 0);
+            this.portraits.push(portrait);
 
             // Calculate positions for the resource bars to be centered to the right of the portrait
             const barX = posX + 50; // Adjust as needed for positioning to the right of the portrait
@@ -61,13 +69,14 @@ export default class PartyDisplayMenu extends BaseMenu {
             resourceBars.setHealth(character.currentStats.health);
             resourceBars.setMana(character.currentStats.mana);
             this.resourceBars.push(resourceBars);
-        });
+        }
     }
 
     async updateStats() {
         // Periodically fetch the latest party data and update the stat bars
         try {
-            this.characters = await api.party.getParty();
+            const response = await api.party.getParty();
+            this.characters = response.characters;
             this.characters.forEach((character, index) => {
                 const resourceBars = this.resourceBars[index];
                 resourceBars.setHealth(character.currentStats.health);

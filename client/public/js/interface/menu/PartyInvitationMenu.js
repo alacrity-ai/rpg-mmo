@@ -46,7 +46,11 @@ export default class PartyInvitationMenu extends BaseMenu {
         api.party.respondToPartyInvite(this.partyId, false)
             .then(response => {
                 console.log('Rejected party invite: ', response);
+                // delete this.scene.partyInvitationMenu);
                 this.hide();
+                // completely delete the instance by entirely removing it from the scene
+                this.destroy();
+                this.scene.partyInvitationMenu = null;
             })
             .catch(error => {
                 console.error('Error rejecting party invite:', error);

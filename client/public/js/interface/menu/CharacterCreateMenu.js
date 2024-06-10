@@ -75,9 +75,7 @@ export default class CharacterCreateMenu extends BaseMenu {
 
         // Clear previous portrait and class info if they exist
         if (this.portrait) {
-            this.portrait.sprite.destroy();
-            this.portrait.maskShape.destroy();
-            this.portrait.border.destroy();
+            this.removePortrait(this.portrait)
         }
         if (this.classNameText) {
             this.classNameText.destroy();
