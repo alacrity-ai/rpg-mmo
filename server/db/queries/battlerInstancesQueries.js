@@ -62,6 +62,17 @@ async function getBattlerInstanceById(id) {
     return null;
 }
 
+async function getBattlerInstancesByIds(ids) {
+    const sql = `SELECT * FROM battler_instances WHERE id IN (${ids.map(() => '?').join(', ')})`;
+    const rows = await query(sql, ids);
+
+    if (rows.length > 0) {
+        return rows.map(battlerInstance => new BattlerInstance(battlerInstance));
+    }
+
+    return [];
+}
+
 async function getBattlerInstancesByCharacterId(characterId) {
     const sql = 'SELECT * FROM battler_instances WHERE character_id = ?';
     const params = [characterId];
@@ -228,6 +239,7 @@ async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
 module.exports = {
     createBattlerInstance,
     getBattlerInstanceById,
+    getBattlerInstancesByIds,
     updateBattlerInstance,
     updateBattlerPhase,
     deleteBattlerInstance,

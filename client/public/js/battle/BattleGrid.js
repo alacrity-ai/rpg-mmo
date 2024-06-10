@@ -88,8 +88,8 @@ class BattleGrid {
         }
     }
 
-    async addBattler(battlerData, initialTile, isThisPlayer = false) {
-        const battler = new Battler(this.scene, battlerData, initialTile, isThisPlayer);
+    async addBattler(battlerData, initialTile, isThisPlayer = false, scale = 1) {
+        const battler = new Battler(this.scene, battlerData, initialTile, isThisPlayer, scale);
         await battler.initialize();
         battler.create(this);
         this.battlerInstanceMap.set(battlerData.id, battler);
@@ -206,7 +206,7 @@ class BattleGrid {
     getTileCenterPosition(tileObject, battlerInstance) {
         return {
             x: tileObject.sprite.x + tileObject.sprite.width / 2 - 4,
-            y: tileObject.sprite.y + battlerInstance.yOffset - 32
+            y: tileObject.sprite.y + battlerInstance.yOffset - battlerInstance.yAdjustment
         };
     }
 

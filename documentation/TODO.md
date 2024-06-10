@@ -9,6 +9,8 @@
 
 - [ ] Render portraits as pixel art.
 
+- [ ] Movement Fix: Don't allow movement to same square (right now it triggers the gcd)
+
 - [ ] Portrait tile selection
     - [ ] When clicking a portrait in battle, should select the tile the battler is on
 

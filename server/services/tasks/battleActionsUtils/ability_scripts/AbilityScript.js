@@ -1,5 +1,4 @@
 const { getAbilityTemplateByShortName } = require('../../../../db/queries/abilityTemplatesQueries');
-const BattleActionProcessor = require('../../BattleActionProcessor');
 
 class AbilityScript {
     constructor(abilityShortName, battlerInstance, battlerInstances, battleInstanceId) {
@@ -17,29 +16,6 @@ class AbilityScript {
         }
     }
 
-    async useAbility(targetBattlerInstances, effects) {
-        const results = [];
-        for (let targetBattlerInstance of targetBattlerInstances) {
-            const actionData = {
-                abilityId: this.abilityTemplate.id,
-                casterId: this.battlerInstance.id,
-                targetId: targetBattlerInstance.id,
-                ...effects,
-                battleInstanceId: this.battleInstanceId
-            };
-
-            const action = {
-                battleInstanceId: this.battleInstanceId,
-                battlerId: this.battlerInstance.id,
-                actionType: 'ability',
-                actionData
-            };
-
-            results.push(await BattleActionProcessor.processSingleAction(action));
-        }
-        return results;
-    }
-
     calculateDamage(stat, potency) {
         const statValue = this.battlerInstance.stats[stat] || 10; // Assuming a default value if the stat is not defined
         return potency * statValue;
@@ -52,6 +28,10 @@ class AbilityScript {
                 position[1] === battlerInstance.gridPosition[1]
             );
         });
+    }
+
+    execute() {
+        throw new Error('execute method must be implemented by the subclass');
     }
 }
 

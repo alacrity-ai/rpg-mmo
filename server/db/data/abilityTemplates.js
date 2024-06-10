@@ -34,7 +34,7 @@ const abilityTemplates = [
         cooldown_duration: 'normal',
         icon_name: 'dagger',
         sound_path: 'assets/sounds/rogue_strike.mp3',
-        script_path: 'strengthAttack.js',
+        script_path: 'rogueAttack.js',
         animation_script: 'strengthAttack.js'
     },
     {

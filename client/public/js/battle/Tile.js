@@ -15,6 +15,26 @@ class Tile {
         this.sprite.setOrigin(0, 0);
     }
 
+    addBattler(battlerId) {
+        if (!this.battlers.includes(battlerId)) {
+            this.battlers.push(battlerId);
+            this.updateTexture(); // Update the texture when a battler is added
+        }
+    }
+
+    removeBattler(battlerId) {
+        const index = this.battlers.indexOf(battlerId);
+        if (index > -1) {
+            this.battlers.splice(index, 1);
+            this.updateTexture(); // Update the texture when a battler is removed
+        }
+    }
+
+    // Add this method
+    getBattlerIds() {
+        return this.battlers;
+    }
+
     updateTexture(inactive = false) {
         let newTextureKey = this.baseTextureKey;
 
@@ -92,21 +112,6 @@ class Tile {
     hideTelegraph() {
         this.telegraphCount -= 1;
         this.updateTexture();
-    }
-
-    addBattler(battlerId) {
-        if (!this.battlers.includes(battlerId)) {
-            this.battlers.push(battlerId);
-            this.updateTexture(); // Update the texture when a battler is added
-        }
-    }
-
-    removeBattler(battlerId) {
-        const index = this.battlers.indexOf(battlerId);
-        if (index > -1) {
-            this.battlers.splice(index, 1);
-            this.updateTexture(); // Update the texture when a battler is removed
-        }
     }
 }
 

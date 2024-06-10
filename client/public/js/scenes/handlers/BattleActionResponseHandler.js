@@ -47,7 +47,7 @@ export default class BattleActionResponseHandler {
             // Add the new battler to the battle grid
             const newBattlerInstance = data.battlerInstancesData.find(b => b.id === data.battlerId);
             if (newBattlerInstance) {
-                this.battleGrid.addBattler(newBattlerInstance, newBattlerInstance.gridPosition, false);
+                this.battleGrid.addBattler(newBattlerInstance, newBattlerInstance.gridPosition, false, 1);
             }
 
             // Update the battlerDisplayMenu

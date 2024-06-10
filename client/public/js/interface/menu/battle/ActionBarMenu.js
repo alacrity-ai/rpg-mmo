@@ -51,23 +51,57 @@ export default class ActionBarMenu extends BaseMenu {
     createActionBar(abilities) {
         const iconWidth = 48;
         const padding = 0;
-
+    
         this.iconButtons = [];
-
+    
         abilities.forEach((ability, index) => {
             const iconX = this.x - (this.width / 2) + iconWidth / 2 + index * (iconWidth + padding);
             const iconY = this.y;
-
-            const iconButton = this.addIconButton(iconX, iconY, ability, () => {
+    
+            const iconButton = this.addIconButton(iconX, iconY, ability, async () => {
+                try {
+                    // Get the selected tiles
+                    const selectedTiles = this.battleGrid.selectedTiles;
+    
+                    // Get the battler IDs on the selected tiles
+                    const battlerIdsOnSelectedTiles = selectedTiles.flatMap(([x, y]) => {
+                        const tile = this.battleGrid.grid[y][x];
+                        return tile.getBattlerIds(); // Get the battler IDs on the tile
+                    });
+    
+                    // Create an array of target tile coordinates (x, y)
+                    const targetTileCoordinates = selectedTiles.map(([x, y]) => [x, y]);
+    
+                    // Construct the action data
+                    const actionData = {
+                        abilityTemplate: ability,
+                        targetTiles: targetTileCoordinates, // Pass in the array of x, y coordinates
+                        targetBattlerIds: battlerIdsOnSelectedTiles,
+                    };
+    
+                    // Call the API to perform the ability action
+                    await api.battlerAction.addBattlerAction(
+                        this.battleInstanceId,
+                        this.battlerId,
+                        'ability',
+                        actionData
+                    );
+    
+                    // Optionally handle the response here if needed
+                    console.log('Action added successfully');
+                } catch (error) {
+                    console.error('Failed to add action:', error);
+                }
+    
                 // Trigger the cooldown for the ability with the appropriate duration
                 this.triggerGlobalCooldown(this.getCooldownDuration(ability.cooldownDuration));
             }, ability.name);
-
+    
             this.iconButtons.push(iconButton);
         });
-
+    
         this.updateButtonStates(); // Initial update of button states
-    }
+    }      
 
     addIconButton(x, y, ability, callback, tooltip = null, tab = 0) {
         const { normalBorderColor, hoverBorderColor } = this.getIconButtonBorderColors(ability.targetTeam, ability.targetType);

@@ -1,4 +1,4 @@
-const { updateBattlerPosition, updateBattlerHealth, updateBattlerMana, applyStatusEffect, getBattlerInstanceById } = require('../../../db/queries/battlerInstancesQueries');
+const { updateBattlerPosition, updateBattlerHealth, updateBattlerMana, applyStatusEffect, getBattlerInstanceById, getBattlerInstancesByIds } = require('../../../db/queries/battlerInstancesQueries');
 const { getCooldownDuration } = require('../../../utilities/helpers');
 
 class BattleActionProcessor {
@@ -31,19 +31,26 @@ class BattleActionProcessor {
      * @returns {Object} The result of processing the ability action.
      */
     async processAbilityAction(action) {
-        const { actionData } = action;
+        const { battleInstanceId, battlerId, actionType, actionData } = action;
+        const { abilityTemplate, targetTiles, targetBattlerIds } = actionData
+        console.log(`BAP: Got values: ${battleInstanceId}, ${battlerId}, ${actionType}, ${actionData}`)
+        console.log(`BAP: Extracted values: ${abilityTemplate}, ${targetTiles}, ${targetBattlerIds}`)
+
+        // Get up to date information from the Database about the battler using the ability and target battlers
+        const userBattlerInstance = await getBattlerInstanceById(battlerId);
+        const targetBattlerInstances = await getBattlerInstancesByIds(targetBattlerIds);
 
         // Deduct mana cost
-        const manaResult = await this.useMana(action.battlerId, actionData.manaCost);
+        const manaResult = await this.useMana(userBattlerInstance, actionData.manaCost);
         if (!manaResult.success) {
             return manaResult;
         }
+        console.log('BAP: Mana deducted successfully')
 
         // Set cooldown based on ability's cooldown duration
         const cooldownKey = `cooldown:${action.battlerId}`;
         const currentTime = Date.now();
         const cooldownDuration = getCooldownDuration(actionData.cooldownDuration);
-
         const cooldownEndTime = await this.redisClient.get(cooldownKey);
         if (cooldownEndTime && currentTime < cooldownEndTime) {
             return {
@@ -54,25 +61,38 @@ class BattleActionProcessor {
                 actionData: action.actionData
             };
         }
-
         await this.redisClient.set(cooldownKey, currentTime + cooldownDuration, 'PX', cooldownDuration);
+        console.log('BAP: Cooldown processed')
 
+        // Instantiate the ability script
+        const battleScriptModule = require(`./ability_scripts/${abilityTemplate.scriptPath}`)
+        const abilityScript = new battleScriptModule(userBattlerInstance, targetBattlerInstances, battleInstanceId);
+        console.log('BAP: Ability script instantiated')
+
+        // Get the proposed actionEffects from the abilityScript
+        // execute() method should return an object with any number of these keys: damage, healing, status
+        const actionEffects = await abilityScript.execute();
+        const { damage, healing, status } = actionEffects;
+        console.log(`BAP: Action effects calculated: damage: ${damage}, healing: ${healing}, status: ${status}`)
+
+        // Apply the effects from the script
         actionData.results = actionData.results || [];
-
-        if (actionData.damage) {
-            actionData.results.push(await this.doDamage(actionData.targetId, actionData.damage));
-        }
-
-        if (actionData.healing) {
-            actionData.results.push(await this.doHealing(actionData.targetId, actionData.healing));
-        }
-
-        if (actionData.statusEffects) {
-            for (let status of actionData.statusEffects) {
-                actionData.results.push(await this.applyStatus(actionData.targetId, status));
+        for (let targetInstance of targetBattlerInstances) {
+            if (damage) {
+                console.log(`BAP: Applying damage to target ${targetInstance.id}`)
+                actionData.results.push(await this.doDamage(targetInstance, damage));
+            }
+            if (healing) {
+                console.log(`BAP: Applying healing to target ${targetInstance.id}`)
+                actionData.results.push(await this.doHealing(targetInstance, healing));
+            }
+            if (status) {
+                console.log(`BAP: Applying status to target ${targetInstance.id}`)
+                actionData.results.push(await this.applyStatus(targetInstance, status));
             }
         }
 
+        console.log(`BAP: Returning results: success: true, message: 'Ability action processed successfully', battlerId: ${action.battlerId}, actionType: ${action.actionType}, actionData: ${action.actionData}`)
         return {
             success: true,
             message: 'Ability action processed successfully',
@@ -88,28 +108,29 @@ class BattleActionProcessor {
      * @param {number} manaCost - The amount of mana to deduct.
      * @returns {Object} The result of the mana deduction.
      */
-    async useMana(battlerId, manaCost) {
-        let battler = await getBattlerInstanceById(battlerId);
-        if (!battler) {
+    async useMana(battlerInstance, manaCost) {
+        if (!battlerInstance) {
             return {
                 success: false,
-                message: `Battler ${battlerId} not found`
+                message: `Battler not found`
             };
         }
 
-        if (battler.currentStats.mana < manaCost) {
+        if (battlerInstance.currentStats.mana < manaCost) {
             return {
                 success: false,
-                message: `Insufficient mana for battler ${battlerId}`
+                message: `Insufficient mana for battler ${battlerInstance.id}`
             };
         }
 
-        battler.currentStats.mana -= manaCost;
-        await updateBattlerMana(battler.id, battler.currentStats.mana);
+        battlerInstance.currentStats.mana -= manaCost;
+        await updateBattlerMana(battlerInstance.id, battlerInstance.currentStats.mana);
 
         return {
             success: true,
-            message: `Deducted ${manaCost} mana from battler ${battlerId}`
+            type: 'mana',
+            statAdjustments: { mana: battlerInstance.currentStats.mana },
+            message: `Deducted ${manaCost} mana from battler ${battlerInstance.id}`
         };
     }
 
@@ -119,20 +140,23 @@ class BattleActionProcessor {
      * @param {number} damage - The amount of damage to apply.
      * @returns {Object} The result of applying the damage.
      */
-    async doDamage(targetId, damage) {
-        let target = await getBattlerInstanceById(targetId);
-        if (!target) {
+    async doDamage(battlerInstance, damage) {
+        if (!battlerInstance) {
             return {
                 success: false,
-                message: `Battler ${targetId} not found`
+                message: `Battler not found`
             };
         }
-        target.currentStats.health = Math.max(target.currentStats.health - damage, 0); // Clamp health to a minimum of 0
-        await updateBattlerHealth(target.id, target.currentStats.health);
+        battlerInstance.currentStats.health = Math.max(battlerInstance.currentStats.health - damage, 0); // Clamp health to a minimum of 0
+        
+        // Update the battlerInstance in the database
+        await updateBattlerHealth(battlerInstance.id, battlerInstance.currentStats.health);
 
         return {
             success: true,
-            message: `Applied ${damage} damage to battler ${targetId}`
+            type: 'damage',
+            statAdjustments: { health: battlerInstance.currentStats.health},
+            message: `Applied ${damage} damage to battler ${battlerInstance.id}`
         };
     }
 
@@ -142,20 +166,21 @@ class BattleActionProcessor {
      * @param {number} healing - The amount of healing to apply.
      * @returns {Object} The result of applying the healing.
      */
-    async doHealing(targetId, healing) {
-        let target = await getBattlerInstanceById(targetId);
-        if (!target) {
+    async doHealing(battlerInstance, healing) {
+        if (!battlerInstance) {
             return {
                 success: false,
-                message: `Battler ${targetId} not found`
+                message: `Battler not found`
             };
         }
-        target.currentStats.health = Math.min(target.currentStats.health + healing, target.baseStats.health); // Clamp health to a maximum of base health
-        await updateBattlerHealth(target.id, target.currentStats.health);
+        battlerInstance.currentStats.health = Math.min(battlerInstance.currentStats.health + healing, battlerInstance.baseStats.health); // Clamp health to a maximum of base health
+        await updateBattlerHealth(battlerInstance.id, battlerInstance.currentStats.health);
 
         return {
             success: true,
-            message: `Applied ${healing} healing to battler ${targetId}`
+            type: 'healing',
+            statAdjustments: { health: battlerInstance.currentStats.health },
+            message: `Applied ${healing} healing to battler ${battlerInstance.id}`
         };
     }
 

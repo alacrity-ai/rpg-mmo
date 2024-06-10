@@ -1,7 +1,7 @@
 import BattlerSpriteManager from './BattlerSpriteManager.js';
 
 class Battler {
-    constructor(scene, battlerData, initialTile, isThisPlayer = false) {
+    constructor(scene, battlerData, initialTile, isThisPlayer = false, scale = 1) {
         this.scene = scene;
         this.battlerData = battlerData;
         this.initialTile = initialTile;
@@ -9,7 +9,15 @@ class Battler {
         if (battlerData.team === 'player') {
             this.yOffset = -20;
         } else {
-            this.yOffset = 0;
+            this.yOffset = 4;
+        }
+        this.scale = scale;
+        if (scale === 1) {
+            this.yAdjustment = 32;
+        } else if (scale == 0.75) {
+            this.yAdjustment = 12;
+        } else {
+            this.yAdjustment = 0;
         }
     }
 
@@ -23,9 +31,9 @@ class Battler {
         // Calculate the position to center the sprite in the tile
         const position = {
             x: tile.sprite.x + tile.sprite.width / 2 - 4,
-            y: tile.sprite.y + this.yOffset - 32
+            y: tile.sprite.y + this.yOffset - this.yAdjustment
         };
-        this.sprite = BattlerSpriteManager.createSprite(this.scene, this.battlerData, position, this.spriteConfigs);
+        this.sprite = BattlerSpriteManager.createSprite(this.scene, this.battlerData, position, this.spriteConfigs, this.scale); // Added scale parameter
 
         battleGrid.addBattlerToTile(this.battlerData.id, this.initialTile);
     }
@@ -51,7 +59,7 @@ class Battler {
         // Calculate the position to center the sprite in the tile
         const position = {
             x: tile.sprite.x + tile.sprite.width / 2 - 4,
-            y: tile.sprite.y + this.yOffset - 32
+            y: tile.sprite.y + this.yOffset - this.yAdjustment
         };
         
         // Get the current tile position of the sprite using battleGrid.getBattlerPosition

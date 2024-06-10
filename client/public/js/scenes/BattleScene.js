@@ -69,7 +69,13 @@ export default class BattleScene extends Phaser.Scene {
 
         // Add battlers to the grid
         for (const battlerData of this.battlerInstancesData) {
-            await this.battleGrid.addBattler(battlerData, battlerData.gridPosition, battlerData.characterId === this.battlerId);
+            if (battlerData.characterId) {
+                // Add characters
+                await this.battleGrid.addBattler(battlerData, battlerData.gridPosition, battlerData.characterId === this.battlerId, 1);
+            } else {
+                // Add enemies
+                await this.battleGrid.addBattler(battlerData, battlerData.gridPosition, false, 1);
+            }
         }
 
         // Initialize the ActionBarMenu

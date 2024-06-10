@@ -16,23 +16,26 @@ class BattlerSpriteManager {
         return spriteConfigs;
     }
 
-    static createSprite(scene, battlerData, position, spriteConfigs, animationType = 'combat') {
+    static createSprite(scene, battlerData, position, spriteConfigs, scale = 1, animationType = 'combat') {
         const { x, y } = position;
         const spriteConfig = spriteConfigs[animationType];
-
+    
         if (spriteConfig) {
             // Create the sprite using the atlas animation
             const sprite = scene.add.sprite(x, y, spriteConfig.key);
+            sprite.setScale(scale); // Set the scale of the sprite
             sprite.play(spriteConfig.animKey);
             return sprite;
         } else {
             // Fallback to combat animation if the requested animation type does not exist
             const fallbackSpriteConfig = spriteConfigs['combat'];
             const sprite = scene.add.sprite(x, y, fallbackSpriteConfig.key);
+            sprite.setScale(scale); // Set the scale of the sprite
             sprite.play(fallbackSpriteConfig.animKey);
             return sprite;
         }
     }
+    
 }
 
 export default BattlerSpriteManager;

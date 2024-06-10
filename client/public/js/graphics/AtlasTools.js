@@ -32,6 +32,9 @@ export async function atlasToSprite(scene, atlasImagePath, frameRate = 10, start
         scene.load.atlas(atlasKey, atlasImagePath, atlasJsonPath);
 
         scene.load.once('complete', () => {
+            // Set the filter mode to NEAREST for pixel-perfect rendering
+            scene.textures.get(atlasKey).setFilter(Phaser.Textures.FilterMode.NEAREST);
+
             let frames = scene.textures.get(atlasKey).getFrameNames().map(frameName => ({
                 key: atlasKey,
                 frame: frameName
