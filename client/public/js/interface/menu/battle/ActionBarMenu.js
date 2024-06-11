@@ -115,7 +115,7 @@ export default class ActionBarMenu extends BaseMenu {
             callback();
         });
         this.addElementToTab(tab, iconButton);
-        if (tooltip) this.addTooltip(iconButton, tooltip);
+        if (tooltip) iconButton.tooltip = this.addTooltip(iconButton, tooltip);
     
         // Add a pointerOver event here to target tiles on the battle grid
         iconButton.on('pointerover', () => {
@@ -207,6 +207,7 @@ export default class ActionBarMenu extends BaseMenu {
     
             if (this.shouldDisableIcon(ability, battlerPosition)) {
                 this.disableIcon(iconButton); // Greyed out
+                // iconButton.tooltip.setVisible(false);
             } else {
                 this.enableIcon(iconButton); // Normal state
             }
@@ -215,6 +216,12 @@ export default class ActionBarMenu extends BaseMenu {
 
     shouldDisableIcon(ability, battlerPosition) {
             const requiredCoords = ability.requiredCoords || [];
+
+            console.log('CHECKING: ability.cost and current mana: ', ability.cost, this.scene.battler.currentStats.mana)
+            // If the user doesn't have enough mana, disable the icon
+            if (ability.cost > this.scene.battler.currentStats.mana) {
+                return true;
+            }
 
             // If a tile is focused, and this ability's targetType is not 'target', disable the icon
             if (this.battleGrid.tileFocused && ability.targetType !== 'target') {
@@ -256,6 +263,7 @@ export default class ActionBarMenu extends BaseMenu {
         iconButton.disableInteractive();
         this.iconHelper.setTint(iconButton, 0x444444);
         this.iconHelper.setBorderTint(iconButton, 0x444444);
+        iconButton.tooltip.setVisible(false);
     }
 
     enableIcon(iconButton) {

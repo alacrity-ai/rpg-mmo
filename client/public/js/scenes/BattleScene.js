@@ -85,7 +85,7 @@ export default class BattleScene extends Phaser.Scene {
         this.actionResponseHandler = new BattleActionResponseHandler(this.battleGrid, this.actionBarMenu, settings);
         this.actionResponseHandler.initialize();
 
-        // Initialize the action response handler for messages from the server
+        // Initialize the room response handler for messages from the server
         this.roomResponseHandler = new BattleRoomResponseHandler(this.battleGrid, this.actionBarMenu, settings);
         this.roomResponseHandler.initialize();
 
@@ -98,6 +98,9 @@ export default class BattleScene extends Phaser.Scene {
         for (let i = 0; i < this.battlerInstancesData.length; i++) {
             if (this.battlerInstancesData[i].id === battlerId) {
                 this.battlerInstancesData[i] = updatedBattlerInstance;
+                if (this.battlerInstancesData[i].characterId === this.battler.characterId) {
+                    this.battler = updatedBattlerInstance;
+                }
                 return;
             }
         }

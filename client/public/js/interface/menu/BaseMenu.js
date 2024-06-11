@@ -546,6 +546,7 @@ class BaseMenu {
         });
     
         this.tabs[this.currentTab].push(tooltip); // Tooltips are associated with the current tab
+        return tooltip;
     }    
 
     addButton(x, y, width, height, text, callback, tooltip = null, tab = 0, backgroundColor = 0x555555, textColor = '#fff', borderRadius = 10, fontSize = '16px', locked = false, soundOnClick = null) {
@@ -612,7 +613,8 @@ class BaseMenu {
         this.addElementToTab(tab, buttonContainer);
     
         // Add tooltip if provided
-        if (tooltip) this.addTooltip(buttonContainer, tooltip);
+        if (tooltip) buttonContainer.tooltip = this.addTooltip(buttonContainer, tooltip);
+        return buttonContainer
     }
     
     
@@ -683,7 +685,8 @@ class BaseMenu {
             callback();
         });
         this.addElementToTab(tab, iconButton);
-        if (tooltip) this.addTooltip(iconButton, tooltip);
+        if (tooltip) iconButton.tooltip = this.addTooltip(iconButton, tooltip);
+        return iconButton;
     }
 
     addIcon(x, y, iconName, tooltip = null, tab = 0) {
