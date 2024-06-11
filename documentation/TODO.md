@@ -10,9 +10,6 @@
 // Updating the existing battler instance by id with the new battler instance object from the result.
 // We should also log to console how much healing, or damage was done.
 
-- [ ] ActionHotBar Clientside
-    - [ ] Grey out abilities when insufficient mana, (Handle targetted abilities as well)
-
 - [ ] Death state
     - [ ] Handle death state for players (Fall over and stay on ground, no actions until raise)
         - [ ] Add raise ability to test raising
@@ -38,6 +35,13 @@
     - [ ] Add hover sound effect as optional argument
 
 - [ ] Party Reconnect on Disconnect?
+
+- Mana / Healthbar bug
+    - [x] If ability would cause mana to go to 0, not updating manabar properly. Probably null evaluating the same as 0 issue.
+    - [x] If ability would drop HP of a target to 0, not updating healthbar properly. Probably null evaluating the same as 0 issue.
+
+- [x] ActionHotBar Clientside
+    - [x] Grey out abilities when insufficient mana, (Handle targetted abilities as well)
 
 - [x] Ability Progress
     - [x] Verify client actionbar is sending request to server
@@ -189,23 +193,23 @@ We just added binding the characterId to the socket on character login (We shoul
                     - [ ] We will figure out how to determine when an encounter is finished.
                     Probably some API call from the client saying that they killed all the enemies in the encounter, then the server will verify, and update the area_instance to show the encounter is cleared, and that they can return to the area_instance scene.
                         We can make a debug command that simply drops all the health of the enemy team to 0 to test this.  We have the win condition checks in the BattleManager.
-                    - [ ] We will need to handle the Retreat option.
-                    - [ ] Keep in mind we may need to handle more cleanup scenarios for battle instances
+                    - [x] We will need to handle the Retreat option.
+                    - [x] Keep in mind we may need to handle more cleanup scenarios for battle instances
                     - [ ] When the player team wins a battle, we need to make sure to superimpose the current health / mana of the battler onto the characters.
                             If for some reason the character is buffed beyond their maxhp, we need to make sure that the health we superimpose isn't higher than the max hp/mp.
 
                     THEN:
-                        - [ ] Delete the entire database, and then rerun the server to create and populate the tables.
+                        - [x] Delete the entire database, and then rerun the server to create and populate the tables.
                             Verify that the game is still able to run, including creating a character from scratch, entering an area, and going into battle.
-                        - [ ] Do basic multiplayer testing. 
-                            - [ ] Can two separate accounts that are logged in both have their own instanced areas and combat?
-                            - [ ] Add basic party invite functionality to join two characters into one party.
-                            - [ ] Verify that partied characters enter the same area instance
-                            - [ ] Verify that partied characters enter the same combat encounter
+                        - [x] Do basic multiplayer testing. 
+                            - [x] Can two separate accounts that are logged in both have their own instanced areas and combat?
+                            - [x] Add basic party invite functionality to join two characters into one party.
+                            - [x] Verify that partied characters enter the same area instance
+                            - [x] Verify that partied characters enter the same combat encounter
 
                         THEN:
-                            - [ ] Begin planning ability system
-                            - [ ] Begin planning enemy script system
+                            - [x] Begin planning ability system
+                            - [x] Begin planning enemy script system
 
 THEN:
     Modify the trans

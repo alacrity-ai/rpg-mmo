@@ -108,10 +108,10 @@ export default class BattlerDisplayMenu extends BaseMenu {
     updateResourceBars(battlerId, newHealth, newMana) {
         const resourceBars = this.battlerIdToResourceBarsMap[battlerId];
         if (resourceBars) {
-            if (newHealth) {
+            if (newHealth != null) {
                 resourceBars.setHealth(newHealth);
             }
-            if (newMana) {
+            if (newMana != null) {
                 resourceBars.setMana(newMana);
             }
         } else {
