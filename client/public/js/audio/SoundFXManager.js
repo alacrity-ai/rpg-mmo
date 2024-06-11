@@ -31,7 +31,7 @@ class SoundFXManager {
             const sound = this.soundCache.get(path);
             sound.play();
         } else {
-            // Load the sound dynamically and play it
+            // Load the sound dynamically and play it once loaded
             this.scene.load.audio(path, path);
             this.scene.load.once('complete', () => {
                 const sound = this.scene.sound.add(path);

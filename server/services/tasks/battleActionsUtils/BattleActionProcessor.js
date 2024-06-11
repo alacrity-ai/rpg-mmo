@@ -45,7 +45,7 @@ class BattleActionProcessor {
         actionData.results = actionData.results || [];        
 
         // Deduct mana cost
-        const manaResult = await this.useMana(userBattlerInstance, actionData.manaCost);
+        const manaResult = await this.useMana(userBattlerInstance, abilityTemplate.cost);
         if (!manaResult.success) {
             return manaResult;
         } else {
@@ -112,31 +112,30 @@ class BattleActionProcessor {
      * @param {number} manaCost - The amount of mana to deduct.
      * @returns {Object} The result of the mana deduction.
      */
-    async useMana(battlerInstance, manaCost) {
-        if (!battlerInstance) {
+    async useMana(userbattlerInstance, manaCost) {
+        if (!userbattlerInstance) {
             return {
                 success: false,
                 message: `Battler not found`
             };
         }
 
-        if (battlerInstance.currentStats.mana < manaCost) {
+        if (userbattlerInstance.currentStats.mana < manaCost) {
             return {
                 success: false,
-                message: `Insufficient mana for battler ${battlerInstance.id}`
+                message: `Insufficient mana for battler ${userbattlerInstance.id}`
             };
         }
 
-        battlerInstance.currentStats.mana -= manaCost;
-        await updateBattlerMana(battlerInstance.id, battlerInstance.currentStats.mana);
+        userbattlerInstance.currentStats.mana -= manaCost;
+        await updateBattlerMana(userbattlerInstance.id, userbattlerInstance.currentStats.mana);
 
         return {
             success: true,
             type: 'manaCost',
             amount: manaCost,
-            newMana: battlerInstance.currentStats.mana,
-            battlerInstance: battlerInstance,
-            message: `Deducted ${manaCost} mana from battler ${battlerInstance.id}`
+            battlerInstance: userbattlerInstance,
+            message: `Deducted ${manaCost} mana from battler ${userbattlerInstance.id}`
         };
     }
 

@@ -22,7 +22,8 @@ class AbilityScript {
         const damage = potency * (statValue * 0.1) * (battlerLevel / (battlerLevel + 10));
         // TODO: Add random variance to damage
         // TODO: Add crits
-        return Math.round(damage);
+        // Clamp damage to a minimum of 1
+        return Math.max(Math.round(damage), 1);
     }
 
     getTargetsByGridPositions(gridPositions) {

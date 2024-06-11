@@ -33,9 +33,9 @@ const abilityTemplates = [
         target_area: JSON.stringify([[1, 0]]),
         cooldown_duration: 'normal',
         icon_name: 'dagger',
-        sound_path: 'assets/sounds/rogue_strike.mp3',
+        sound_path: 'combat/swing.wav',
         script_path: 'rogueAttack.js',
-        animation_script: 'strengthAttack.js'
+        animation_script: 'rogueAttack.js'
     },
     {
         name: 'Fan Daggers',
@@ -50,9 +50,9 @@ const abilityTemplates = [
         target_area: JSON.stringify([[1, 0], [2, -1], [2, 1]]),
         cooldown_duration: 'normal',
         icon_name: 'scratch-lines',
-        sound_path: 'assets/sounds/rogue_strike.mp3',
-        script_path: 'strengthAttack.js',
-        animation_script: 'strengthAttack.js'
+        sound_path: 'combat/axe_throw.wav',
+        script_path: 'fanDaggers.js',
+        animation_script: 'fanDaggers.js'
     },
     {
         name: 'Toxic Vial',
@@ -67,15 +67,15 @@ const abilityTemplates = [
         target_area: JSON.stringify([[0, 1], [1, 1], [2, 1], [1, 0], [1, 2]]),
         cooldown_duration: 'normal',
         icon_name: 'green-fire-sword',
-        sound_path: 'assets/sounds/rogue_strike.mp3',
-        script_path: 'strengthAttack.js',
-        animation_script: 'strengthAttack.js'
+        sound_path: 'magic/poison.wav',
+        script_path: 'toxicVial.js',
+        animation_script: 'toxicVial.js'
     },
     {
         name: 'Assassinate',
         short_name: 'assassinate',
         description: 'Sneak attack a vulnerable enemy for massive damage.',
-        type: 'ability',
+        type: 'attack',
         potency: 120,
         cost: 20,
         required_coords: JSON.stringify([[1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]),
@@ -84,9 +84,9 @@ const abilityTemplates = [
         target_area: JSON.stringify([[0, 0], [0, 1], [0, 2], [1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]),
         cooldown_duration: 'normal',
         icon_name: 'bloody-blade',
-        sound_path: 'assets/sounds/rogue_strike.mp3',
-        script_path: 'strengthAttack.js',
-        animation_script: 'strengthAttack.js'
+        sound_path: 'combat/magic_arrow.wav',
+        script_path: 'assassinate.js',
+        animation_script: 'assassinate.js'
     },
     {
         name: 'Bandage',
@@ -101,9 +101,9 @@ const abilityTemplates = [
         target_area: JSON.stringify([]),
         cooldown_duration: 'long',
         icon_name: 'bandage',
-        sound_path: 'assets/sounds/rogue_strike.mp3',
-        script_path: 'strengthAttack.js',
-        animation_script: 'strengthAttack.js'
+        sound_path: 'magic/heal1.wav',
+        script_path: 'bandage.js',
+        animation_script: 'bandage.js'
     },
     {
         name: 'Smite',
@@ -118,7 +118,7 @@ const abilityTemplates = [
         target_area: JSON.stringify([[1, 0], [2, 0], [3, 0]]),
         cooldown_duration: 'normal',
         icon_name: 'sparks',
-        sound_path: 'assets/sounds/priest_smite.mp3',
+        sound_path: 'combat/knife_swing.wav',
         script_path: 'strengthAttack.js',
         animation_script: 'strengthAttack.js'
     },
@@ -134,7 +134,7 @@ const abilityTemplates = [
         target_area: JSON.stringify([[1, 0], [1, 1], [1, 2], [2, 0], [2, 1], [2, 2]]),
         cooldown_duration: 'normal',
         icon_name: 'iron-sword',
-        sound_path: 'assets/sounds/warrior_slash.mp3',
+        sound_path: 'combat/knife_swing.wav',
         script_path: 'strengthAttack.js',
         animation_script: 'strengthAttack.js'
     },
@@ -151,7 +151,7 @@ const abilityTemplates = [
         target_area: JSON.stringify([[1, 0]]),
         cooldown_duration: 'normal',
         icon_name: 'fist',
-        sound_path: 'assets/sounds/monk_punch.mp3',
+        sound_path: 'combat/knife_swing.wav',
         script_path: 'strengthAttack.js',
         animation_script: 'strengthAttack.js'
     },

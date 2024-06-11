@@ -6,6 +6,7 @@ class Battler {
         this.battlerData = battlerData;
         this.initialTile = initialTile;
         this.sprite = null;
+        this.moving = false;
         if (battlerData.team === 'player') {
             this.yOffset = -20;
         } else {
@@ -78,7 +79,7 @@ class Battler {
         }
     }
 
-    playHitAnimation(damage = 11) {
+    playHitAnimation(amount) {
         if (this.sprite) {
             // Play the 'hit' animation once
             this.playAnimationOnce('hit');
@@ -92,53 +93,83 @@ class Battler {
                 repeat: 3
             });
     
-            // Tween to knock the sprite back and then return to original position
-            const originalPosition = { x: this.sprite.x, y: this.sprite.y };
-            const knockbackDistance = 10; // Adjust the knockback distance as needed
-    
-            // Determine the direction of the knockback
-            const knockbackDirection = (this.battlerData.team === 'player') ? -1 : 1;
-            
+            if (!this.moving) {
+                // Tween to knock the sprite back and then return to original position
+                const originalPosition = { x: this.sprite.x, y: this.sprite.y };
+                const knockbackDistance = 10; // Adjust the knockback distance as needed
+        
+                // Determine the direction of the knockback
+                const knockbackDirection = (this.battlerData.team === 'player') ? -1 : 1;
+                
+                this.scene.tweens.add({
+                    targets: this.sprite,
+                    x: originalPosition.x + knockbackDistance * knockbackDirection,
+                    duration: 100,
+                    yoyo: true,
+                    onComplete: () => {
+                        this.sprite.setPosition(originalPosition.x, originalPosition.y); // Ensure it returns to the exact original position
+                    }
+                });
+            }
+
+            // Render floating damage text if amount is provided
+            if (amount !== null) {
+                this.renderFloatingDamageText(amount);
+            }
+        }
+    }
+
+    renderBattleText(text, color = '#ffffff', yOffset = 50, duration = 1500) {
+        const textStyle = {
+            font: '20px Arial',
+            fill: color,
+            stroke: '#000000',
+            strokeThickness: 3
+        };
+
+        const battleText = this.scene.add.text(this.sprite.x, this.sprite.y - yOffset, text, textStyle)
+            .setOrigin(0.5)
+            .setDepth(100);
+
+        this.scene.tweens.add({
+            targets: battleText,
+            y: this.sprite.y - yOffset - 70, // Move up
+            alpha: { from: 1, to: 0 },
+            duration: duration,
+            ease: 'Cubic.easeOut',
+            onComplete: () => {
+                battleText.destroy();
+            }
+        });
+    }
+
+    playHealAnimation(healing = 10) {
+        if (this.sprite) {
             this.scene.tweens.add({
                 targets: this.sprite,
-                x: originalPosition.x + knockbackDistance * knockbackDirection,
+                tint: { from: 0xffffff, to: 0x00ff00 },
                 duration: 100,
                 yoyo: true,
+                repeat: 3,
                 onComplete: () => {
-                    this.sprite.setPosition(originalPosition.x, originalPosition.y); // Ensure it returns to the exact original position
+                    this.sprite.clearTint();
                 }
             });
-    
-            // Render floating damage text if damage is provided
-            if (damage !== null) {
-                this.renderFloatingDamageText(damage);
+
+            if (healing !== null) {
+                this.renderFloatingHealingText(healing);
             }
         }
     }
 
     renderFloatingDamageText(damage) {
         const textColor = this.battlerData.team === 'player' ? '#ff0000' : '#ffffff';
-    
-        const damageText = this.scene.add.text(this.sprite.x, this.sprite.y - 50, damage, {
-            font: '20px Arial',
-            fill: textColor,
-            stroke: '#000000',
-            strokeThickness: 3
-        })
-        .setOrigin(0.5)
-        .setDepth(100);
-    
-        // Tween to animate the floating damage text
-        this.scene.tweens.add({
-            targets: damageText,
-            y: this.sprite.y - 120, // Move up a bit slower
-            alpha: { from: 1, to: 0 },
-            duration: 1500, // Last a bit longer
-            ease: 'Cubic.easeOut',
-            onComplete: () => {
-                damageText.destroy();
-            }
-        });
+        this.renderBattleText(damage, textColor);
+    }
+
+    renderFloatingHealingText(healing) {
+        const textColor = '#00ff00';
+        this.renderBattleText(healing, textColor);
     }
     
     moveToTile(newTile, battleGrid) {
@@ -160,6 +191,9 @@ class Battler {
         // Play the 'run' animation, reversed if moving left
         this.playAnimation('run', isMovingLeft);
     
+        // Set to moving
+        this.moving = true;
+
         this.scene.tweens.add({
             targets: this.sprite,
             x: position.x,
@@ -169,6 +203,7 @@ class Battler {
                 // Play the 'combat' animation once the movement is complete
                 this.playAnimation('combat');
                 battleGrid.moveBattler(this.battlerData.id, newTile);
+                this.moving = false;
             }
         });
     }
