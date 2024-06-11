@@ -124,7 +124,9 @@ class Battler {
             fill: textColor,
             stroke: '#000000',
             strokeThickness: 3
-        }).setOrigin(0.5);
+        })
+        .setOrigin(0.5)
+        .setDepth(100);
     
         // Tween to animate the floating damage text
         this.scene.tweens.add({

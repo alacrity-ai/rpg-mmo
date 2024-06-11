@@ -20,6 +20,8 @@ class AbilityScript {
         const battlerLevel = this.battlerInstance.level;
         const statValue = this.battlerInstance.currentStats[stat];
         const damage = potency * (statValue * 0.1) * (battlerLevel / (battlerLevel + 10));
+        // TODO: Add random variance to damage
+        // TODO: Add crits
         return Math.round(damage);
     }
 

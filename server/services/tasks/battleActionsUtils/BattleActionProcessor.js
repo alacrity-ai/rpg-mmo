@@ -32,15 +32,15 @@ class BattleActionProcessor {
      */
     async processAbilityAction(action) {
         const { battleInstanceId, battlerId, actionType, actionData } = action;
-        const { abilityTemplate, targetTiles, targetBattlerIds } = actionData
+        const { abilityTemplate, targetTiles, targetBattlerIds } = actionData;
 
         console.log(`BAP: Got values: ${battleInstanceId}, ${battlerId}, ${actionType}, ${actionData}`)
         console.log(`BAP: Extracted values: ${abilityTemplate}, ${targetTiles}, ${targetBattlerIds}`)
 
         // Get up to date information from the Database about the battler using the ability and target battlers
         const userBattlerInstance = await getBattlerInstanceById(battlerId);
-        const targetBattlerInstances = await getBattlerInstancesByIds(targetBattlerIds || []);
-
+        const targetBattlerInstances = await getBattlerInstancesByIds(targetBattlerIds);
+  
         // Prepare array to hold the results from the script execution
         actionData.results = actionData.results || [];        
 

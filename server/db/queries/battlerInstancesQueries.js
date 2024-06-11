@@ -65,6 +65,8 @@ async function getBattlerInstanceById(id) {
 }
 
 async function getBattlerInstancesByIds(ids) {
+    if (!ids || ids.length === 0) return [];
+    
     const sql = `SELECT * FROM battler_instances WHERE id IN (${ids.map(() => '?').join(', ')})`;
     const rows = await query(sql, ids);
 

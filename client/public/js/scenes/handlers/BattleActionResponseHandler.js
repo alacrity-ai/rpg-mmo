@@ -59,7 +59,6 @@ export default class BattleActionResponseHandler {
                     }
                     if (type === 'manaCost') {
                         // Update the mana bar for the user of the ability
-                        const userBattler = this.battleGrid.getBattlerInstance(battlerId);
                         this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(battlerId, null, newMana);
                     }
                 });
