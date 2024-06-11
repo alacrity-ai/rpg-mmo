@@ -16,7 +16,7 @@ export default class BattleActionClientInputHandler {
         this.attachMoveKeysListener();
         this.attachTileHoverListener();
         // Listen for navigation button clicks
-        this.scene.events.on('moveButtonClicked', this.handleMoveAction, this);
+        this.scene.events.on('moveButtonClicked', this.handleMove, this);
         this.scene.events.on('tileSelected', (data) => console.log('Tile selected:', data));
         this.scene.events.on('tileFocused', (data) => console.log('Tile focused:', data));
     }
@@ -135,7 +135,7 @@ export default class BattleActionClientInputHandler {
     }
     
 
-    handleMoveAction(direction) {
+    handleMove(direction) {
         // Don't allow movement if the action bar is on cooldown
         if (this.actionBar.isOnCooldown()) {
             console.log('Cannot move while on cooldown');
@@ -181,7 +181,7 @@ export default class BattleActionClientInputHandler {
     }
 
     cleanup() {
-        this.scene.events.off('moveButtonClicked', this.handleMoveAction, this);
+        this.scene.events.off('moveButtonClicked', this.handleMove, this);
         this.scene.events.off('tileSelected', (data) => console.log('Tile selected:', data));
     }
 }

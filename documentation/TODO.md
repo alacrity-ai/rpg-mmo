@@ -10,23 +10,15 @@
 // Updating the existing battler instance by id with the new battler instance object from the result.
 // We should also log to console how much healing, or damage was done.
 
-- [ ] Ability Progress
-    - [ ] Verify client actionbar is sending request to server
-    - [ ] Verify server properly passes all data to the task processor via the task handler
-    - [ ] Verify the BAP logging output looks good, and response comes back to client
-    - [ ] Write client code to extract the results and update the client information
-    - [ ] Verify edge cases:
-        - [ ] Out of mana
-        - [ ] No target (should not send request to server if no target)
+- [ ] ActionHotBar Clientside
+    - [ ] Grey out abilities when insufficient mana, (Handle targetted abilities as well)
 
-- [ ] Add first damaging ability
-    - [ ] Render damage numbers on the target
-    - [ ] Use hit animation
-    - [ ] Create a flash animation while taking damage
-    - [ ] Make sure healthbars are properly updated when damage is taken
-    - [ ] Add death state
-
-- [ ] Render portraits as pixel art.
+- [ ] Death state
+    - [ ] Handle death state for players (Fall over and stay on ground, no actions until raise)
+        - [ ] Add raise ability to test raising
+    - [ ] Handle death state for enemies
+        - [ ] Death animation
+        - [ ] Battler removed, added to a slain enemies list to track the exp gains
 
 - [ ] Movement Fix: Don't allow movement to same square (right now it triggers the gcd)
 
@@ -40,7 +32,31 @@
 
 - [ ] Enemy level scaling.  We need to add a level to the zone keys in the mapmarkers, or in the encounter_templates, and then apply it when creating npc battler instances in the BattleCreator.
 
-- [ ] Multiplayer Testing
+- [ ] Redo Hotbar Menu (bottom left) Using menu system
+    - [ ] Leverage the menu system
+    - [ ] Add the tween growth of icons to the menu iconButton class as optional argument
+    - [ ] Add hover sound effect as optional argument
+
+- [ ] Party Reconnect on Disconnect?
+
+- [x] Ability Progress
+    - [x] Verify client actionbar is sending request to server
+    - [x] Verify server properly passes all data to the task processor via the task handler
+    - [x] Verify the BAP logging output looks good, and response comes back to client
+    - [x] Write client code to extract the results and update the client information
+    - [x] Verify edge cases:
+        - [x] Out of mana
+        - [x] No target (should not send request to server if no target)
+
+- [x] Add first damaging ability
+    - [x] Render damage numbers on the target
+    - [x] Use hit animation
+    - [x] Create a flash animation while taking damage
+    - [x] Make sure healthbars are properly updated when damage is taken
+
+- [x] Render portraits as pixel art.
+
+- [x] Multiplayer Testing
     - [x] Characters in same party should go to same area instance
     - [x] Characters in same party should go to same battle instance
     - [x] Character can join an in progress battle instance
@@ -58,11 +74,6 @@
 - [x] Invite regression
     - [x] If reject invite, it breaks the invite menu for future invites.  Need to make sure if you reject an invite, you will get a new one.  This will require deleting the existing invite menu entirely (because the check is not checking if it's hidden, it's checking if it exists)
     - [x] Clear invite text input on close
-
-- [ ] Redo Hotbar Menu (bottom left) Using menu system
-    - [ ] Leverage the menu system
-    - [ ] Add the tween growth of icons to the menu iconButton class as optional argument
-    - [ ] Add hover sound effect as optional argument
 
 - [x] Implement Party Invites
 

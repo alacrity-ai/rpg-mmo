@@ -2,6 +2,7 @@
 
 import Phaser from 'phaser';
 import BattleActionResponseHandler from './handlers/BattleActionResponseHandler';
+import BattleRoomResponseHandler from './handlers/BattleRoomResponseHandler.js'
 import MusicManager from '../audio/MusicManager.js';
 import SoundFXManager from '../audio/SoundFXManager.js';
 import BattleGrid from '../battle/BattleGrid.js';
@@ -83,6 +84,10 @@ export default class BattleScene extends Phaser.Scene {
         // Initialize the action response handler for messages from the server
         this.actionResponseHandler = new BattleActionResponseHandler(this.battleGrid, this.actionBarMenu, settings);
         this.actionResponseHandler.initialize();
+
+        // Initialize the action response handler for messages from the server
+        this.roomResponseHandler = new BattleRoomResponseHandler(this.battleGrid, this.actionBarMenu, settings);
+        this.roomResponseHandler.initialize();
 
         // Initialize the BattleActionClientInputHandler for client local inputs
         this.battleActionClientInputHandler = new BattleActionClientInputHandler(this, this.battleGrid, this.actionBarMenu, this.battlerId);
