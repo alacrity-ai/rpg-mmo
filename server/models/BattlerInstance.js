@@ -6,6 +6,7 @@ class BattlerInstance {
      * Create a battler instance.
      * @param {Object} params - The parameters for creating a battler instance.
      * @param {number} params.id - The ID of the battler instance.
+     * @param {number} params.level - The level of the battler instance.
      * @param {number} [params.character_id] - The ID of the character, if applicable.
      * @param {number} [params.npc_template_id] - The ID of the NPC template, if applicable.
      * @param {string} params.battlerClass - The class of the battler.
@@ -24,6 +25,7 @@ class BattlerInstance {
      */
     constructor({
         id,
+        level,
         character_id,
         npc_template_id,
         battlerClass,
@@ -41,6 +43,7 @@ class BattlerInstance {
         phase
     }) {
         this.id = id;
+        this.level = level;
         this.characterId = character_id;
         this.npcTemplateId = npc_template_id;
         this.battlerClass = battlerClass;
@@ -66,6 +69,7 @@ module.exports = BattlerInstance;
  *
  * const battlerInstance = new BattlerInstance({
  *   id: 1,
+ *   level: 1,
  *   character_id: 101,
  *   npc_template_id: null,
  *   battlerClass: 'warrior',

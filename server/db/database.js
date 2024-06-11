@@ -236,6 +236,7 @@ async function initTables() {
     )`,
     `CREATE TABLE IF NOT EXISTS battler_instances (
       id INT AUTO_INCREMENT PRIMARY KEY,
+      level INT,
       character_id INT,
       npc_template_id INT,
       class VARCHAR(32),

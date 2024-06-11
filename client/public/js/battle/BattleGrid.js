@@ -104,6 +104,13 @@ class BattleGrid {
         return this.battlerPositions.get(battlerId);
     }
 
+    updateBattlerInstance(battlerInstanceId, newBattlerInstance) {
+        const oldBattlerInstance = this.battlerInstanceMap.get(battlerInstanceId);
+        if (oldBattlerInstance) {
+            oldBattlerInstance.battlerData = newBattlerInstance;
+        }
+    }
+
     moveBattler(battlerId, newTile) {
         // Logic to move the battler to the new tile
         const oldTile = this.battlerPositions.get(battlerId);

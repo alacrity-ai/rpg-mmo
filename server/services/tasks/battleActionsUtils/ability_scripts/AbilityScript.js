@@ -17,8 +17,10 @@ class AbilityScript {
     }
 
     calculateDamage(stat, potency) {
-        const statValue = this.battlerInstance.stats[stat] || 10; // Assuming a default value if the stat is not defined
-        return potency * statValue;
+        const battlerLevel = this.battlerInstance.level;
+        const statValue = this.battlerInstance.currentStats[stat];
+        const damage = potency * (statValue * 0.1) * (battlerLevel / (battlerLevel + 10));
+        return Math.round(damage);
     }
 
     getTargetsByGridPositions(gridPositions) {

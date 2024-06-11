@@ -17,6 +17,7 @@ export default class BattlerDisplayMenu extends BaseMenu {
         this.battlerInstances = battlerInstances;
         this.resourceBars = [];
         this.portraits = []; // Track portraits
+        this.battlerIdToResourceBarsMap = {}; // Mapping of battler IDs to resource bars
         this.renderBattlers();
     }
 
@@ -36,6 +37,8 @@ export default class BattlerDisplayMenu extends BaseMenu {
             this.removePortrait(portrait);
         });
         this.portraits = [];
+        
+        this.battlerIdToResourceBarsMap = {}; // Clear the mapping
         
         // Calculate spacing based on the number of battlers
         const portraitSpacing = 110; // Adjust this value as needed for spacing between portraits
@@ -60,6 +63,9 @@ export default class BattlerDisplayMenu extends BaseMenu {
                 resourceBars.setHealth(battler.currentStats.health);
                 resourceBars.setMana(battler.currentStats.mana);
                 this.resourceBars.push(resourceBars);
+                
+                // Map battler ID to resource bars
+                this.battlerIdToResourceBarsMap[battler.id] = resourceBars;
     
                 playerIndex++;
             }
@@ -84,6 +90,9 @@ export default class BattlerDisplayMenu extends BaseMenu {
                 resourceBars.setHealth(battler.currentStats.health);
                 resourceBars.setMana(battler.currentStats.mana);
                 this.resourceBars.push(resourceBars);
+                
+                // Map battler ID to resource bars
+                this.battlerIdToResourceBarsMap[battler.id] = resourceBars;
     
                 npcIndex++;
             }
@@ -93,5 +102,20 @@ export default class BattlerDisplayMenu extends BaseMenu {
     updateBattlers(battlerInstances) {
         this.battlerInstances = battlerInstances;
         this.renderBattlers();
+    }
+
+    // Method to update resource bars by battler ID
+    updateResourceBars(battlerId, newHealth, newMana) {
+        const resourceBars = this.battlerIdToResourceBarsMap[battlerId];
+        if (resourceBars) {
+            if (newHealth) {
+                resourceBars.setHealth(newHealth);
+            }
+            if (newMana) {
+                resourceBars.setMana(newMana);
+            }
+        } else {
+            console.warn(`Resource bars not found for battler ID: ${battlerId}`);
+        }
     }
 }

@@ -34,11 +34,6 @@ export default class BattleScene extends Phaser.Scene {
 
         // Load background image (testing)
         this.load.image(this.backgroundImage, this.backgroundImage);
-
-        // Console logging
-        console.log('DEBUGGING: this.battleInstanceData:', this.battleInstanceData);
-        console.log('DEBUGGING: this.battlerInstancesData:', this.battlerInstancesData);
-        console.log('DEBUGGING: this.battleInstanceId:', this.battleInstanceId);
     }
 
     async create() {
@@ -82,10 +77,6 @@ export default class BattleScene extends Phaser.Scene {
         this.actionBarMenu = new ActionBarMenu(this, this.battleInstanceId, this.battlerId, this.battleGrid);
         this.actionBarMenu.show();
 
-        // // Initialize the StatsMenu with mock data
-        // this.statsMenu = new StatsMenu(this, this.battler.currentStats.health, this.battler.baseStats.health, this.battler.currentStats.mana, this.battler.baseStats.mana);
-        // this.statsMenu.show();
-
         // Get settings from registry
         const settings = this.registry.get('settings');
 
@@ -97,6 +88,16 @@ export default class BattleScene extends Phaser.Scene {
         this.battleActionClientInputHandler = new BattleActionClientInputHandler(this, this.battleGrid, this.actionBarMenu, this.battlerId);
         this.battleActionClientInputHandler.initialize();
     }
+
+    updateBattlerInstance(battlerId, updatedBattlerInstance) {
+        for (let i = 0; i < this.battlerInstancesData.length; i++) {
+            if (this.battlerInstancesData[i].id === battlerId) {
+                this.battlerInstancesData[i] = updatedBattlerInstance;
+                return;
+            }
+        }
+        console.warn(`Battler instance not found for ID: ${battlerId}`);
+    }        
 
     update(time, delta) {
         // Update fog effect if exists

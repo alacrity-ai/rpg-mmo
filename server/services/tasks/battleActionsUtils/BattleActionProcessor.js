@@ -33,17 +33,23 @@ class BattleActionProcessor {
     async processAbilityAction(action) {
         const { battleInstanceId, battlerId, actionType, actionData } = action;
         const { abilityTemplate, targetTiles, targetBattlerIds } = actionData
+
         console.log(`BAP: Got values: ${battleInstanceId}, ${battlerId}, ${actionType}, ${actionData}`)
         console.log(`BAP: Extracted values: ${abilityTemplate}, ${targetTiles}, ${targetBattlerIds}`)
 
         // Get up to date information from the Database about the battler using the ability and target battlers
         const userBattlerInstance = await getBattlerInstanceById(battlerId);
-        const targetBattlerInstances = await getBattlerInstancesByIds(targetBattlerIds);
+        const targetBattlerInstances = await getBattlerInstancesByIds(targetBattlerIds || []);
+
+        // Prepare array to hold the results from the script execution
+        actionData.results = actionData.results || [];        
 
         // Deduct mana cost
         const manaResult = await this.useMana(userBattlerInstance, actionData.manaCost);
         if (!manaResult.success) {
             return manaResult;
+        } else {
+            actionData.results.push(manaResult);
         }
         console.log('BAP: Mana deducted successfully')
 
@@ -75,8 +81,6 @@ class BattleActionProcessor {
         const { damage, healing, status } = actionEffects;
         console.log(`BAP: Action effects calculated: damage: ${damage}, healing: ${healing}, status: ${status}`)
 
-        // Apply the effects from the script
-        actionData.results = actionData.results || [];
         for (let targetInstance of targetBattlerInstances) {
             if (damage) {
                 console.log(`BAP: Applying damage to target ${targetInstance.id}`)
@@ -128,8 +132,10 @@ class BattleActionProcessor {
 
         return {
             success: true,
-            type: 'mana',
-            statAdjustments: { mana: battlerInstance.currentStats.mana },
+            type: 'manaCost',
+            amount: manaCost,
+            newMana: battlerInstance.currentStats.mana,
+            battlerInstance: battlerInstance,
             message: `Deducted ${manaCost} mana from battler ${battlerInstance.id}`
         };
     }
@@ -155,7 +161,8 @@ class BattleActionProcessor {
         return {
             success: true,
             type: 'damage',
-            statAdjustments: { health: battlerInstance.currentStats.health},
+            amount: damage,
+            battlerInstance: battlerInstance,
             message: `Applied ${damage} damage to battler ${battlerInstance.id}`
         };
     }
@@ -174,12 +181,15 @@ class BattleActionProcessor {
             };
         }
         battlerInstance.currentStats.health = Math.min(battlerInstance.currentStats.health + healing, battlerInstance.baseStats.health); // Clamp health to a maximum of base health
+        
+        // Update the battlerInstance in the database
         await updateBattlerHealth(battlerInstance.id, battlerInstance.currentStats.health);
 
         return {
             success: true,
             type: 'healing',
-            statAdjustments: { health: battlerInstance.currentStats.health },
+            amount: healing,
+            battlerInstance: battlerInstance,
             message: `Applied ${healing} healing to battler ${battlerInstance.id}`
         };
     }

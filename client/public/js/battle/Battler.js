@@ -51,6 +51,93 @@ class Battler {
             }
         }
     }
+
+    playAnimationOnce(animationName) {
+        const validAnimations = ['attack', 'cast', 'combat', 'die', 'hit', 'idle', 'run'];
+        if (this.sprite && validAnimations.includes(animationName)) {
+            const animKey = this.spriteConfigs[animationName].animKey;
+            console.log(`Playing animation once: ${animationName}, animKey: ${animKey}, spriteConfigs: ${this.spriteConfigs}`);
+    
+            // Ensure any previous event listener is removed to prevent multiple triggers
+            this.sprite.off('animationcomplete');
+    
+            // Play the animation once by temporarily creating a new animation configuration
+            this.sprite.anims.play({
+                key: animKey,
+                repeat: 0 // Override repeat setting to play the animation once
+            });
+    
+            // Listen for the animation complete event once
+            this.sprite.once('animationcomplete', (animation, frame) => {
+                if (animation.key === animKey) {
+                    console.log(`Animation complete: ${animation.key}`);
+                    // Optionally reset to idle animation after the animation completes
+                    this.sprite.play(this.spriteConfigs['combat'].animKey);
+                }
+            });
+        }
+    }
+
+    playHitAnimation(damage = 11) {
+        if (this.sprite) {
+            // Play the 'hit' animation once
+            this.playAnimationOnce('hit');
+    
+            // Flash the sprite white for a brief moment
+            this.scene.tweens.add({
+                targets: this.sprite,
+                alpha: { from: 1, to: 0 },
+                duration: 50,
+                yoyo: true,
+                repeat: 3
+            });
+    
+            // Tween to knock the sprite back and then return to original position
+            const originalPosition = { x: this.sprite.x, y: this.sprite.y };
+            const knockbackDistance = 10; // Adjust the knockback distance as needed
+    
+            // Determine the direction of the knockback
+            const knockbackDirection = (this.battlerData.team === 'player') ? -1 : 1;
+            
+            this.scene.tweens.add({
+                targets: this.sprite,
+                x: originalPosition.x + knockbackDistance * knockbackDirection,
+                duration: 100,
+                yoyo: true,
+                onComplete: () => {
+                    this.sprite.setPosition(originalPosition.x, originalPosition.y); // Ensure it returns to the exact original position
+                }
+            });
+    
+            // Render floating damage text if damage is provided
+            if (damage !== null) {
+                this.renderFloatingDamageText(damage);
+            }
+        }
+    }
+
+    renderFloatingDamageText(damage) {
+        const textColor = this.battlerData.team === 'player' ? '#ff0000' : '#ffffff';
+    
+        const damageText = this.scene.add.text(this.sprite.x, this.sprite.y - 50, damage, {
+            font: '20px Arial',
+            fill: textColor,
+            stroke: '#000000',
+            strokeThickness: 3
+        }).setOrigin(0.5);
+    
+        // Tween to animate the floating damage text
+        this.scene.tweens.add({
+            targets: damageText,
+            y: this.sprite.y - 120, // Move up a bit slower
+            alpha: { from: 1, to: 0 },
+            duration: 1500, // Last a bit longer
+            ease: 'Cubic.easeOut',
+            onComplete: () => {
+                damageText.destroy();
+            }
+        });
+    }
     
     moveToTile(newTile, battleGrid) {
         const [newX, newY] = newTile;

@@ -6,11 +6,12 @@ const { getNPCTemplateById } = require('./npcTemplatesQueries');
 async function createBattlerInstance(battlerInstanceData) {
     const sql = `
         INSERT INTO battler_instances (
-            character_id, npc_template_id, class, base_stats, current_stats, abilities, script_path, script_speed,
+            level, character_id, npc_template_id, class, base_stats, current_stats, abilities, script_path, script_speed,
             sprite_path, grid_position, last_action_time, time_created, status_effects, team, phase
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
+        battlerInstanceData.level,
         battlerInstanceData.characterId,
         battlerInstanceData.npcTemplateId,
         battlerInstanceData.battlerClass,
@@ -33,6 +34,7 @@ async function createBattlerInstance(battlerInstanceData) {
     // Return the newly created BattlerInstance object
     return new BattlerInstance({
         id,
+        level: battlerInstanceData.level,
         character_id: battlerInstanceData.characterId,
         npc_template_id: battlerInstanceData.npcTemplateId,
         battlerClass: battlerInstanceData.battlerClass,
@@ -184,6 +186,7 @@ async function createBattlerInstancesFromCharacterIds(characterIds) {
         const character = await getCharacterById(characterId);
         if (character) {
             const battlerInstance = new BattlerInstance({
+                level: character.level,
                 character_id: character.id,
                 npc_template_id: null,
                 battlerClass: character.characterClass,
@@ -213,6 +216,7 @@ async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
         const npcTemplate = await getNPCTemplateById(npcTemplateId);
         if (npcTemplate) {
             const battlerInstance = new BattlerInstance({
+                level: 1, // TODO: Add level scaling in instance creation
                 character_id: null,
                 npc_template_id: npcTemplate.id,
                 battlerClass: null,

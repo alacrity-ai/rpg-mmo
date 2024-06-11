@@ -121,6 +121,7 @@ async function getBattlerInstancesInBattle(battleId) {
     const rows = await query(sql, params);
     return rows.map(row => new BattlerInstance({
       id: row.id,
+      level: row.level,
       character_id: row.character_id,
       npc_template_id: row.npc_template_id,
       battlerClass: row.class,

@@ -1,6 +1,6 @@
 import { BaseMenu } from '../BaseMenu.js';
 import SoundFXManager from '../../../audio/SoundFXManager.js';
-import api from '../../../api/battler';
+import api from '../../../api';
 
 export default class ActionBarMenu extends BaseMenu {
     constructor(scene, battleInstanceId, battlerId, battleGrid) {
@@ -39,7 +39,7 @@ export default class ActionBarMenu extends BaseMenu {
 
     async getAbilities() {
         try {
-            this.abilities = await api.getBattlerAbilities();
+            this.abilities = await api.battler.getBattlerAbilities();
             this.createActionBar(this.abilities);
         } catch (error) {
             console.error('Failed to get abilities:', error);
@@ -61,8 +61,8 @@ export default class ActionBarMenu extends BaseMenu {
             const iconButton = this.addIconButton(iconX, iconY, ability, async () => {
                 try {
                     // Get the selected tiles
-                    const selectedTiles = this.battleGrid.selectedTiles;
-    
+                    const selectedTiles = this.calculateTargetTiles(ability);
+
                     // Get the battler IDs on the selected tiles
                     const battlerIdsOnSelectedTiles = selectedTiles.flatMap(([x, y]) => {
                         const tile = this.battleGrid.grid[y][x];
@@ -75,8 +75,9 @@ export default class ActionBarMenu extends BaseMenu {
                     // Construct the action data
                     const actionData = {
                         abilityTemplate: ability,
-                        targetTiles: targetTileCoordinates, // Pass in the array of x, y coordinates
-                        targetBattlerIds: battlerIdsOnSelectedTiles,
+                        targetTiles: targetTileCoordinates,
+                        // If battlerIdsOnSelectedTiles is null, pass an empty array
+                        targetBattlerIds: battlerIdsOnSelectedTiles || [],
                     };
     
                     // Call the API to perform the ability action
@@ -93,8 +94,8 @@ export default class ActionBarMenu extends BaseMenu {
                     console.error('Failed to add action:', error);
                 }
     
-                // Trigger the cooldown for the ability with the appropriate duration
-                this.triggerGlobalCooldown(this.getCooldownDuration(ability.cooldownDuration));
+                // // Trigger the cooldown for the ability with the appropriate duration
+                // this.triggerGlobalCooldown(this.getCooldownDuration(ability.cooldownDuration));
             }, ability.name);
     
             this.iconButtons.push(iconButton);

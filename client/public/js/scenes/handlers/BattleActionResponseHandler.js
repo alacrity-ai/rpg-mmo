@@ -20,7 +20,7 @@ export default class BattleActionResponseHandler {
                         this.battleGrid.clearTileSelections();
                     }
                 }
-
+    
                 // Get the battler instance that moved and update its position
                 const battlerInstance = this.battleGrid.getBattlerInstance(data.battlerId);
                 if (battlerInstance) {
@@ -29,12 +29,57 @@ export default class BattleActionResponseHandler {
                     console.warn(`Battler instance not found for id: ${data.battlerId}`);
                 }
             }
-            // Handle other action types as needed
+    
+            if (data.actionType === 'ability') {
+                console.log('Got response from ability action:', data);
+                // Get the actionData, the actionType, and the user of the ability (battlerId)
+                const { actionData, actionType, battlerId } = data;
+                // Get the ability used (abilityTemplate), the results array, the targetBattlerIds array, and the targetTiles array
+                const { abilityTemplate, results, targetBattlerIds, targetTiles } = actionData;
+    
+                // Log the ability used
+                console.log(`Ability used: ${abilityTemplate.name}`);
+    
+                // Iterate through the results and update the corresponding battler instances
+                results.forEach(result => {
+                    const { type, amount, newMana, battlerInstance, message } = result;
+    
+                    // Update the battler instance in the battleGrid
+                    this.battleGrid.updateBattlerInstance(battlerInstance.id, battlerInstance);
+                    // Update the battler instance in the scene
+                    this.battleGrid.scene.updateBattlerInstance(battlerInstance.id, battlerInstance);
+                    // Update the battler's health bar
+                    if (type === 'damage' ) {
+                        // Update the health bar for the target battler
+                        this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(battlerInstance.id, battlerInstance.currentStats.health, null);
+                        
+                        // Run the hit animation for the target battler
+                        const targetBattler = this.battleGrid.getBattlerInstance(battlerInstance.id);
+                        targetBattler.playHitAnimation();
+                    }
+                    if (type === 'manaCost') {
+                        // Update the mana bar for the user of the ability
+                        const userBattler = this.battleGrid.getBattlerInstance(battlerId);
+                        this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(battlerId, null, newMana);
+                    }
+                });
 
+                // Run the animation for the user
+                const userAnimation = abilityTemplate.type === 'attack' ? 'attack' : 'cast';
+                const userBattler = this.battleGrid.getBattlerInstance(battlerId);
+                userBattler.playAnimationOnce(userAnimation);
+    
+                // If the ability was used by the current player's battler, trigger the global cooldown
+                if (battlerId === this.battleGrid.scene.battlerId) {
+                    const cooldownDuration = abilityTemplate.cooldownDuration;
+                    const cooldownType = this.actionBarMenu.getCooldownDuration(cooldownDuration);
+                    this.actionBarMenu.triggerGlobalCooldown(cooldownType);
+                }
+            }
         } catch (error) {
             console.error('Error handling completed battler action:', error);
         }
-    }
+    }    
 
     handleBattlerJoined(data) {
         try {

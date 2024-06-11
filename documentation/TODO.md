@@ -1,5 +1,24 @@
 # TODOS
 
+
+// Extract the main keys from the response
+
+// For each id in the actionData.targetBattlerIds, we need to update that instance in the battleGrid.
+// In the actionData.results, we will have an array of 'daamge' type, and 'healing' type objects:
+// e.g.    {success: true, type: 'damage', amount: 3, battlerInstance: {…}, message: 'Applied 3 damage'}
+// We will call this.battleGrid.updateBattlerInstance(battlerInstanceId, newBattlerInstanceObject)
+// Updating the existing battler instance by id with the new battler instance object from the result.
+// We should also log to console how much healing, or damage was done.
+
+- [ ] Ability Progress
+    - [ ] Verify client actionbar is sending request to server
+    - [ ] Verify server properly passes all data to the task processor via the task handler
+    - [ ] Verify the BAP logging output looks good, and response comes back to client
+    - [ ] Write client code to extract the results and update the client information
+    - [ ] Verify edge cases:
+        - [ ] Out of mana
+        - [ ] No target (should not send request to server if no target)
+
 - [ ] Add first damaging ability
     - [ ] Render damage numbers on the target
     - [ ] Use hit animation
@@ -18,6 +37,8 @@
 
     - Implement API calls to verify and update when an encounter is finished.
     - Create a debug command to drop enemy health to zero for testing purposes.
+
+- [ ] Enemy level scaling.  We need to add a level to the zone keys in the mapmarkers, or in the encounter_templates, and then apply it when creating npc battler instances in the BattleCreator.
 
 - [ ] Multiplayer Testing
     - [x] Characters in same party should go to same area instance
