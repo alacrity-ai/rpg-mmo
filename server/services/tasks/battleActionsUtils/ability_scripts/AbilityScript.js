@@ -26,6 +26,16 @@ class AbilityScript {
         return Math.max(Math.round(damage), 1);
     }
 
+    processEffects(damage, healing, status, healthGain, manaGain) {
+        return {
+            damage: damage,
+            healing: healing,
+            status: status,
+            healthGain: healthGain,
+            manaGain: manaGain
+        }
+    }
+
     getTargetsByGridPositions(gridPositions) {
         return this.battlerInstances.filter(battlerInstance => {
             return gridPositions.some(position => 

@@ -78,7 +78,7 @@ class BattleActionProcessor {
         // Get the proposed actionEffects from the abilityScript
         // execute() method should return an object with any number of these keys: damage, healing, status
         const actionEffects = await abilityScript.execute();
-        const { damage, healing, status } = actionEffects;
+        const { damage, healing, status, healthGain, manaGain } = actionEffects;
         console.log(`BAP: Action effects calculated: damage: ${damage}, healing: ${healing}, status: ${status}`)
 
         for (let targetInstance of targetBattlerInstances) {
@@ -93,6 +93,14 @@ class BattleActionProcessor {
             if (status) {
                 console.log(`BAP: Applying status to target ${targetInstance.id}`)
                 actionData.results.push(await this.applyStatus(targetInstance, status));
+            }
+            if (healthGain) {
+                console.log(`BAP: Applying health gain to target ${targetInstance.id}`)
+                actionData.results.push(await this.doHealing(userBattlerInstance, healthGain));
+            }
+            if (manaGain) {
+                console.log(`BAP: Applying mana gain to target ${targetInstance.id}`)
+                actionData.results.push(await this.manaGain(userBattlerInstance, manaGain));
             }
         }
 
@@ -136,6 +144,33 @@ class BattleActionProcessor {
             amount: manaCost,
             battlerInstance: userbattlerInstance,
             message: `Deducted ${manaCost} mana from battler ${userbattlerInstance.id}`
+        };
+    }
+
+    /**
+     * Add mana to a battler.
+     * @param {*} userbattlerInstance - The battler instance to gain mana
+     * @param {*} manaGain - The amount of mana to gain
+     * @returns {Object} The result of the mana gain.
+     */
+    async manaGain(userbattlerInstance, manaGain) {
+        if (!userbattlerInstance) {
+            return {
+                success: false,
+                message: `Battler not found`
+            };
+        }
+
+        userbattlerInstance.currentStats.mana += manaGain;
+        Math.min(userbattlerInstance.currentStats.mana + manaGain, userbattlerInstance.baseStats.mana);
+        await updateBattlerMana(userbattlerInstance.id, userbattlerInstance.currentStats.mana);
+
+        return {
+            success: true,
+            type: 'manaGain',
+            amount: manaGain,
+            battlerInstance: userbattlerInstance,
+            message: `Gained ${manaGain} mana for battler ${userbattlerInstance.id}`
         };
     }
 

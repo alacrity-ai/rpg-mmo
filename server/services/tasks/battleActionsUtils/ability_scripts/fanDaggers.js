@@ -10,8 +10,7 @@ class RogueAttack extends AbilityScript {
 
         const damage = this.calculateDamage('strength', this.abilityTemplate.potency);
 
-        // Acceptable any number of these keys in return object: damage, healing, status
-        return { damage: damage, healing: null, status: null };
+        return this.processEffects(damage);
     }
 }
 

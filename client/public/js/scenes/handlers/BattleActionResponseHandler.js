@@ -68,6 +68,13 @@ export default class BattleActionResponseHandler {
                 this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(battlerInstance.id, null, battlerInstance.currentStats.mana);
             }
 
+            if (type === 'manaGain') {
+                this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(battlerInstance.id, null, battlerInstance.currentStats.mana);
+
+                const targetBattler = this.battleGrid.getBattlerInstance(battlerInstance.id);
+                targetBattler.renderBattleText(amount, '#0000ff');
+            }
+
             if (type === 'healing') {
                 this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(battlerInstance.id, battlerInstance.currentStats.health, null);
 
