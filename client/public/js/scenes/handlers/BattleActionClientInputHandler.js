@@ -154,6 +154,12 @@ export default class BattleActionClientInputHandler {
         // Get the current position, and the new position
         const newPosition = [currentBattlerX + direction[0], currentBattlerY + direction[1]];
 
+        // Verify that were are not moving to the same position
+        console.log('Current position:', currentPosition, 'New position:', newPosition);
+        if (currentPosition[0] === newPosition[0] && currentPosition[1] === newPosition[1]) {
+            return;
+        }
+
         // Verify that the new position is in bounds
         if (!this.battleGrid.positionInBounds(newPosition, 'player')) {
             console.log('New position is out of bounds:', newPosition);

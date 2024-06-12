@@ -79,6 +79,33 @@ class Battler {
         }
     }
 
+    playAnimationAndStopOnLastFrame(animationName) {
+        const validAnimations = ['attack', 'cast', 'combat', 'die', 'hit', 'idle', 'run'];
+        if (this.sprite && validAnimations.includes(animationName)) {
+            const animKey = this.spriteConfigs[animationName].animKey;
+            console.log(`Playing animation and stopping on last frame: ${animationName}, animKey: ${animKey}, spriteConfigs: ${this.spriteConfigs}`);
+    
+            // Ensure any previous event listener is removed to prevent multiple triggers
+            this.sprite.off('animationcomplete');
+    
+            // Play the animation
+            this.sprite.play(animKey);
+    
+            // Listen for the animation complete event once
+            this.sprite.once('animationcomplete', (animation, frame) => {
+                if (animation.key === animKey) {
+                    console.log(`Animation complete: ${animation.key}`);
+    
+                    // Get the last frame of the animation
+                    const lastFrame = this.sprite.anims.get(animKey).getLastFrame();
+    
+                    // Stop the animation on the last frame
+                    this.sprite.anims.stopOnFrame(lastFrame);
+                }
+            });
+        }
+    }    
+
     playHitAnimation(amount) {
         if (this.sprite) {
             // Play the 'hit' animation once
@@ -119,6 +146,105 @@ class Battler {
         }
     }
 
+    playHealAnimation(healing = 10) {
+        if (this.sprite) {
+            this.scene.tweens.add({
+                targets: this.sprite,
+                tint: { from: 0xffffff, to: 0x00ff00 },
+                duration: 100,
+                yoyo: true,
+                repeat: 3,
+                onComplete: () => {
+                    this.sprite.clearTint();
+                }
+            });
+
+            if (healing !== null) {
+                this.renderFloatingHealingText(healing);
+            }
+        }
+    }
+
+    playNpcDeathAnimation() {
+        if (this.sprite) {
+            // Split into two and separate into two directions on the x-axis while fading out
+            const originalPosition = { x: this.sprite.x, y: this.sprite.y };
+            const splitDistance = 60; // Adjust the split distance as needed
+            const knockbackDistance = 10; // Adjust the knockback distance as needed
+    
+            // Create three sprites for the split animation
+            const spriteLeft = this.scene.add.sprite(originalPosition.x, originalPosition.y, this.sprite.texture.key);
+            const spriteMiddle = this.scene.add.sprite(originalPosition.x, originalPosition.y, this.sprite.texture.key);
+            const spriteRight = this.scene.add.sprite(originalPosition.x, originalPosition.y, this.sprite.texture.key);
+    
+            // Set the same tint to all sprites as the original sprite
+            spriteLeft.setTintFill(this.sprite.tintTopLeft, this.sprite.tintTopRight, this.sprite.tintBottomLeft, this.sprite.tintBottomRight);
+            spriteMiddle.setTintFill(this.sprite.tintTopLeft, this.sprite.tintTopRight, this.sprite.tintBottomLeft, this.sprite.tintBottomRight);
+            spriteRight.setTintFill(this.sprite.tintTopLeft, this.sprite.tintTopRight, this.sprite.tintBottomLeft, this.sprite.tintBottomRight);
+    
+            // Flash the middle sprite red briefly and knock it back
+            this.scene.tweens.add({
+                targets: spriteMiddle,
+                tint: { from: 0xffffff, to: 0xff0000 },
+                x: originalPosition.x + knockbackDistance,
+                duration: 140,
+                yoyo: true,
+                repeat: 1,
+                onComplete: () => {
+                    spriteMiddle.clearTint();
+    
+                    // Fade out the middle sprite
+                    this.scene.tweens.add({
+                        targets: spriteMiddle,
+                        alpha: { from: 1, to: 0 },
+                        duration: 500,
+                        onComplete: () => {
+                            spriteMiddle.destroy();
+                        }
+                    });
+                }
+            });
+    
+            // Tween to move both left and right sprites in opposite directions and fade out
+            this.scene.tweens.add({
+                targets: spriteLeft,
+                x: originalPosition.x - splitDistance,
+                alpha: { from: 1, to: 0 },
+                duration: 500,
+                onComplete: () => {
+                    spriteLeft.destroy();
+                }
+            });
+    
+            this.scene.tweens.add({
+                targets: spriteRight,
+                x: originalPosition.x + splitDistance,
+                alpha: { from: 1, to: 0 },
+                duration: 500,
+                onComplete: () => {
+                    spriteRight.destroy();
+                }
+            });
+    
+            // Destroy the original sprite immediately
+            this.sprite.destroy();
+        }
+    }
+    
+       
+
+    die() {
+        if (this.battlerData.team === 'player') {
+            if (this.sprite) {
+                this.playAnimationAndStopOnLastFrame('die');
+            }
+        } else {
+            if (this.sprite) {
+                this.playNpcDeathAnimation();
+            }
+        }
+    }
+
     renderBattleText(text, color = '#ffffff', yOffset = 50, duration = 1500) {
         const textStyle = {
             font: '20px Arial',
@@ -141,25 +267,6 @@ class Battler {
                 battleText.destroy();
             }
         });
-    }
-
-    playHealAnimation(healing = 10) {
-        if (this.sprite) {
-            this.scene.tweens.add({
-                targets: this.sprite,
-                tint: { from: 0xffffff, to: 0x00ff00 },
-                duration: 100,
-                yoyo: true,
-                repeat: 3,
-                onComplete: () => {
-                    this.sprite.clearTint();
-                }
-            });
-
-            if (healing !== null) {
-                this.renderFloatingHealingText(healing);
-            }
-        }
     }
 
     renderFloatingDamageText(damage) {

@@ -1,4 +1,5 @@
-const { updateBattlerPosition, updateBattlerHealth, updateBattlerMana, applyStatusEffect, getBattlerInstanceById, getBattlerInstancesByIds } = require('../../../db/queries/battlerInstancesQueries');
+const { updateBattlerPosition, updateBattlerHealth, updateBattlerMana, updateBattlerAlive, applyStatusEffect, getBattlerInstanceById, getBattlerInstancesByIds } = require('../../../db/queries/battlerInstancesQueries');
+const { setCacheBattlerInstance } = require('../../../db/cache/helpers/battleHelper');
 const { getCooldownDuration } = require('../../../utilities/helpers');
 
 class BattleActionProcessor {
@@ -82,29 +83,46 @@ class BattleActionProcessor {
         console.log(`BAP: Action effects calculated: damage: ${damage}, healing: ${healing}, status: ${status}`)
 
         for (let targetInstance of targetBattlerInstances) {
+            // Apply health gain to the user battler
+            if (healthGain) {
+                console.log(`BAP: Applying health gain to target ${userBattlerInstance.id}`)
+                actionData.results.push(await this.doHealing(userBattlerInstance, healthGain));
+            }
+            // Apply mana gain to the user battler
+            if (manaGain) {
+                console.log(`BAP: Applying mana gain to target ${userBattlerInstance.id}`)
+                actionData.results.push(await this.manaGain(userBattlerInstance, manaGain));
+            }
+            // Handle damage on the target battler
             if (damage) {
                 console.log(`BAP: Applying damage to target ${targetInstance.id}`)
                 actionData.results.push(await this.doDamage(targetInstance, damage));
             }
+            // Handle death of the target battler
+            if (targetInstance.currentStats.health <= 0) {
+                actionData.results.push(await this.handleDeath(targetInstance));
+                // Update the cached target battler instance
+                setCacheBattlerInstance(this.redisClient, targetInstance, battleInstanceId);
+                continue;
+            }
+            // Handle healing of the target battler
             if (healing) {
                 console.log(`BAP: Applying healing to target ${targetInstance.id}`)
                 actionData.results.push(await this.doHealing(targetInstance, healing));
             }
+            // Apply status effect to the target battler
             if (status) {
                 console.log(`BAP: Applying status to target ${targetInstance.id}`)
                 actionData.results.push(await this.applyStatus(targetInstance, status));
             }
-            if (healthGain) {
-                console.log(`BAP: Applying health gain to target ${targetInstance.id}`)
-                actionData.results.push(await this.doHealing(userBattlerInstance, healthGain));
-            }
-            if (manaGain) {
-                console.log(`BAP: Applying mana gain to target ${targetInstance.id}`)
-                actionData.results.push(await this.manaGain(userBattlerInstance, manaGain));
-            }
+            // Update the cached target battler instance
+            setCacheBattlerInstance(this.redisClient, targetInstance, battleInstanceId);
         }
+        // Update the cached user battler instance
+        setCacheBattlerInstance(this.redisClient, userBattlerInstance, battleInstanceId);
 
         console.log(`BAP: Returning results: success: true, message: 'Ability action processed successfully', battlerId: ${action.battlerId}, actionType: ${action.actionType}, actionData: ${action.actionData}`)
+        
         return {
             success: true,
             message: 'Ability action processed successfully',
@@ -112,6 +130,32 @@ class BattleActionProcessor {
             actionType: action.actionType,
             actionData: action.actionData
         };
+    }
+
+    /**
+     * Handle death of a battler
+     * @param {Object} battlerInstance - The battler instance that died
+     * @param {number} battleInstanceId - The ID of the battle instance
+     */
+    async handleDeath(battlerInstance) {
+        try {
+            // Check if the battler is dead
+            battlerInstance.alive = false;
+            await updateBattlerAlive(battlerInstance.id, false);
+            
+            return {
+                success: true,
+                type: 'death',
+                amount: 0,
+                battlerInstance: battlerInstance,
+                message: `Battler ${battlerInstance.id} has died`,
+            }
+        } catch (error) {
+            return {
+                success: false,
+                message: `Failed to handleDeath for battler ${battlerInstance.id}`
+            };
+        }
     }
 
     /**

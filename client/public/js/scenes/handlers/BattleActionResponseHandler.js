@@ -51,7 +51,7 @@ export default class BattleActionResponseHandler {
         console.log(`Ability used: ${abilityTemplate.name}`);
 
         results.forEach(result => {
-            const { type, amount, newMana, battlerInstance, message } = result;
+            const { success, type, amount, battlerInstance, message } = result;
 
             this.battleGrid.updateBattlerInstance(battlerInstance.id, battlerInstance);
             this.battleGrid.scene.updateBattlerInstance(battlerInstance.id, battlerInstance);
@@ -61,6 +61,9 @@ export default class BattleActionResponseHandler {
 
                 const targetBattler = this.battleGrid.getBattlerInstance(battlerInstance.id);
                 targetBattler.playHitAnimation(amount);
+            }
+            if (type === 'death') {
+                this.battleGrid.killBattler(battlerInstance.id)
             }
 
             if (type === 'manaCost') {

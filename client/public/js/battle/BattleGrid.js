@@ -7,6 +7,8 @@ class BattleGrid {
         this.scene = scene;
         this.battleTileImagePath = battleTileImagePath;
         this.grid = [];
+        this.unconsciousBattlers = [];
+        this.deadBattlers = [];
         this.tileWidth = 96; // Default 96
         this.tileHeight = 42; // Default 42
         this.gridYOffset = 120;
@@ -108,6 +110,19 @@ class BattleGrid {
         const oldBattlerInstance = this.battlerInstanceMap.get(battlerInstanceId);
         if (oldBattlerInstance) {
             oldBattlerInstance.battlerData = newBattlerInstance;
+        }
+    }
+
+    killBattler(battlerId) {
+        const deadBattler = this.getBattlerInstance(battlerId);
+        if (deadBattler) {
+            if (deadBattler.battlerData.team === 'player') {
+                this.unconsciousBattlers.push(deadBattler);
+            } else {
+                this.deadBattlers.push(deadBattler);
+                this.removeBattler(battlerId);
+            }
+            deadBattler.die();
         }
     }
 

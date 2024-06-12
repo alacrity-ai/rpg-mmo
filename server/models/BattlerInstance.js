@@ -22,6 +22,7 @@ class BattlerInstance {
      * @param {Array<number>} [params.status_effects] - The status effects applied to the battler.
      * @param {string} params.team - The team the battler belongs to ('player' or 'enemy').
      * @param {number} params.phase - The current phase of the battler.
+     * @param {boolean} [params.alive] - The status of the battler (alive or dead).
      */
     constructor({
         id,
@@ -40,7 +41,8 @@ class BattlerInstance {
         time_created,
         status_effects,
         team,
-        phase
+        phase,
+        alive = true
     }) {
         this.id = id;
         this.level = level;
@@ -59,6 +61,7 @@ class BattlerInstance {
         this.statusEffects = status_effects;
         this.team = team;
         this.phase = phase;
+        this.alive = alive;
     }
 }
 
@@ -85,5 +88,6 @@ module.exports = BattlerInstance;
  *   status_effects: [1, 2],
  *   team: 'player',
  *   phase: 0
+ *   alive: true
  * });
  */

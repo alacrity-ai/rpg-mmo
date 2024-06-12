@@ -7,8 +7,8 @@ async function createBattlerInstance(battlerInstanceData) {
     const sql = `
         INSERT INTO battler_instances (
             level, character_id, npc_template_id, class, base_stats, current_stats, abilities, script_path, script_speed,
-            sprite_path, grid_position, last_action_time, time_created, status_effects, team, phase
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            sprite_path, grid_position, last_action_time, time_created, status_effects, team, phase, alive
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
     const params = [
         battlerInstanceData.level,
@@ -26,7 +26,8 @@ async function createBattlerInstance(battlerInstanceData) {
         battlerInstanceData.timeCreated,
         JSON.stringify(battlerInstanceData.statusEffects),
         battlerInstanceData.team,
-        battlerInstanceData.phase || 0 // Default phase to 0
+        battlerInstanceData.phase || 0, // Default phase to 0
+        battlerInstanceData.alive || true
     ];
     const result = await query(sql, params);
     const id = result.insertId;
@@ -49,7 +50,8 @@ async function createBattlerInstance(battlerInstanceData) {
         time_created: battlerInstanceData.timeCreated,
         status_effects: battlerInstanceData.statusEffects,
         team: battlerInstanceData.team,
-        phase: battlerInstanceData.phase || 0 // Default phase to 0
+        phase: battlerInstanceData.phase || 0, // Default phase to 0
+        alive: true
     });
 }
 
@@ -104,6 +106,7 @@ async function updateBattlerInstance(id, updates) {
             status_effects = ?,
             team = ?,
             phase = ?
+            alive = ?
         WHERE id = ?
     `;
     const params = [
@@ -118,6 +121,7 @@ async function updateBattlerInstance(id, updates) {
         JSON.stringify(updates.statusEffects),
         updates.team,
         updates.phase,
+        updates.alive,
         id
     ];
     await query(sql, params);
@@ -138,6 +142,12 @@ async function updateBattlerHealth(battlerId, newHealth) {
 async function updateBattlerMana(battlerId, newMana) {
     const sql = 'UPDATE battler_instances SET current_stats = JSON_SET(current_stats, "$.mana", ?) WHERE id = ?';
     const params = [newMana, battlerId];
+    await query(sql, params);
+}
+
+async function updateBattlerAlive(battlerId, alive) {
+    const sql = 'UPDATE battler_instances SET alive = ? WHERE id = ?';
+    const params = [alive, battlerId];
     await query(sql, params);
 }
 
@@ -203,7 +213,8 @@ async function createBattlerInstancesFromCharacterIds(characterIds) {
                 time_created: new Date(),
                 status_effects: [],
                 team: 'player',
-                phase: 0 // Default phase to 0
+                phase: 0, // Default phase to 0
+                alive: true
             });
             const createdBattlerInstance = await createBattlerInstance(battlerInstance);
             battlerInstances.push(createdBattlerInstance);
@@ -233,7 +244,8 @@ async function createBattlerInstancesFromNPCTemplateIds(npcTemplateIds) {
                 time_created: new Date(),
                 status_effects: [],
                 team: 'enemy',
-                phase: 0 // Default phase to 0
+                phase: 0, // Default phase to 0
+                alive: true
             });
             const createdBattlerInstance = await createBattlerInstance(battlerInstance);
             battlerInstances.push(createdBattlerInstance);
@@ -256,6 +268,7 @@ module.exports = {
     updateBattlerPositions,
     updateBattlerHealth,
     updateBattlerMana,
+    updateBattlerAlive,
     applyStatusEffect,
     getBattlerInstancesByCharacterId
 };

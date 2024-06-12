@@ -1,15 +1,5 @@
 # TODOS
 
-
-// Extract the main keys from the response
-
-// For each id in the actionData.targetBattlerIds, we need to update that instance in the battleGrid.
-// In the actionData.results, we will have an array of 'daamge' type, and 'healing' type objects:
-// e.g.    {success: true, type: 'damage', amount: 3, battlerInstance: {…}, message: 'Applied 3 damage'}
-// We will call this.battleGrid.updateBattlerInstance(battlerInstanceId, newBattlerInstanceObject)
-// Updating the existing battler instance by id with the new battler instance object from the result.
-// We should also log to console how much healing, or damage was done.
-
 - [ ] Death state
     - [ ] Handle death state for players (Fall over and stay on ground, no actions until raise)
         - [ ] Add raise ability to test raising
@@ -17,7 +7,7 @@
         - [ ] Death animation
         - [ ] Battler removed, added to a slain enemies list to track the exp gains
 
-- [ ] Movement Fix: Don't allow movement to same square (right now it triggers the gcd)
+- [x] Movement Fix: Don't allow movement to same square (right now it triggers the gcd)
 
 - [ ] Portrait tile selection
     - [ ] When clicking a portrait in battle, should select the tile the battler is on
@@ -35,6 +25,8 @@
     - [ ] Add hover sound effect as optional argument
 
 - [ ] Party Reconnect on Disconnect?
+
+### Release/0.3.0
 
 - Mana / Healthbar bug
     - [x] If ability would cause mana to go to 0, not updating manabar properly. Probably null evaluating the same as 0 issue.

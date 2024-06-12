@@ -252,6 +252,7 @@ async function initTables() {
       status_effects JSON,
       team ENUM('player', 'enemy') NOT NULL,
       phase INT DEFAULT 0,
+      alive BOOLEAN DEFAULT TRUE,
       FOREIGN KEY (character_id) REFERENCES characters(id),
       FOREIGN KEY (npc_template_id) REFERENCES npc_templates(id)
     )`,

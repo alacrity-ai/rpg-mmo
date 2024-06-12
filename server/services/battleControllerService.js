@@ -15,7 +15,7 @@ class BattleControllerService {
         // Process NPC scripts in battle
         const battlerInstances = await getAllCachedBattlerInstancesInBattle(this.redisClient, battleInstance.id);
         for (const battlerInstance of battlerInstances) {
-          if (battlerInstance.npcTemplateId && battlerInstance.scriptPath) {
+          if (battlerInstance.npcTemplateId && battlerInstance.scriptPath && battlerInstance.alive) {
             const nextActionTimeKey = `nextActionTime:${battleInstance.id}:${battlerInstance.id}`;
             const nextActionTime = await this.redisClient.get(nextActionTimeKey);
             const currentTime = Date.now();
