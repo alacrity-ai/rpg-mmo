@@ -102,6 +102,11 @@ export default class BattleActionResponseHandler {
             const cooldownType = this.actionBarMenu.getCooldownDuration(cooldownDuration);
             this.actionBarMenu.triggerGlobalCooldown(cooldownType);
         }
+
+        if (this.battleGrid.enemiesDefeated()) {
+            // TODO: Finish this implementation
+            console.log('BATTLE WON!!!!!!!!!!!!!!')
+        }
     }    
 
     initialize() {

@@ -126,6 +126,11 @@ class BattleGrid {
         }
     }
 
+    enemiesDefeated() {
+        // Check if there are no battlers in the battlerInstancesMap that are npcs (battlerInstance.battlerData.team === 'enemy')
+        return !Array.from(this.battlerInstanceMap.values()).some(battler => battler.battlerData.team === 'enemy');
+    }
+
     moveBattler(battlerId, newTile) {
         // Logic to move the battler to the new tile
         const oldTile = this.battlerPositions.get(battlerId);
