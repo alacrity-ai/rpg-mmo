@@ -123,7 +123,7 @@ class Battler {
             if (!this.moving) {
                 // Tween to knock the sprite back and then return to original position
                 const originalPosition = { x: this.sprite.x, y: this.sprite.y };
-                const knockbackDistance = 10; // Adjust the knockback distance as needed
+                const knockbackDistance = 14; // Adjust the knockback distance as needed
         
                 // Determine the direction of the knockback
                 const knockbackDirection = (this.battlerData.team === 'player') ? -1 : 1;
@@ -145,6 +145,30 @@ class Battler {
             }
         }
     }
+
+    playAttackAnimation() {
+        if (this.sprite) {
+            // Play the 'attack' animation once
+            this.playAnimationOnce('attack');
+    
+            // Move the sprite forward and back during the attack animation
+            const originalPosition = { x: this.sprite.x, y: this.sprite.y };
+            const attackDistance = 64; // Adjust the attack distance as needed
+    
+            // Determine the direction of the attack movement
+            const attackDirection = (this.battlerData.team === 'player') ? 1 : -1;
+    
+            this.scene.tweens.add({
+                targets: this.sprite,
+                x: originalPosition.x + attackDistance * attackDirection,
+                duration: 200,
+                yoyo: true,
+                onComplete: () => {
+                    this.sprite.setPosition(originalPosition.x, originalPosition.y); // Ensure it returns to the exact original position
+                }
+            });
+        }
+    }    
 
     playHealAnimation(healing = 10) {
         if (this.sprite) {
@@ -182,6 +206,11 @@ class Battler {
             spriteMiddle.setTintFill(this.sprite.tintTopLeft, this.sprite.tintTopRight, this.sprite.tintBottomLeft, this.sprite.tintBottomRight);
             spriteRight.setTintFill(this.sprite.tintTopLeft, this.sprite.tintTopRight, this.sprite.tintBottomLeft, this.sprite.tintBottomRight);
     
+            // Set the depth of the sprites to the original sprite's depth
+            spriteLeft.setDepth(this.sprite.depth);
+            spriteMiddle.setDepth(this.sprite.depth);
+            spriteRight.setDepth(this.sprite.depth);
+
             // Flash the middle sprite red briefly and knock it back
             this.scene.tweens.add({
                 targets: spriteMiddle,
@@ -231,8 +260,6 @@ class Battler {
         }
     }
     
-       
-
     die() {
         if (this.battlerData.team === 'player') {
             if (this.sprite) {
@@ -257,16 +284,20 @@ class Battler {
             .setOrigin(0.5)
             .setDepth(100);
 
-        this.scene.tweens.add({
-            targets: battleText,
-            y: this.sprite.y - yOffset - 70, // Move up
-            alpha: { from: 1, to: 0 },
-            duration: duration,
-            ease: 'Cubic.easeOut',
-            onComplete: () => {
-                battleText.destroy();
-            }
-        });
+        try {
+            this.scene.tweens.add({
+                targets: battleText,
+                y: this.sprite.y - yOffset - 70, // Move up
+                alpha: { from: 1, to: 0 },
+                duration: duration,
+                ease: 'Cubic.easeOut',
+                onComplete: () => {
+                    battleText.destroy();
+                }
+            });
+        } catch (error) {
+            console.error('Failed to render battle text:', error);
+        }
     }
 
     renderFloatingDamageText(damage) {
@@ -307,10 +338,14 @@ class Battler {
             y: position.y,
             duration: 500,
             onComplete: () => {
-                // Play the 'combat' animation once the movement is complete
-                this.playAnimation('combat');
-                battleGrid.moveBattler(this.battlerData.id, newTile);
-                this.moving = false;
+                try {
+                    // Play the 'combat' animation once the movement is complete
+                    this.playAnimation('combat');
+                    battleGrid.moveBattler(this.battlerData.id, newTile);
+                    this.moving = false;
+                } catch (error) {
+                    console.error('Failed to move battler:', error);
+                }
             }
         });
     }

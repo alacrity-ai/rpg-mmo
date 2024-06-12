@@ -1,6 +1,7 @@
 import Battler from './Battler.js';
 import Tile from './Tile.js';
 import { generateGradientTexture, generateBorderTexture } from './BattleGridTiles.js';
+import SoundFXManager from '../audio/SoundFXManager.js';
 
 class BattleGrid {
     constructor(scene, battleTileImagePath) {
@@ -119,6 +120,7 @@ class BattleGrid {
             if (deadBattler.battlerData.team === 'player') {
                 this.unconsciousBattlers.push(deadBattler);
             } else {
+                SoundFXManager.playSound('assets/sounds/combat/enemy_death.wav');
                 this.deadBattlers.push(deadBattler);
                 this.removeBattler(battlerId);
             }

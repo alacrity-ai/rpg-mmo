@@ -1,4 +1,6 @@
+import AreaScene from "../AreaScene.js";
 import SocketManager from "../../SocketManager.js";
+import { fadeTransition } from "../utils/SceneTransitions.js"
 import api from '../../api';
 
 export default class BattleRoomResponseHandler {
@@ -50,14 +52,47 @@ export default class BattleRoomResponseHandler {
         }
     }
 
+    async handleBattleCompleted(data) {
+        try {
+            console.log('Handling battle completed:', data);
+
+            const battleWinner = data.actionResult.battleWinner;
+            if (battleWinner) {
+                console.log('Battle winner:', battleWinner);
+                // Handle battle completion
+                const currentAreaId = this.battleGrid.scene.registry.get('currentAreaId');
+                api.zone.requestArea(currentAreaId, currentAreaId)
+                .then((response) => {
+                    console.log('Area request response:', response);
+                    const areaInstanceData = response.areaInstance;
+                    const areaKey = `AreaScene_${areaInstanceData.zoneInstanceId}_${areaInstanceData.id}`;
+                    const areaScene = new AreaScene(areaKey, areaInstanceData);
+                    this.scene.scene.add(areaKey, areaScene, false);
+                    SoundFXManager.playSound('assets/sounds/footstep_chain.wav');
+                    fadeTransition(this.scene, areaKey);
+                })
+                .catch((error) => {
+                    console.error('Error requesting area:', error);
+                });
+            } else {
+                // Handle completed battler action
+                this.battleGrid.scene.battleActionResponseHandler.handleCompletedBattlerAction(data.actionResult);
+            }
+        } catch (error) {
+            console.error('Error handling battle completed:', error);
+        }
+    }
+
     initialize() {
         const socket = SocketManager.getSocket();
+        socket.on('battleCompleted', this.handleBattleCompleted.bind(this));
         socket.on('battlerJoined', this.handleBattlerJoined.bind(this));
         socket.on('battlerLeft', this.handleBattlerLeft.bind(this));
     }
 
     cleanup() {
         const socket = SocketManager.getSocket();
+        socket.off('battleCompleted', this.handleBattleCompleted.bind(this));
         socket.off('battlerJoined', this.handleBattlerJoined.bind(this));
         socket.off('battlerLeft', this.handleBattlerLeft.bind(this));
     }

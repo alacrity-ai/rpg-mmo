@@ -129,7 +129,7 @@ export default class AreaScene extends Phaser.Scene {
         // Update the registry with the new area connections
         currentConnections[areaId] = areaConnections;
         this.registry.set('areaConnections', currentConnections);
-
+        this.registry.set('currentAreaId', areaId);
         console.log('Updated registry with area connections:', currentConnections);
     }
 

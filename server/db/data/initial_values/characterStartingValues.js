@@ -1,7 +1,7 @@
 // db/data/initial_values/characterStartingValues.js
 
 const classStartingAbilitiesMap = {
-  rogue: ['rogueAttack', 'fanDaggers', 'toxicVial', 'assassinate', 'bandage'],
+  rogue: ['rogueAttack', 'throw', 'fanDaggers', 'toxicVial', 'assassinate', 'bandage'],
   monk: ['monkAttack'],
   ranger: ['rangerAttack'],
   reaver: ['reaverAttack'],

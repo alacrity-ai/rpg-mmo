@@ -1,10 +1,12 @@
 import SocketManager from "../../SocketManager.js";
 import SoundFXManager from '../../audio/SoundFXManager.js';
+import getCooldownDuration from "./helpers/getCooldownDuration.js";
 
 export default class BattleActionResponseHandler {
     constructor(battleGrid, actionBarMenu, settings) {
         this.battleGrid = battleGrid;
         this.actionBarMenu = actionBarMenu;
+        this.battlerDisplayMenu = battleGrid.scene.battlerDisplayMenu;
         this.settings = settings;
     }
 
@@ -47,6 +49,7 @@ export default class BattleActionResponseHandler {
         console.log('Got response from ability action:', data);
         const { actionData, battlerId } = data;
         const { abilityTemplate, results, targetBattlerIds, targetTiles } = actionData;
+        const userBattler = this.battleGrid.getBattlerInstance(battlerId);
 
         console.log(`Ability used: ${abilityTemplate.name}`);
 
@@ -58,23 +61,34 @@ export default class BattleActionResponseHandler {
 
             if (type === 'damage') {
                 this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(battlerInstance.id, battlerInstance.currentStats.health, null);
-
                 const targetBattler = this.battleGrid.getBattlerInstance(battlerInstance.id);
                 targetBattler.playHitAnimation(amount);
+
+                // Dynamically import the abilityTemplate.animationScript and execute the animation
+                try {
+                    import(`../../battle/abilityAnimations/${abilityTemplate.animationScript}`).then((module) => {
+                        const AnimationScriptClass = module.default;
+                        const animationScript = new AnimationScriptClass(this.battleGrid.scene, this.battleGrid, userBattler, targetBattler);
+                        animationScript.execute();
+                    }).catch((error) => {
+                        console.error(`Failed to load animation script: ${abilityTemplate.animationScript}`, error);
+                    });   
+                } catch (error) {
+                    console.error('Failed to load animation script:', error);
+                }
             }
             if (type === 'death') {
                 this.battleGrid.killBattler(battlerInstance.id)
+                this.battlerDisplayMenu.removeBattler(battlerInstance.id);
             }
 
             if (type === 'manaCost') {
-                this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(battlerInstance.id, null, battlerInstance.currentStats.mana);
+                this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(userBattler.battlerData.id, null, userBattler.battlerData.currentStats.mana);
             }
 
             if (type === 'manaGain') {
-                this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(battlerInstance.id, null, battlerInstance.currentStats.mana);
-
-                const targetBattler = this.battleGrid.getBattlerInstance(battlerInstance.id);
-                targetBattler.renderBattleText(amount, '#0000ff');
+                this.battleGrid.scene.battlerDisplayMenu.updateResourceBars(userBattler.battlerData.id, null, userBattler.battlerData.currentStats.mana);
+                userBattler.renderBattleText(amount, '#0000ff');
             }
 
             if (type === 'healing') {
@@ -91,21 +105,23 @@ export default class BattleActionResponseHandler {
             }
         } else {
             SoundFXManager.playSound(`assets/sounds/${abilityTemplate.soundPath}`);
+            // Delay the hit sound effect for 50ms
+            setTimeout(() => {
+                SoundFXManager.playSound('assets/sounds/combat/hit.wav');
+            }, 150);
         }
 
-        const userAnimation = abilityTemplate.type === 'attack' ? 'attack' : 'cast';
-        const userBattler = this.battleGrid.getBattlerInstance(battlerId);
-        userBattler.playAnimationOnce(userAnimation);
+        // Play the user's animation
+        if (abilityTemplate.type === 'attack') {
+            userBattler.playAttackAnimation();
+        } else if (abilityTemplate.type === 'spell' || abilityTemplate.type === 'ability') {
+            userBattler.playAnimationOnce('cast');
+        }
 
         if (battlerId === this.battleGrid.scene.battlerId) {
             const cooldownDuration = abilityTemplate.cooldownDuration;
-            const cooldownType = this.actionBarMenu.getCooldownDuration(cooldownDuration);
+            const cooldownType = getCooldownDuration(this.settings, cooldownDuration);
             this.actionBarMenu.triggerGlobalCooldown(cooldownType);
-        }
-
-        if (this.battleGrid.enemiesDefeated()) {
-            // TODO: Finish this implementation
-            console.log('BATTLE WON!!!!!!!!!!!!!!')
         }
     }    
 

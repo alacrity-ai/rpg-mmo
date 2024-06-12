@@ -23,23 +23,16 @@ export default class BattlerDisplayMenu extends BaseMenu {
 
     async renderBattlers() {
         // Clear previous resource bars and portraits
-        this.resourceBars.forEach(resourceBar => {
-            resourceBar.healthBar.destroy();
-            resourceBar.manaBar.destroy();
-            resourceBar.healthBackground.destroy();
-            resourceBar.manaBackground.destroy();
-            resourceBar.healthBorder.destroy();
-            resourceBar.manaBorder.destroy();
-        });
-        this.resourceBars = [];
-        
-        this.portraits.forEach(portrait => {
-            this.removePortrait(portrait);
-        });
-        this.portraits = [];
-        
-        this.battlerIdToResourceBarsMap = {}; // Clear the mapping
-        
+        this.clearPreviousRenderings();
+
+        // Render player portraits and resource bars
+        await this.renderPlayers();
+
+        // Render NPC portraits and resource bars
+        await this.renderNPCs();
+    }
+
+    async renderPlayers() {
         // Calculate spacing based on the number of battlers
         const portraitSpacing = 110; // Adjust this value as needed for spacing between portraits
         const barSpacing = 10; // Spacing between the portrait and the bars
@@ -70,6 +63,12 @@ export default class BattlerDisplayMenu extends BaseMenu {
                 playerIndex++;
             }
         }
+    }
+
+    async renderNPCs() {
+        // Calculate spacing based on the number of battlers
+        const portraitSpacing = 110; // Adjust this value as needed for spacing between portraits
+        const barSpacing = 10; // Spacing between the portrait and the bars
     
         // Render NPC portraits and resource bars
         let npcIndex = 0;
@@ -99,6 +98,25 @@ export default class BattlerDisplayMenu extends BaseMenu {
         }
     }
 
+    clearPreviousRenderings() {
+        this.resourceBars.forEach(resourceBar => {
+            resourceBar.healthBar.destroy();
+            resourceBar.manaBar.destroy();
+            resourceBar.healthBackground.destroy();
+            resourceBar.manaBackground.destroy();
+            resourceBar.healthBorder.destroy();
+            resourceBar.manaBorder.destroy();
+        });
+        this.resourceBars = [];
+        
+        this.portraits.forEach(portrait => {
+            this.removePortrait(portrait);
+        });
+        this.portraits = [];
+        
+        this.battlerIdToResourceBarsMap = {}; // Clear the mapping
+    }
+
     updateBattlers(battlerInstances) {
         this.battlerInstances = battlerInstances;
         this.renderBattlers();
@@ -117,5 +135,40 @@ export default class BattlerDisplayMenu extends BaseMenu {
         } else {
             console.warn(`Resource bars not found for battler ID: ${battlerId}`);
         }
+    }
+
+    // Method to remove a battler and rerender portraits
+    removeBattler(battlerId) {
+        // Find the index of the battler to remove
+        const battlerIndex = this.battlerInstances.findIndex(battler => battler.id === battlerId);
+        if (battlerIndex === -1) {
+            console.warn(`Battler with ID: ${battlerId} not found.`);
+            return;
+        }
+
+        // Remove the battler from the instances array
+        const [removedBattler] = this.battlerInstances.splice(battlerIndex, 1);
+
+        // Destroy the resource bars and portrait for the removed battler
+        const resourceBars = this.battlerIdToResourceBarsMap[removedBattler.id];
+        if (resourceBars) {
+            resourceBars.healthBar.destroy();
+            resourceBars.manaBar.destroy();
+            resourceBars.healthBackground.destroy();
+            resourceBars.manaBackground.destroy();
+            resourceBars.healthBorder.destroy();
+            resourceBars.manaBorder.destroy();
+        }
+        delete this.battlerIdToResourceBarsMap[removedBattler.id];
+
+        // Remove the corresponding portrait
+        const portraitIndex = this.portraits.findIndex(portrait => portrait.battlerId === battlerId);
+        if (portraitIndex !== -1) {
+            this.removePortrait(this.portraits[portraitIndex]);
+            this.portraits.splice(portraitIndex, 1);
+        }
+
+        // Rerender the remaining battlers
+        this.renderBattlers();
     }
 }

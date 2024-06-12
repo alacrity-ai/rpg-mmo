@@ -120,7 +120,7 @@ export default class BattleActionClientInputHandler {
                     if (pointer.leftButtonDown()) {
                         const selectedTile = this.battleGrid.selectedTiles.find(([selectedX, selectedY]) => selectedX === x && selectedY === y);
     
-                        if (selectedTile) {
+                        if (selectedTile && this.battleGrid.tileFocused) {
                             // Deselect the tile
                             this.battleGrid.clearTileSelections();
                             this.scene.events.emit('tileUnfocused', { x, y });

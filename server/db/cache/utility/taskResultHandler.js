@@ -21,7 +21,12 @@ function processTaskResult(io, taskId, taskResult) {
   // Only for processRunScriptActionTask (for NPCs actions), and processAddBattlerActionTask (for player actions)
   if (taskResult.data && taskResult.data.actionResult) {
     const battleInstanceId = taskResult.data.battleInstanceId;
-    io.to(`battle-${battleInstanceId}`).emit('completedBattlerAction', taskResult.data.actionResult);
+    const battleWinner = taskResult.data.actionResult.battleWinner;
+    if (battleWinner) {
+      io.to(`battle-${battleInstanceId}`).emit('battleCompleted', battleWinner);
+    } else {
+      io.to(`battle-${battleInstanceId}`).emit('completedBattlerAction', taskResult.data.actionResult);
+    }
   }
 
   // Emit battlerJoined event if a new battler has joined

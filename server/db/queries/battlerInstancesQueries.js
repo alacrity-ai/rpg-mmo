@@ -61,10 +61,14 @@ async function getBattlerInstanceById(id) {
     const rows = await query(sql, params);
     if (rows.length > 0) {
         const battlerInstance = rows[0];
-        return new BattlerInstance(battlerInstance);
+        return new BattlerInstance({
+            ...battlerInstance,
+            battlerClass: battlerInstance.class // Ensure this mapping is correct
+        });
     }
     return null;
 }
+
 
 async function getBattlerInstancesByIds(ids) {
     if (!ids || ids.length === 0) return [];
@@ -73,11 +77,15 @@ async function getBattlerInstancesByIds(ids) {
     const rows = await query(sql, ids);
 
     if (rows.length > 0) {
-        return rows.map(battlerInstance => new BattlerInstance(battlerInstance));
+        return rows.map(row => new BattlerInstance({
+            ...row,
+            battlerClass: row.class  // Map the 'class' column to 'battlerClass'
+        }));
     }
 
     return [];
 }
+
 
 async function getBattlerInstancesByCharacterId(characterId) {
     const sql = 'SELECT * FROM battler_instances WHERE character_id = ?';
@@ -85,11 +93,15 @@ async function getBattlerInstancesByCharacterId(characterId) {
     const rows = await query(sql, params);
     
     if (rows.length > 0) {
-        return rows.map(battlerInstance => new BattlerInstance(battlerInstance));
+        return rows.map(row => new BattlerInstance({
+            ...row,
+            battlerClass: row.class  // Map the 'class' column to 'battlerClass'
+        }));
     }
     
     return [];
 }
+
 
 async function updateBattlerInstance(id, updates) {
     const sql = `

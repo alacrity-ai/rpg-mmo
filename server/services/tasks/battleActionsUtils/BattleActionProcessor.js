@@ -1,5 +1,5 @@
 const { updateBattlerPosition, updateBattlerHealth, updateBattlerMana, updateBattlerAlive, applyStatusEffect, getBattlerInstanceById, getBattlerInstancesByIds } = require('../../../db/queries/battlerInstancesQueries');
-const { setCacheBattlerInstance } = require('../../../db/cache/helpers/battleHelper');
+const { setCacheBattlerInstance, getAllCachedBattlerInstancesInBattle } = require('../../../db/cache/helpers/battleHelper');
 const { getCooldownDuration } = require('../../../utilities/helpers');
 
 class BattleActionProcessor {
@@ -46,13 +46,15 @@ class BattleActionProcessor {
         actionData.results = actionData.results || [];        
 
         // Deduct mana cost
-        const manaResult = await this.useMana(userBattlerInstance, abilityTemplate.cost);
-        if (!manaResult.success) {
-            return manaResult;
-        } else {
-            actionData.results.push(manaResult);
+        if (abilityTemplate.cost != 0) {
+            const manaResult = await this.useMana(userBattlerInstance, abilityTemplate.cost);
+            if (!manaResult.success) {
+                return manaResult;
+            } else {
+                actionData.results.push(manaResult);
+            }
+            console.log('BAP: Mana deducted successfully')
         }
-        console.log('BAP: Mana deducted successfully')
 
         // Set cooldown based on ability's cooldown duration
         const cooldownKey = `cooldown:${action.battlerId}`;
@@ -103,6 +105,13 @@ class BattleActionProcessor {
                 actionData.results.push(await this.handleDeath(targetInstance));
                 // Update the cached target battler instance
                 setCacheBattlerInstance(this.redisClient, targetInstance, battleInstanceId);
+                // Get all the battler instances in the battle from the cache
+                const battlerInstances = await getAllCachedBattlerInstancesInBattle(this.redisClient, battleInstanceId);
+                // Check if all battlers on the team are dead
+                const allDead = battlerInstances.every(battler => battler.team === targetInstance.team && !battler.alive);
+                if (allDead) {
+                    actionData.results.push(await this.handleBattleEnd(targetInstance.team));
+                }
                 continue;
             }
             // Handle healing of the target battler
@@ -128,8 +137,29 @@ class BattleActionProcessor {
             message: 'Ability action processed successfully',
             battlerId: action.battlerId,
             actionType: action.actionType,
-            actionData: action.actionData
+            actionData: action.actionData,
+            battleWinner: null
         };
+    }
+
+    /**
+     * Handle the end of a battle.
+     * @param {string} losingTeam - The winning team ('player' or 'enemy').
+     */
+    async handleBattleEnd(losingTeam) {
+        if (losingTeam === 'enemy') {
+            return {
+                success: true,
+                message: 'Ability action processed successfully',
+                battleWinner: 'player'
+            };
+        } else {
+            return {
+                success: true,
+                message: 'Ability action processed successfully',
+                battleWinner: 'enemy'
+            };
+        }
     }
 
     /**

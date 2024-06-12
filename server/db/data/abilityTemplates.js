@@ -38,6 +38,23 @@ const abilityTemplates = [
         animation_script: 'rogueAttack.js'
     },
     {
+        name: 'Throw',
+        short_name: 'throw',
+        description: 'Throw a knife at the enemy.',
+        type: 'attack',
+        potency: 30,
+        cost: 0,
+        required_coords: JSON.stringify([]),
+        target_team: 'hostile',
+        target_type: 'relative',
+        target_area: JSON.stringify([[2, 0], [3, 0]]),
+        cooldown_duration: 'normal',
+        icon_name: 'arrow-head',
+        sound_path: 'combat/knife_swing.wav',
+        script_path: 'throw.js',
+        animation_script: 'throw.js'
+    },
+    {
         name: 'Fan Daggers',
         short_name: 'fanDaggers',
         description: 'Throw three daggers in a fan pattern.',
