@@ -3,19 +3,21 @@
 - [ ] Death state
     - [ ] Handle death state for players (Fall over and stay on ground, no actions until raise)
         - [ ] Add raise ability to test raising
-    - [ ] Handle death state for enemies
-        - [ ] Death animation
-        - [ ] Battler removed, added to a slain enemies list to track the exp gains
+    - [x] Handle death state for enemies
+        - [x] Death animation
+        - [x] Battler removed, added to a slain enemies list to track the exp gains
 
 - [x] Movement Fix: Don't allow movement to same square (right now it triggers the gcd)
 
 - [ ] Portrait tile selection
     - [ ] When clicking a portrait in battle, should select the tile the battler is on
 
-- [ ] Determine Encounter Completion:
+- [x] Determine Encounter Completion:
 
     - Implement API calls to verify and update when an encounter is finished.
     - Create a debug command to drop enemy health to zero for testing purposes.
+
+- [x] Add queued ability action. (Click while still on cooldown queues up the ability to run)
 
 - [ ] Enemy level scaling.  We need to add a level to the zone keys in the mapmarkers, or in the encounter_templates, and then apply it when creating npc battler instances in the BattleCreator.
 

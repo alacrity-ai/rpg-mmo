@@ -28,7 +28,7 @@ export default class BattleActionResponseHandler {
         if (data.battlerId === this.battleGrid.scene.battlerId) {
             // Play the move sound
             SoundFXManager.playSound('assets/sounds/movement/step.wav');
-
+            this.actionBarMenu.addCanQueueAbility(this.settings.cooldowns.short);
             this.actionBarMenu.triggerGlobalCooldown(this.settings.cooldowns.short);
             // Reset target selection
             if (!this.battleGrid.tileFocused) {
@@ -121,6 +121,7 @@ export default class BattleActionResponseHandler {
         if (battlerId === this.battleGrid.scene.battlerId) {
             const cooldownDuration = abilityTemplate.cooldownDuration;
             const cooldownType = getCooldownDuration(this.settings, cooldownDuration);
+            this.actionBarMenu.addCanQueueAbility(cooldownType);
             this.actionBarMenu.triggerGlobalCooldown(cooldownType);
         }
     }    

@@ -1,4 +1,4 @@
-// BattleScene.js
+// scenes/BattleScene.js
 
 import Phaser from 'phaser';
 import BattleActionResponseHandler from './handlers/BattleActionResponseHandler';

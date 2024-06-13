@@ -2,6 +2,7 @@ import { BaseMenu } from '../BaseMenu.js';
 import getIconButtonBorderColors from './utils/getIconButtonBorderColors.js';
 import calculateTargetTiles from './utils/calculateTargetTiles.js';
 import shouldDisableIcon from './utils/shouldDisableIcon.js';
+import { getCooldownDuration } from '../../../scenes/handlers/helpers/getCooldownDuration.js';
 import api from '../../../api';
 
 export default class ActionBarMenu extends BaseMenu {
@@ -23,6 +24,8 @@ export default class ActionBarMenu extends BaseMenu {
         this.battleGrid = battleGrid;
         this.isCooldownActive = false; // Track the cooldown state
         this.abilities = []; // Initialize abilities array
+        this.abilityQueued = null; // Track queued ability
+        this.settings = this.scene.registry.get('settings'); // Get the settings from the registry
 
         this.getAbilities(); // Call the new method here
         this.setupEventListeners();
@@ -135,8 +138,37 @@ export default class ActionBarMenu extends BaseMenu {
     
         // Add a pointerOut event to clear the target tiles on the battle grid
         iconButton.on('pointerout', iconButton.pointerOutHandler);
-    
+        
         return iconButton;
+    }
+
+    addCanQueueAbility(cooldownLengthMs) {
+        this.scene.time.delayedCall(cooldownLengthMs * 0.5, () => {
+            // Change border of button to green
+            // Faint light blue with low saturation = 0x00ffff
+            // Even fainter with lower saturation = 0x00cccc
+            // Lower saturation, more grey blue = 0x009999
+            // Yellow = 0xffff00
+            // Very pale yellow = 0xffffcc
+            this.changeIconBorders('0x009999');
+            // for every icon button:
+            this.iconButtons.forEach(({ button, ability }) => {
+                button.on('pointerdown', () => {
+                    if (this.isOnCooldown()) {
+                        this.changeIconBorders('0xffffcc');
+                        this.abilityQueued = { button, ability, callback: button.originalCallback };
+                    }
+                });
+            });
+        });
+    }
+
+    changeIconBorders(color) {
+        // Get all icon buttons
+        this.iconButtons.forEach(({ button: iconButton }) => {
+            // Change border of button to light blue
+            this.iconHelper.setBorderTint(iconButton, color);
+        });
     }
 
     handlePointerOver(ability) {
@@ -219,6 +251,17 @@ export default class ActionBarMenu extends BaseMenu {
         this.scene.time.delayedCall(delayAmount, () => {
             this.updateButtonStates(); // Update button states after cooldown
             this.isCooldownActive = false; // Reset cooldown state to inactive
+
+            // If an ability was queued, use it
+            if (this.abilityQueued) {
+                const { iconButton, ability, callback } = this.abilityQueued;
+                this.scene.time.delayedCall(10, () => {
+                    callback(); // Use the queued ability
+                    this.abilityQueued = null; // Clear the queued ability
+                    const queuedDelay = getCooldownDuration(this.settings, ability.cooldown);
+                    this.triggerGlobalCooldown(queuedDelay);
+                });
+            }
         });
     }
 
