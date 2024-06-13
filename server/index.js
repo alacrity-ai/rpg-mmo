@@ -36,7 +36,7 @@ app.use(cors({
 }));
 
 app.get('/', (req, res) => {
-  res.send('MUD Server is running');
+  res.send('Server is running');
 });
 
 io.on('connection', (socket) => {

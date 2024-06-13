@@ -7,16 +7,14 @@ dotenv.config();
 export default defineConfig({
   root: './public',
   build: {
-    outDir: '../dist',
+    outDir: '../editor-dist',
     rollupOptions: {
-      input: {
-        main: './public/index.html',
-      }
+      input: './public/editor.html'
     }
   },
   server: {
-    open: process.env.NODE_ENV !== 'production',
-    port: 8000,
+    open: '/editor.html',
+    port: 8001,
     host: '0.0.0.0'
   }
 });

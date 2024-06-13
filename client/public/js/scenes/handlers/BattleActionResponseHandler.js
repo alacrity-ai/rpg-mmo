@@ -95,13 +95,14 @@ export default class BattleActionResponseHandler {
             }
         });
 
+        // If the ability is an attack, play the appropriate sound effect
         if (targetBattlerIds.length === 0 && abilityTemplate.type === 'attack') {
             if (battlerId === this.battleGrid.scene.battlerId) {
                 SoundFXManager.playSound('assets/sounds/combat/miss.wav');
             }
         } else {
             SoundFXManager.playSound(`assets/sounds/${abilityTemplate.soundPath}`);
-            // Delay the hit sound effect for 50ms
+            // Delay the enemy getting hit sound effect for impact
             setTimeout(() => {
                 SoundFXManager.playSound('assets/sounds/combat/hit.wav');
             }, 150);
@@ -114,6 +115,7 @@ export default class BattleActionResponseHandler {
             userBattler.playAnimationOnce('cast');
         }
 
+        // Trigger the cooldown for the user's ability
         if (battlerId === this.battleGrid.scene.battlerId) {
             const cooldownDuration = abilityTemplate.cooldownDuration;
             const cooldownType = getCooldownDuration(this.settings, cooldownDuration);
