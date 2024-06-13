@@ -261,6 +261,7 @@ async function initTables() {
       battler_ids JSON NOT NULL,
       area_instance_id INT NOT NULL,
       time_created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      cleared BOOLEAN DEFAULT FALSE,
       FOREIGN KEY (area_instance_id) REFERENCES area_instances(id),
       UNIQUE (area_instance_id)
     )`,

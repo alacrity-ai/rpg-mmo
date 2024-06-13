@@ -58,6 +58,8 @@ export default class AreaNavigationMenu extends BaseMenu {
     requestAreaChange(targetAreaId) {
         api.zone.requestArea(this.currentAreaId, targetAreaId)
             .then((response) => {
+                this.scene.registry.set('previousAreaId', this.currentAreaId);
+                this.scene.registry.set('currentAreaId', targetAreaId);
                 console.log('Area request response:', response);
                 const areaInstanceData = response.areaInstance;
                 const areaKey = `AreaScene_${areaInstanceData.zoneInstanceId}_${areaInstanceData.id}`;

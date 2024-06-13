@@ -94,7 +94,7 @@ export default class AreaScene extends Phaser.Scene {
         this.areaMapMenu.setupAreaMap(areaConnections, this.areaInstanceData.id);
 
         // Check for an encounter
-        if (this.areaInstanceData.encounter) {
+        if (this.areaInstanceData.encounter && !this.areaInstanceData.encounterCleared) {
             this.encounterPromptMenu = new EncounterPromptMenu(this, this.areaInstanceData.id);
         }
 

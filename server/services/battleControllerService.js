@@ -1,5 +1,5 @@
 const { enqueueTask } = require('../db/cache/utility/taskUtils');
-const { getAllCachedBattleInstances, getAllCachedBattlerInstancesInBattle } = require('../db/cache/helpers/battleHelper');
+const { setCacheBattleInstanceCleared, getAllCachedBattleInstances, getAllCachedBattlerInstancesInBattle } = require('../db/cache/helpers/battleHelper');
 const logger = require('../utilities/logger');
 
 class BattleControllerService {
@@ -11,9 +11,34 @@ class BattleControllerService {
     try {
       const battleInstances = await getAllCachedBattleInstances(this.redisClient);
       for (const battleInstance of battleInstances) {
-        
+        // If cleared, skip it
+        if (battleInstance.cleared) {
+          continue;
+        }
+
         // Process NPC scripts in battle
         const battlerInstances = await getAllCachedBattlerInstancesInBattle(this.redisClient, battleInstance.id);
+        
+        // Filter battlers by team
+        const enemyBattlers = battlerInstances.filter(battler => battler.team === 'enemy');
+        const playerBattlers = battlerInstances.filter(battler => battler.team === 'player');
+
+        // Check if all battlers are dead on each team
+        const allEnemiesDead = enemyBattlers.every(battler => !battler.alive);
+        const allPlayersDead = playerBattlers.every(battler => !battler.alive);
+
+        console.log('All enemies dead:', allEnemiesDead);
+        if (allEnemiesDead && allPlayersDead || allEnemiesDead) {
+            setCacheBattleInstanceCleared(this.redisClient, battleInstance.id);
+            enqueueTask(this.redisClient, 'playerVictory', { battleInstanceId: battleInstance.id }, () => {
+                logger.debug('Player victory task enqueued');
+            });
+        } else if (allPlayersDead) {
+            setCacheBattleInstanceCleared(this.redisClient, battleInstance.id);
+            console.log('Enemies win');
+        }
+
+        // Perform the NPC Scripts for all battlers
         for (const battlerInstance of battlerInstances) {
           if (battlerInstance.npcTemplateId && battlerInstance.scriptPath && battlerInstance.alive) {
             const nextActionTimeKey = `nextActionTime:${battleInstance.id}:${battlerInstance.id}`;

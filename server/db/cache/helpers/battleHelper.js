@@ -9,6 +9,18 @@ async function setCacheBattleInstance(redisClient, battleInstance) {
   await redisClient.set(battleInstanceAreaKey, battleInstance.id);
 }
 
+// Function to set the cleared field to true for a cached battle instance using only the id
+async function setCacheBattleInstanceCleared(redisClient, battleInstanceId) {
+  const battleInstanceKey = `battleInstance:${battleInstanceId}`;
+  const battleInstance = await redisClient.get(battleInstanceKey);
+  
+  if (battleInstance) {
+    const parsedBattleInstance = JSON.parse(battleInstance);
+    parsedBattleInstance.cleared = true;
+    await redisClient.set(battleInstanceKey, JSON.stringify(parsedBattleInstance));
+  }
+}
+
 // Function to cache a battler instance
 async function setCacheBattlerInstance(redisClient, battlerInstance, battleInstanceId) {
   const battlerInstanceKey = `battlerInstance:${battleInstanceId}:${battlerInstance.id}`;
@@ -115,5 +127,6 @@ module.exports = {
   deleteCacheBattlerInstance,
   getAllCachedBattleInstances,
   getAllCachedBattlerInstancesInBattle,
-  deleteAllBattlerInstancesByIds
+  deleteAllBattlerInstancesByIds,
+  setCacheBattleInstanceCleared
 };

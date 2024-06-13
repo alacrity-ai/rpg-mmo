@@ -1,5 +1,5 @@
 // scenes/utils/SceneTransitions.js
-export function fadeTransition(currentScene, newSceneKey, speed = 500, color = 0x000000) {
+export function fadeTransition(currentScene, newSceneKey, fromBattle = false, speed = 500, color = 0x000000) {
     // Create a rectangle that covers the entire screen
     let width = currentScene.cameras.main.width;
     let height = currentScene.cameras.main.height;
@@ -33,6 +33,10 @@ export function fadeTransition(currentScene, newSceneKey, speed = 500, color = 0
                     onComplete: () => {
                         // Destroy the rectangle after the fade-in is complete
                         fadeRectNewScene.destroy();
+                        // Delete the previous scene from the game
+                        if (fromBattle) {
+                            newScene.scene.remove(currentScene.scene.key);
+                        }
                     }
                 });
             });

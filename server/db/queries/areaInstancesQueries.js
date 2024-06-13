@@ -33,6 +33,12 @@ async function getAllAreaInstances() {
   }));
 }
 
+async function setEncounterCleared(id) {
+  const sql = 'UPDATE area_instances SET encounter_cleared = 1 WHERE id = ?';
+  const params = [id];
+  await query(sql, params);
+}
+
 async function createAreaInstance(areaInstanceData) {
   const sql = `
     INSERT INTO area_instances (
@@ -148,5 +154,6 @@ module.exports = {
   getAllAreaInstances,
   createAreaInstance,
   updateAreaInstance,
-  deleteAreaInstance
+  deleteAreaInstance,
+  setEncounterCleared
 };

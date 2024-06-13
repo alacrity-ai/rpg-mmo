@@ -1,6 +1,6 @@
 import Phaser from 'phaser';
 import CircleMaskImagePlugin from 'phaser3-rex-plugins/plugins/circlemaskimage-plugin.js';
-import socketManager from './SocketManager.js';
+import SocketManager from './SocketManager.js';
 
 // Game Scenes
 import WorldmapScene from './scenes/WorldmapScene.js';
@@ -49,7 +49,7 @@ document.addEventListener('contextmenu', event => event.preventDefault());
 const url = import.meta.env.VITE_SERVER_URL;
 console.log(`Server URL: ${url}`);
 
-socketManager.connect(url).then(async () => {
+SocketManager.connect(url).then(async () => {
     console.log('Socket connected, starting Phaser game...');
     
     // Load all town scenes dynamically
@@ -64,7 +64,7 @@ socketManager.connect(url).then(async () => {
     game.events.on('changeScene', (sceneKey) => {
         // Get the scene object by key
         const scene = game.scene.getScene(sceneKey);
-        socketManager.setCurrentScene(scene);
+        SocketManager.setCurrentScene(scene);
     });
 
 }).catch((err) => {

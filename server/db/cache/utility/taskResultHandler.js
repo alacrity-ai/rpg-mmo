@@ -1,7 +1,7 @@
 const logger = require('../../../utilities/logger');
 const { callbackMap } = require('./taskUtils');
 
-function processTaskResult(io, taskId, taskResult) {  
+function processTaskResult(io, taskId, taskResult, socket) {  
   // Retrieve the callback from the map
   const callback = callbackMap.get(taskId);
   
@@ -17,15 +17,18 @@ function processTaskResult(io, taskId, taskResult) {
     callbackMap.delete(taskId);
   }
 
-  // Emit to battle room if applicable
-  // Only for processRunScriptActionTask (for NPCs actions), and processAddBattlerActionTask (for player actions)
+  // Emit action results to battle room if applicable
   if (taskResult.data && taskResult.data.actionResult) {
-    const battleInstanceId = taskResult.data.battleInstanceId;
-    const battleWinner = taskResult.data.actionResult.battleWinner;
-    if (battleWinner) {
-      io.to(`battle-${battleInstanceId}`).emit('battleCompleted', battleWinner);
-    } else {
+      const battleInstanceId = taskResult.data.battleInstanceId;
       io.to(`battle-${battleInstanceId}`).emit('completedBattlerAction', taskResult.data.actionResult);
+  }
+
+  // Emit battleCompleted event if a battle has completed
+  if (taskResult.data && taskResult.data.battleResult) {
+    const { battleResult, battleInstanceId } = taskResult.data;
+    if (battleResult) {
+      console.log('Battle completed:', battleResult)
+      io.to(`battle-${battleInstanceId}`).emit('battleCompleted', { battleResult, battleInstanceId });
     }
   }
 

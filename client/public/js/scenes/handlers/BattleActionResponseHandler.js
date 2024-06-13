@@ -132,6 +132,6 @@ export default class BattleActionResponseHandler {
 
     cleanup() {
         const socket = SocketManager.getSocket();
-        socket.off('completedBattlerAction', this.handleCompletedBattlerAction.bind(this));
+        socket.removeAllListeners('completedBattlerAction');
     }
 }

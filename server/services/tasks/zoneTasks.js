@@ -162,7 +162,7 @@ async function processRequestAreaTask(task, redisClient) {
     }
 
     // Verify that if there is an encounter, it has been cleared
-    if (currentAreaInstance.encounter !== null && !currentAreaInstance.encounter_cleared) {
+    if (currentAreaInstance.encounter !== null && !currentAreaInstance.encounterCleared) {
       throw new Error(`Encounter in current area instance with ID ${currentAreaId} has not been cleared.`);
     }
 

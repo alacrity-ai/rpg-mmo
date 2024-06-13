@@ -12,7 +12,8 @@ async function getBattleInstanceById(id) {
       ...rows[0],
       battler_ids: rows[0].battler_ids,
       area_instance_id: rows[0].area_instance_id,
-      time_created: rows[0].time_created
+      time_created: rows[0].time_created,
+      cleared: !!rows[0].cleared
     });
     return battleInstance;
   }
@@ -26,7 +27,8 @@ async function getAllBattleInstances() {
     ...row,
     battler_ids: row.battler_ids,
     area_instance_id: row.area_instance_id,
-    time_created: row.time_created
+    time_created: row.time_created,
+    cleared: !!row.cleared
   }));
 }
 
@@ -67,7 +69,8 @@ async function updateBattleInstance(id, battleInstanceData) {
   const fields = [
     'battler_ids',
     'area_instance_id',
-    'time_created'
+    'time_created',
+    'cleared'
   ];
 
   const updates = [];
@@ -91,6 +94,12 @@ async function updateBattleInstance(id, battleInstanceData) {
   `;
   params.push(id);
 
+  await query(sql, params);
+}
+
+async function setBattleInstanceCleared(id) {
+  const sql = 'UPDATE battle_instances SET cleared = 1 WHERE id = ?';
+  const params = [id];
   await query(sql, params);
 }
 
@@ -150,11 +159,22 @@ async function getBattleInstanceByAreaInstanceId(areaInstanceId) {
             ...rows[0],
             battler_ids: rows[0].battler_ids,
             area_instance_id: rows[0].area_instance_id,
-            time_created: rows[0].time_created
+            time_created: rows[0].time_created,
+            cleared: !!rows[0].cleared
         });
         return battleInstance;
     }
     return null;
+}
+
+async function getAreaInstanceIdByBattleInstanceId(battleInstanceId) {
+  const sql = 'SELECT area_instance_id FROM battle_instances WHERE id = ?';
+  const params = [battleInstanceId];
+  const rows = await query(sql, params);
+  if (rows.length > 0) {
+      return rows[0].area_instance_id;
+  }
+  return null;
 }
 
 module.exports = {
@@ -164,5 +184,7 @@ module.exports = {
   createBattleInstance,
   updateBattleInstance,
   deleteBattleInstance,
-  getBattleInstanceByAreaInstanceId
+  getBattleInstanceByAreaInstanceId,
+  setBattleInstanceCleared,
+  getAreaInstanceIdByBattleInstanceId
 };

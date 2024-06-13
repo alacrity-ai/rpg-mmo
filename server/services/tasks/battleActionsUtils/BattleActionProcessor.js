@@ -105,13 +105,6 @@ class BattleActionProcessor {
                 actionData.results.push(await this.handleDeath(targetInstance));
                 // Update the cached target battler instance
                 setCacheBattlerInstance(this.redisClient, targetInstance, battleInstanceId);
-                // Get all the battler instances in the battle from the cache
-                const battlerInstances = await getAllCachedBattlerInstancesInBattle(this.redisClient, battleInstanceId);
-                // Check if all battlers on the team are dead
-                const allDead = battlerInstances.every(battler => battler.team === targetInstance.team && !battler.alive);
-                if (allDead) {
-                    actionData.results.push(await this.handleBattleEnd(targetInstance.team));
-                }
                 continue;
             }
             // Handle healing of the target battler
@@ -138,28 +131,7 @@ class BattleActionProcessor {
             battlerId: action.battlerId,
             actionType: action.actionType,
             actionData: action.actionData,
-            battleWinner: null
         };
-    }
-
-    /**
-     * Handle the end of a battle.
-     * @param {string} losingTeam - The winning team ('player' or 'enemy').
-     */
-    async handleBattleEnd(losingTeam) {
-        if (losingTeam === 'enemy') {
-            return {
-                success: true,
-                message: 'Ability action processed successfully',
-                battleWinner: 'player'
-            };
-        } else {
-            return {
-                success: true,
-                message: 'Ability action processed successfully',
-                battleWinner: 'enemy'
-            };
-        }
     }
 
     /**

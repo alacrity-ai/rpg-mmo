@@ -3,8 +3,19 @@ import PartyInvitationMenu from './interface/menu/PartyInvitationMenu';
 
 class SocketManager {
   constructor() {
-    this.socket = null;
-    this.currentScene = null; // Add a property to hold the current scene
+    if (!SocketManager.instance) {
+      this.socket = null;
+      this.currentScene = null;
+      SocketManager.instance = this;
+    }
+    return SocketManager.instance;
+  }
+
+  static getInstance() {
+    if (!SocketManager.instance) {
+      SocketManager.instance = new SocketManager();
+    }
+    return SocketManager.instance;
   }
 
   connect(serverUrl) {
@@ -96,5 +107,4 @@ class SocketManager {
   }
 }
 
-const socketManager = new SocketManager();
-export default socketManager;
+export default SocketManager.getInstance();

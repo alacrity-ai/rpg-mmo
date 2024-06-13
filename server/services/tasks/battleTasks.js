@@ -4,9 +4,10 @@ const taskRegistry = require('./registry/taskRegistry');
 const BattleCreator = require('../../services/expeditions/battleCreator');
 const BattleManager = require('../../services/expeditions/battleManager');
 const { getAreaInstanceById } = require('../../db/queries/areaInstancesQueries');
-const { getBattlerInstancesByCharacterId, deleteBattlerInstancesByIds } = require('../../db/queries/battlerInstancesQueries');
-const { getAllCachedBattleInstances, getCacheBattleInstance, getAllCachedBattlerInstancesInBattle, setCacheBattleInstance, setCacheBattlerInstance, getBattleInstanceIdByAreaId, deleteAllBattlerInstancesByIds } = require('../../db/cache/helpers/battleHelper');
-const { getBattlerInstancesInBattle } = require('../../db/queries/battleInstancesQueries');
+const { getCharactersInBattle, getBattlerInstancesByCharacterId, deleteBattlerInstancesByIds } = require('../../db/queries/battlerInstancesQueries');
+const { getAllCachedBattleInstances, getCacheBattleInstance, getAllCachedBattlerInstancesInBattle, setCacheBattleInstance, setCacheBattlerInstance, getBattleInstanceIdByAreaId, deleteAllBattlerInstancesByIds, deleteCacheBattleInstance } = require('../../db/cache/helpers/battleHelper');
+const { getAreaInstanceIdByBattleInstanceId, getBattlerInstancesInBattle, setBattleInstanceCleared, deleteBattleInstance } = require('../../db/queries/battleInstancesQueries');
+const { setEncounterCleared } = require('../../db/queries/areaInstancesQueries');
 const logger = require('../../utilities/logger');
 
 async function processGetBattleInstanceTask(task, redisClient) {
@@ -143,8 +144,36 @@ async function processCleanupBattleTask(task, redisClient) {
   }
 }
 
+async function processPlayerVictoryTask(task, redisClient) {
+  // Extract values:
+  const { taskId, data } = task.taskData;
+  const { battleInstanceId } = data;
+ 
+  await setBattleInstanceCleared(battleInstanceId);
+  await deleteCacheBattleInstance(redisClient, battleInstanceId);
+  const areaInstanceId = await getAreaInstanceIdByBattleInstanceId(battleInstanceId);
+  await setEncounterCleared(areaInstanceId);
+  await deleteBattleInstance(battleInstanceId);
+
+  result = { 
+    success: true, 
+    data: { 
+      battleResult: 'player', 
+      battleInstanceId: battleInstanceId, 
+    }
+  };
+
+  try {
+    await addTaskResult(redisClient, taskId, result);
+  } catch (error) {
+    const result = { success: false, error: 'Failed to process player victory. ' + error.message };
+    logger.error(`Player victory processing failed for task ${taskId}: ${error.message}`);
+    await addTaskResult(redisClient, taskId, result);
+  }
+}
 
 // Register task handlers
+taskRegistry.register('playerVictory', processPlayerVictoryTask);
 taskRegistry.register('getBattleInstance', processGetBattleInstanceTask);
 taskRegistry.register('cleanupBattle', processCleanupBattleTask);
 

@@ -21,6 +21,7 @@ export default class BattleScene extends Phaser.Scene {
         this.battlerInstancesData = battlerInstancesData;
         this.battleInstanceId = battleInstanceData.id;
         this.backgroundImage = backgroundImage;
+        console.log('Battle scene with key: ', key, 'Created with battle instance data:', battleInstanceData, 'and battler instances data:', battlerInstancesData);
     }
 
     preload() {
@@ -82,12 +83,12 @@ export default class BattleScene extends Phaser.Scene {
         const settings = this.registry.get('settings');
 
         // Initialize the action response handler for messages from the server
-        this.actionResponseHandler = new BattleActionResponseHandler(this.battleGrid, this.actionBarMenu, settings);
-        this.actionResponseHandler.initialize();
+        this.battleActionResponseHandler = new BattleActionResponseHandler(this.battleGrid, this.actionBarMenu, settings);
+        this.battleActionResponseHandler.initialize();
 
         // Initialize the room response handler for messages from the server
-        this.roomResponseHandler = new BattleRoomResponseHandler(this.battleGrid, this.actionBarMenu, settings);
-        this.roomResponseHandler.initialize();
+        this.battleRoomResponseHandler = new BattleRoomResponseHandler(this.battleGrid, this.actionBarMenu, settings);
+        this.battleRoomResponseHandler.initialize();
 
         // Initialize the BattleActionClientInputHandler for client local inputs
         this.battleActionClientInputHandler = new BattleActionClientInputHandler(this, this.battleGrid, this.actionBarMenu, this.battlerId);
@@ -118,9 +119,32 @@ export default class BattleScene extends Phaser.Scene {
     }
 
     cleanup() {
+        SocketManager.leaveBattle(this.battleInstanceId);
+
         // Cleanup event listeners and other resources
-        this.actionResponseHandler.cleanup();
-        this.battleActionClientInputHandler.cleanup();
+        if (this.battleActionClientInputHandler) {
+            this.battleActionClientInputHandler.cleanup();
+        }
+        if (this.battleActionResponseHandler) {
+            this.battleActionResponseHandler.cleanup();
+        }
+        if (this.battleRoomResponseHandler) {
+            this.battleRoomResponseHandler.cleanup();
+        }
+        
+        // Remove all event listeners for this scene
+        this.events.removeAllListeners();
+        
+        // Stop all tweens
+        this.tweens.killAll();
+
+        // Remove all active objects from the scene
+        this.children.removeAll();
+
+        // Clear the battle grid
+        if (this.battleGrid) {
+            delete(this.battleGrid)
+        }
     }
 
     destroy() {

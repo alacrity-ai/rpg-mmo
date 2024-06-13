@@ -1,5 +1,6 @@
 const { query } = require('../database');
 const BattlerInstance = require('../../models/BattlerInstance');
+const Character = require('../../models/Character');
 const { getCharacterById } = require('./characterQueries');
 const { getNPCTemplateById } = require('./npcTemplatesQueries');
 
@@ -102,6 +103,45 @@ async function getBattlerInstancesByCharacterId(characterId) {
     return [];
 }
 
+// Function to get characters in a battle
+async function getCharactersInBattle(battleInstanceId) {
+    const sql = 'SELECT character_id FROM battler_instances WHERE id = ?';
+    const params = [battleInstanceId];
+    const rows = await query(sql, params);
+    
+    if (rows.length > 0) {
+        const characterIds = rows.map(row => row.character_id);
+        const characters = [];
+        
+        for (const id of characterIds) {
+            const characterSql = 'SELECT * FROM characters WHERE id = ?';
+            const characterRows = await query(characterSql, [id]);
+            
+            if (characterRows.length > 0) {
+                const row = characterRows[0];
+                const character = new Character({
+                    id: row.id,
+                    user_id: row.user_id,
+                    name: row.name,
+                    characterClass: row.character_class,
+                    level: row.level,
+                    baseStats: row.base_stats,
+                    currentStats: row.current_stats,
+                    abilities: row.abilities,
+                    current_area_id: row.current_area_id,
+                    previous_area_id: row.previous_area_id,
+                    current_town_key: row.current_town_key,
+                    flags: row.flags
+                });
+                characters.push(character);
+            }
+        }
+        
+        return characters;
+    }
+    
+    return [];
+}
 
 async function updateBattlerInstance(id, updates) {
     const sql = `
@@ -282,5 +322,6 @@ module.exports = {
     updateBattlerMana,
     updateBattlerAlive,
     applyStatusEffect,
-    getBattlerInstancesByCharacterId
+    getBattlerInstancesByCharacterId,
+    getCharactersInBattle
 };
