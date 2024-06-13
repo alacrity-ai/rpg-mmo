@@ -141,12 +141,6 @@ export default class ActionBarMenu extends BaseMenu {
 
     addCanQueueAbility(cooldownLengthMs) {
         this.scene.time.delayedCall(cooldownLengthMs * 0.5, () => {
-            // Change border of button to green
-            // Faint light blue with low saturation = 0x00ffff
-            // Even fainter with lower saturation = 0x00cccc
-            // Lower saturation, more grey blue = 0x009999
-            // Yellow = 0xffff00
-            // Very pale yellow = 0xffffcc
             this.changeIconBorders('0x009999');
             // for every icon button:
             this.iconButtons.forEach(({ button, ability }) => {

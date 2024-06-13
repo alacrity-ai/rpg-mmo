@@ -1,16 +1,15 @@
-require('dotenv').config();
-const { pool } = require('./database');
-const areaEventTemplates = require('./data/areaEventTemplates');
-const itemTemplates = require('./data/itemTemplates');
-const npcTemplates = require('./data/npcTemplates');
-const classTemplates = require('./data/classTemplates');
-const shopTemplates = require('./data/shopTemplates');
-const statusTemplates = require('./data/statusTemplates')
-const zoneTemplates = require('./data/zoneTemplates');
-const encounterTemplates = require('./data/encounterTemplates');
-const npcDialogueTemplates = require('./data/npcDialogueTemplates');
-const abilityTemplates = require('./data/abilityTemplates');
-const logger = require('../utilities/logger');
+const { pool } = require('../database');
+const areaEventTemplates = require('../data/areaEventTemplates');
+const itemTemplates = require('../data/itemTemplates');
+const npcTemplates = require('../data/npcTemplates');
+const classTemplates = require('../data/classTemplates');
+const shopTemplates = require('../data/shopTemplates');
+const statusTemplates = require('../data/statusTemplates')
+const zoneTemplates = require('../data/zoneTemplates');
+const encounterTemplates = require('../data/encounterTemplates');
+const npcDialogueTemplates = require('../data/npcDialogueTemplates');
+const abilityTemplates = require('../data/abilityTemplates');
+const logger = require('../../utilities/logger');
 
 
 async function populateNpcDialogueTemplates() {

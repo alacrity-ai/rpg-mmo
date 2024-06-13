@@ -1,6 +1,6 @@
 // Initializer.js
 const { initTables } = require('../db/database');
-const { populateTables } = require('../db/populateTables');
+const { populateTables } = require('../db/utils/populateTables');
 const clearRedis = require('../db/cache/utility/taskClear');
 const { createStreamIfNotExists, createConsumerGroup } = require('../db/cache/utility/taskQueue');
 const BattleControllerService = require('./battleControllerService');
