@@ -63,14 +63,18 @@ export default class AreaNavigationMenu extends BaseMenu {
                 console.log('Area request response:', response);
                 const areaInstanceData = response.areaInstance;
                 const areaKey = `AreaScene_${areaInstanceData.zoneInstanceId}_${areaInstanceData.id}`;
-                const areaScene = new AreaScene(areaKey, areaInstanceData);
-                this.scene.scene.add(areaKey, areaScene, false);
+                
+                if (!this.scene.scene.get(areaKey)) {
+                    const areaScene = new AreaScene(areaKey, areaInstanceData);
+                    this.scene.scene.add(areaKey, areaScene, false);
+                }
+    
                 SoundFXManager.playSound('assets/sounds/footstep_chain.wav');
                 fadeTransition(this.scene, areaKey);
             })
             .catch((error) => {
                 console.error('Error requesting area:', error);
-            });
+            });    
     }
 
     attachMoveKeysListener(areaConnections) {

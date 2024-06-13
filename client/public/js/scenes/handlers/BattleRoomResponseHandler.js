@@ -12,8 +12,6 @@ export default class BattleRoomResponseHandler {
 
     handleBattlerJoined(data) {
         try {
-            console.log('Handling battler joined:', data);
-
             // Update scene data
             this.battleGrid.scene.battlerInstancesData = data.battlerInstancesData;
             this.battleGrid.scene.battleInstanceData = data.battleInstanceData;
@@ -33,8 +31,6 @@ export default class BattleRoomResponseHandler {
 
     async handleBattlerLeft(data) {
         try {
-          console.log('Handling battler left:', data);
-    
           // Update battleGrid data
           this.battleGrid.scene.battlerInstancesData = data.battlerInstancesData;
           this.battleGrid.scene.battleInstanceData = data.battleInstanceData;
@@ -55,17 +51,14 @@ export default class BattleRoomResponseHandler {
     async handleBattleCompleted(data) {
         try {
             console.log('Handling battle completed:', data);
-            console.log(data);
             const { battleResult } = data;
             if (battleResult) {
                 if (battleResult === 'player') {
                     const previousAreaId = this.battleGrid.scene.registry.get('previousAreaId');
                     const currentAreaId = this.battleGrid.scene.registry.get('currentAreaId');
-                    console.log('Battle winner:', battleResult);
                     // Handle battle completion
                     api.zone.requestArea(previousAreaId, currentAreaId)
                     .then((response) => {
-                        console.log('Area request response:', response);
                         const areaInstanceData = response.areaInstance;
                         const areaKey = `AreaScene_${areaInstanceData.zoneInstanceId}_${areaInstanceData.id}`;
                     

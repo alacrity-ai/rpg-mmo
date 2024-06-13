@@ -22,12 +22,12 @@ export default class GlaciersedgeExterior1Scene extends BaseTownScene {
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(307, 307, 110, 100, 'Blacksmith', () => {
             SoundFXManager.playSound('assets/sounds/menu/ui_2.wav');
-            fadeTransition(this, 'GlaciersedgeBlacksmithScene', 500);
+            fadeTransition(this, 'GlaciersedgeBlacksmithScene');
         });
 
         this.interactiveZoneManager.createInteractiveArea(630, 344, 150, 110, 'Guildhall', () => {
             SoundFXManager.playSound('assets/sounds/menu/ui_2.wav');
-            fadeTransition(this, 'GlaciersedgeGuildhallScene', 500);
+            fadeTransition(this, 'GlaciersedgeGuildhallScene');
         });
 
         // Add the fog effect

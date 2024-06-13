@@ -23,7 +23,6 @@ export default class BattleActionResponseHandler {
     }
 
     handleMoveAction(data) {
-        console.log('Handling completed battler move action:', data);
         // if the data.battlerId is the same as the current player's battlerId, trigger the global cooldown
         if (data.battlerId === this.battleGrid.scene.battlerId) {
             // Play the move sound
@@ -46,12 +45,9 @@ export default class BattleActionResponseHandler {
     }
 
     handleAbilityAction(data) {
-        console.log('Got response from ability action:', data);
         const { actionData, battlerId } = data;
         const { abilityTemplate, results, targetBattlerIds, targetTiles } = actionData;
         const userBattler = this.battleGrid.getBattlerInstance(battlerId);
-
-        console.log(`Ability used: ${abilityTemplate.name}`);
 
         results.forEach(result => {
             const { success, type, amount, battlerInstance, message } = result;

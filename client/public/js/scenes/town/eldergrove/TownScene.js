@@ -22,25 +22,25 @@ export default class EldergroveTownScene extends BaseTownScene {
         this.interactiveZoneManager.createInteractiveArea(150, 360, 200, 150, 'Market', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
             // this.scene.start('EldergroveMarketScene');
-            fadeTransition(this, 'EldergroveMarketScene', 500);
+            fadeTransition(this, 'EldergroveMarketScene');
         });
 
         this.interactiveZoneManager.createInteractiveArea(400, 330, 80, 100, 'Arcanium', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
             // this.scene.start('EldergroveArcaniumScene');
-            fadeTransition(this, 'EldergroveArcaniumScene', 500);
+            fadeTransition(this, 'EldergroveArcaniumScene');
         });
 
         this.interactiveZoneManager.createInteractiveArea(515, 300, 150, 150, 'Blacksmith', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
             // this.scene.start('EldergroveBlacksmithScene');
-            fadeTransition(this, 'EldergroveBlacksmithScene', 500);
+            fadeTransition(this, 'EldergroveBlacksmithScene');
         });
 
         this.interactiveZoneManager.createInteractiveArea(780, 360, 150, 150, 'Guild Hall', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
             // this.scene.start('EldergroveGuildhallScene');
-            fadeTransition(this, 'EldergroveGuildhallScene', 500);
+            fadeTransition(this, 'EldergroveGuildhallScene');
         });
         // Add pulsating point lights
         this.pointLightManager.addPointLight(510, 355, 0xffaa00, 15, 0.02, true, 0.02, 0.15, 0.004);

@@ -22,17 +22,17 @@ export default class HarborviewExterior1Scene extends BaseTownScene {
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(50, 200, 180, 140, 'Blacksmith', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'HarborviewBlacksmithScene', 500);
+            fadeTransition(this, 'HarborviewBlacksmithScene');
         });
 
         this.interactiveZoneManager.createInteractiveArea(700, 140, 180, 150, 'Arcanium', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'HarborviewArcaniumScene', 500);
+            fadeTransition(this, 'HarborviewArcaniumScene');
         });
 
         this.interactiveZoneManager.createInteractiveArea(260, 160, 100, 120, 'Residence', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'HarborviewResidence1Scene', 500);
+            fadeTransition(this, 'HarborviewResidence1Scene');
         });
 
         // Add pointlight

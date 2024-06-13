@@ -19,7 +19,7 @@ export default class HarborviewExterior2Scene extends BaseTownScene {
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(400, 300, 200, 150, 'Guildhall', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'HarborviewGuildhallScene', 500);
+            fadeTransition(this, 'HarborviewGuildhallScene');
         });
 
         // Add the fog effect

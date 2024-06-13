@@ -19,7 +19,7 @@ export default class HarborviewExterior3Scene extends BaseTownScene {
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(330, 200, 260, 120, 'Gemcutter', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'HarborviewGemcutterScene', 500);
+            fadeTransition(this, 'HarborviewGemcutterScene');
         });
 
 

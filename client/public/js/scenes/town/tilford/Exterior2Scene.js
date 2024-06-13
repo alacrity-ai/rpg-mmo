@@ -19,19 +19,19 @@ export default class TilfordExterior2Scene extends BaseTownScene {
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(400, 300, 200, 150, 'Arcanium', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'TilfordArcaniumScene', 500);
+            fadeTransition(this, 'TilfordArcaniumScene');
         });
 
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(135, 307, 125, 170, 'Apothecary', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'TilfordApothecaryScene', 500);
+            fadeTransition(this, 'TilfordApothecaryScene');
         });
 
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(670, 350, 250, 170, 'Blacksmith', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'TilfordBlacksmithScene', 500);
+            fadeTransition(this, 'TilfordBlacksmithScene');
         });
 
         // Add the fog effect

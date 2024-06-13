@@ -1,5 +1,7 @@
 # TODOS
 
+- [x] Leaving a battle seems to pass the area data to the player 4 times from the server.
+
 - [ ] Death state
     - [ ] Handle death state for players (Fall over and stay on ground, no actions until raise)
         - [ ] Add raise ability to test raising

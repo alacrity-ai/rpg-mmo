@@ -19,19 +19,19 @@ export default class FrostholmExterior3Scene extends BaseTownScene {
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(160, 320, 200, 150, 'Leatherworker', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'FrostholmLeatherworkerScene', 500);
+            fadeTransition(this, 'FrostholmLeatherworkerScene');
         });
 
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(700, 340, 300, 200, 'Market', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'FrostholmMarketScene', 500);
+            fadeTransition(this, 'FrostholmMarketScene');
         });
 
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(400, 300, 200, 100, 'Guild Hall', () => {
             SoundFXManager.playSound('assets/sounds/door_open_2.wav');
-            fadeTransition(this, 'FrostholmGuildhallScene', 500);
+            fadeTransition(this, 'FrostholmGuildhallScene');
         });
 
         // Add the fog effect

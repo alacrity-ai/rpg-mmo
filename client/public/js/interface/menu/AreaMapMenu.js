@@ -22,7 +22,6 @@ export default class AreaMapMenu extends BaseMenu {
      * @param {number} [playerArea=1] - The ID of the area where the player is located.
      */
     setupAreaMap(areaData, playerArea = 1, debug = false) {
-        console.log('Area Data Passed in to setupAreaMap: ', JSON.stringify(areaData));
         const buttonSize = 20 * this.scale; // Reduced button size
         const labelSize = `${16 * this.scale}px`; // Adjusted label size
         const offset = buttonSize + 5 * this.scale; // Distance between areas
@@ -44,16 +43,13 @@ export default class AreaMapMenu extends BaseMenu {
 
         // Perform BFS to place all areas
         while (queue.length > 0) {
-            console.log('Queue Length: ', queue.length)
             const { area, x, y } = queue.shift();
             if (visited.has(area)) continue;
 
             visited.add(area);
             this.grid[y][x] = area;
 
-            console.log('areaData: ', JSON.stringify(areaData));
             const data = areaData[area];
-            console.log('Data for this area', JSON.stringify(data));
             const color = area == playerArea ? 0x00FF00 : data.type === 'entrance' ? 0x800080 : data.type === 'exit' ? 0xFFFF00 : 0x555555;
             // if debug, placeButton with area number, else placeButton with asciiSquare
             const buttonText = debug ? area : asciiSquare;

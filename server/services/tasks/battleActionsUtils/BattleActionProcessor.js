@@ -207,9 +207,10 @@ class BattleActionProcessor {
             };
         }
 
-        userbattlerInstance.currentStats.mana += manaGain;
-        Math.min(userbattlerInstance.currentStats.mana + manaGain, userbattlerInstance.baseStats.mana);
+        // Add mana to battler instance without overcapping over userBattlerInstance.baseStats.mana
+        userbattlerInstance.currentStats.mana = Math.min(userbattlerInstance.currentStats.mana + manaGain, userbattlerInstance.baseStats.mana);
         await updateBattlerMana(userbattlerInstance.id, userbattlerInstance.currentStats.mana);
+
 
         return {
             success: true,

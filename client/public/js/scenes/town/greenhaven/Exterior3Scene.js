@@ -19,19 +19,19 @@ export default class GreenhavenExterior3Scene extends BaseTownScene {
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(774, 251, 200, 200, 'Blacksmith', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'GreenhavenBlacksmithScene', 500);
+            fadeTransition(this, 'GreenhavenBlacksmithScene');
         });
 
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(161, 245, 120, 120, 'Arcanium', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'GreenhavenArcaniumScene', 500);
+            fadeTransition(this, 'GreenhavenArcaniumScene');
         });
 
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(368, 172, 260, 150, 'Market', () => {
             SoundFXManager.playSound('assets/sounds/footstep_chain.wav');
-            fadeTransition(this, 'GreenhavenMarketScene', 500);
+            fadeTransition(this, 'GreenhavenMarketScene');
         });
 
         // // Add pulsating point lights

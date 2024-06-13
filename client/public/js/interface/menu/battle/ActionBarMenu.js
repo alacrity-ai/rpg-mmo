@@ -97,9 +97,6 @@ export default class ActionBarMenu extends BaseMenu {
                     if (ability.targetType === 'target') {
                         this.battleGrid.clearTileSelections();
                     }
-
-                    // Optionally handle the response here if needed
-                    console.log('Action added successfully');
                 } catch (error) {
                     console.error('Failed to add action:', error);
                 }

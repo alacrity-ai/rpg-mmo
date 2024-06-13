@@ -43,7 +43,6 @@ class Battler {
         const validAnimations = ['attack', 'cast', 'combat', 'die', 'hit', 'idle', 'run'];
         if (this.sprite && validAnimations.includes(animationName)) {
             const animKey = this.spriteConfigs[animationName].animKey;
-            console.log(`Playing animation: ${animationName}, animKey: ${animKey}, spriteConfigs: ${this.spriteConfigs}`);
             
             if (reverse) {
                 this.sprite.anims.playReverse(animKey);
@@ -57,7 +56,6 @@ class Battler {
         const validAnimations = ['attack', 'cast', 'combat', 'die', 'hit', 'idle', 'run'];
         if (this.sprite && validAnimations.includes(animationName)) {
             const animKey = this.spriteConfigs[animationName].animKey;
-            console.log(`Playing animation once: ${animationName}, animKey: ${animKey}, spriteConfigs: ${this.spriteConfigs}`);
     
             // Ensure any previous event listener is removed to prevent multiple triggers
             this.sprite.off('animationcomplete');
@@ -71,7 +69,6 @@ class Battler {
             // Listen for the animation complete event once
             this.sprite.once('animationcomplete', (animation, frame) => {
                 if (animation.key === animKey) {
-                    console.log(`Animation complete: ${animation.key}`);
                     // Optionally reset to idle animation after the animation completes
                     this.sprite.play(this.spriteConfigs['combat'].animKey);
                 }
@@ -83,7 +80,6 @@ class Battler {
         const validAnimations = ['attack', 'cast', 'combat', 'die', 'hit', 'idle', 'run'];
         if (this.sprite && validAnimations.includes(animationName)) {
             const animKey = this.spriteConfigs[animationName].animKey;
-            console.log(`Playing animation and stopping on last frame: ${animationName}, animKey: ${animKey}, spriteConfigs: ${this.spriteConfigs}`);
     
             // Ensure any previous event listener is removed to prevent multiple triggers
             this.sprite.off('animationcomplete');
@@ -94,8 +90,6 @@ class Battler {
             // Listen for the animation complete event once
             this.sprite.once('animationcomplete', (animation, frame) => {
                 if (animation.key === animKey) {
-                    console.log(`Animation complete: ${animation.key}`);
-    
                     // Get the last frame of the animation
                     const lastFrame = this.sprite.anims.get(animKey).getLastFrame();
     

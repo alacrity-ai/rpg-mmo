@@ -22,7 +22,7 @@ export default class TilfordExterior1Scene extends BaseTownScene {
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(170, 350, 200, 150, 'Market', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'TilfordMarketScene', 500);
+            fadeTransition(this, 'TilfordMarketScene');
         });
 
         // Add the fog effect

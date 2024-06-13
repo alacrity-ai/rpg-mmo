@@ -19,13 +19,13 @@ export default class FrostholmExterior2Scene extends BaseTownScene {
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(350, 250, 200, 200, 'Arcanium', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'FrostholmArcaniumScene', 500);
+            fadeTransition(this, 'FrostholmArcaniumScene');
         });
 
         // Add links to other scenes
         this.interactiveZoneManager.createInteractiveArea(720, 220, 250, 320, 'Blacksmith', () => {
             SoundFXManager.playSound('assets/sounds/door_open.wav');
-            fadeTransition(this, 'FrostholmBlacksmithScene', 500);
+            fadeTransition(this, 'FrostholmBlacksmithScene');
         });
 
         // Add the fog effect

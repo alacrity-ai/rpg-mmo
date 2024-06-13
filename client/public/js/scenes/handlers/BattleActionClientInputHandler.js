@@ -155,7 +155,6 @@ export default class BattleActionClientInputHandler {
         const newPosition = [currentBattlerX + direction[0], currentBattlerY + direction[1]];
 
         // Verify that were are not moving to the same position
-        console.log('Current position:', currentPosition, 'New position:', newPosition);
         if (currentPosition[0] === newPosition[0] && currentPosition[1] === newPosition[1]) {
             return;
         }
@@ -176,7 +175,6 @@ export default class BattleActionClientInputHandler {
 
         // Send movement request to server
         const actionData = { newPosition: newPosition, currentPosition: currentPosition, team: 'player' };
-        console.log(`Calling addBattlerAction with: ${battleInstanceId}, ${this.battlerId}, move, ${actionData}`)
         api.battlerAction.addBattlerAction(battleInstanceId, this.battlerId, 'move', actionData)
             .then(response => {
                 // Insert action here if needed

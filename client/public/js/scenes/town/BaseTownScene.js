@@ -127,7 +127,7 @@ export default class BaseTownScene extends Phaser.Scene {
     
         const returnAction = () => {
             SoundFXManager.playSound('assets/sounds/door_close.wav');
-            fadeTransition(this, this.returnSceneKey, 500);
+            fadeTransition(this, this.returnSceneKey);
         };
     
         arrowDownRedIcon.on('pointerdown', returnAction);

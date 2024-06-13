@@ -30,7 +30,7 @@ export default class CharacterSelectMenu extends BaseMenu {
             const errorMessage = 'Failed to load character list';
             const errorMenu = new ErrorMenu(this.scene, errorMessage);
             errorMenu.onClose = () => {
-                fadeTransition(this.scene, 'LoginScene', 500);
+                fadeTransition(this.scene, 'LoginScene');
             };
             this.hideNoOnclose();
             errorMenu.show();
@@ -84,7 +84,7 @@ export default class CharacterSelectMenu extends BaseMenu {
                 console.log('Character logged in successfully:', data);
                 this.scene.registry.set('characterId', data.id);
                 this.scene.scene.get('LoginScene').cleanup();
-                fadeTransition(this.scene, this.scene.registry.get('firstSceneKey'), 500);
+                fadeTransition(this.scene, this.scene.registry.get('firstSceneKey'));
                 this.hide();
     
                 // Call createParty after logging in the character
