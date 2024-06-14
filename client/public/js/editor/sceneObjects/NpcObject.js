@@ -5,6 +5,7 @@ export class NPC {
       this.path = path;
       this.scale = scale;
       this.flipped = flipped;
+      this.dialogue = null;
     }
   }
   

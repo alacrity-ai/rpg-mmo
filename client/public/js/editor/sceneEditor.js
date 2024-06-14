@@ -4,15 +4,20 @@ import { toggleBackToZoneEditor } from './utils/sceneEditorToggles.js';
 import { LightSource } from './sceneObjects/lightSource.js';
 import { createLightSourcePopup } from './popups/lightSourceEditor.js';
 import { chooseNPC, updateSceneBoxNPC } from './utils/npcSelector.js';
+import { createNPCPopup } from './popups/npcEditor.js';
 import { NPC } from './sceneObjects/NpcObject.js';
+import { DialogueEditor } from './dialogueEditor.js';
 
 let selectedNPCPath = null;
 
 
 export class SceneEditor {
-  constructor(zoneData) {
+  constructor(zoneData, zoneEditor) {
     this.zoneData = zoneData; // The same as the 'zone' object in the main editor
     this.sceneId = null;
+
+    this.zoneEditor = zoneEditor; // Reference to the main editor
+
     this.editorDiv = document.getElementById('editor-container');
     this.sceneEditorDiv = document.createElement('div');
     this.sceneEditorDiv.id = 'scene-editor-container';
@@ -24,6 +29,7 @@ export class SceneEditor {
     this.isNPCMode = false; // Track whether NPC mode is active
     this.selectedNPCPath = null; // Store the selected NPC path
 
+    this.dialogueEditor = new DialogueEditor(this.zoneEditor);
     this.toggleBackToZoneEditor = toggleBackToZoneEditor.bind(this);
     this.handleSceneClick = this.handleSceneClick.bind(this); // Ensure handleSceneClick is properly bound
   }
@@ -143,18 +149,22 @@ export class SceneEditor {
         const npcImage = document.createElement('img');
         npcImage.src = npc.path;
         npcImage.style.position = 'absolute';
-        npcImage.style.left = `${npc.x - 85}px`; // Center horizontally
-        npcImage.style.top = `${npc.y - 85}px`; // Center vertically
-        npcImage.style.width = '170px';
-        npcImage.style.height = '170px';
+        npcImage.style.left = `${npc.x - (170 * npc.scale / 2)}px`; // Center horizontally
+        npcImage.style.top = `${npc.y - (170 * npc.scale / 2)}px`; // Center vertically
+        npcImage.style.width = `${170 * npc.scale}px`;
+        npcImage.style.height = `${170 * npc.scale}px`;
         npcImage.style.cursor = 'pointer';
+
+        if (npc.flipped) {
+            npcImage.style.transform = 'scaleX(-1)';
+        }
 
         npcImage.addEventListener('click', (event) => {
             event.stopPropagation(); // Prevent triggering other click events
             if (this.isDeleteMode) {
               this.deleteNPC(index);
             } else {
-              this.openLightSourceEditor(index);
+              this.openNpcEditor(index);
             }
           });
 
@@ -171,6 +181,15 @@ export class SceneEditor {
       this.renderScene(sceneData); // Use this.renderScene to ensure context
     });
   }
+
+  openNpcEditor(index) {
+    const sceneData = this.zoneData.scenes[this.sceneId];
+    const npc = sceneData.npcs[index];
+    createNPCPopup(npc, (updatedNPC) => {
+        sceneData.npcs[index] = updatedNPC;
+        this.renderScene(sceneData); // Use this.renderScene to ensure context
+    });
+ }
 
   handleSceneClick(event) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -256,5 +275,10 @@ export class SceneEditor {
   deselectModes() {
     this.setActiveMode(null);
     console.log('Deselected all modes.');
+  }
+
+  showDialogueEditor() {
+    this.sceneEditorDiv.style.display = 'none';
+    this.dialogueEditor.show(this.sceneId, this.zoneData);
   }
 }

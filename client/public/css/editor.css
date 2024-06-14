@@ -42,7 +42,7 @@ body {
     background-color: #e0e0e0;
   }
   
-  #editor-container {
+  #editor-container, #dialogue-editor-container {
     width: 80%;
     height: 76%;
     display: flex;
@@ -58,7 +58,7 @@ body {
     overflow: scroll; /* Ensure scrollbars are always present */
   }
   
-  #editor-container .content {
+  #editor-container .content, #dialogue-editor-container .content {
     width: 100%; /* Ensure the content takes full width */
     height: 100%; /* Ensure the content takes full height */
     transform-origin: top left;
@@ -193,7 +193,7 @@ body {
     left: 0;
   }
   
-  #scene-editor-container button {
+  #scene-editor-container button  {
     padding: 10px 18px;
     margin-top: 20px;
     font-size: 16px;
@@ -237,3 +237,89 @@ body {
     background-color: #004085;
   }
   
+  #npc-popup {
+    font-family: Arial, sans-serif;
+    text-align: center;
+  }
+  
+  #npc-popup label {
+    display: block;
+    margin: 10px 0;
+  }
+  
+  #npc-popup button {
+    margin: 5px;
+    padding: 5px 10px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #npc-popup button:hover {
+    background-color: #0056b3;
+  }
+  
+  #npc-popup button:active {
+    background-color: #004085;
+  }
+  
+/* Styles for dialogue nodes */
+.dialogue-node {
+    position: absolute;
+    padding: 10px;
+    border-radius: 4px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    font-size: 14px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.dialogue-node:hover {
+    transform: scale(1.05);
+}
+
+/* Highlight selected node */
+.dialogue-node.selected {
+    border: 2px solid yellow;
+}
+
+/* Color codes for different node types */
+.dialogue-node.start { background-color: #000000; }      /* Start node: black */
+.dialogue-node.text { background-color: #007bff; }       /* Text node: blue */
+.dialogue-node.choice { background-color: #28a745; }     /* Choice node: green */
+.dialogue-node.condition { background-color: #fd7e14; }  /* Condition node: orange */
+.dialogue-node.action { background-color: #6f42c1; }     /* Action node: purple */
+
+
+.node-button {
+    position: absolute;
+    width: 25px;
+    height: 25px;
+    border: none;
+    border-radius: 50%;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    line-height: 1;
+}
+
+.node-button:hover {
+    background-color: #f0f0f0;
+}
+
+.pencil-button {
+    color: #007bff;
+}
+
+.trash-button {
+    color: #dc3545;
+}

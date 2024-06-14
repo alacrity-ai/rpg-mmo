@@ -112,10 +112,16 @@ export function toggleSceneEditor(sceneId, zoneData) {
     sceneTools.appendChild(divider3);
 
     // Create encounter button
-    const encounterButton = createButton('encounter-button', '👹', 'Edit Encounters', () => {
+    const encounterButton = createButton('encounter-button', '👹', 'Encounter Editor', () => {
         this.showEncounterEditor();
     });
     sceneTools.appendChild(encounterButton);
+
+    // Create encounter button
+    const dialogueButton = createButton('dialogue-button', '💬', 'Dialogue Editor', () => {
+        this.showDialogueEditor();
+    });
+    sceneTools.appendChild(dialogueButton);
 
     // Append scene tools to the scene editor container
     this.sceneEditorDiv.appendChild(sceneTools);

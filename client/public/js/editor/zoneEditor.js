@@ -17,7 +17,7 @@ export class ZoneEditor {
       this.zoomLevel = 1; // Initial zoom level
 
       // Initialize the SceneEditor with the zone data
-      this.sceneEditor = new SceneEditor(this.zone, null);
+      this.sceneEditor = new SceneEditor(this.zone, this);
       this.toggleSceneEditor = toggleSceneEditor.bind(this.sceneEditor);
 
       // Bind zoom controls
