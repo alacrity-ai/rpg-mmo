@@ -41,6 +41,14 @@ app.get('/api/zone-images/:zoneType', (req, res) => {
   });
 });
 
+// New API endpoint to get a map of editor.png files and their folder paths
+app.get('/api/npc-images', (req, res) => {
+  const directoryPath = path.join(__dirname, 'public/assets/images/npcs');
+  const results = getEditorPngMap(directoryPath, directoryPath);
+
+  res.json(results);
+});
+
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/editor.html'));
 });
@@ -48,3 +56,24 @@ app.get('*', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+// Utility function to get the map of editor.png files and their folder paths
+function getEditorPngMap(directory, basePath) {
+  let results = {};
+
+  fs.readdirSync(directory).forEach(file => {
+    const fullPath = path.join(directory, file);
+    const relativePath = path.relative(basePath, fullPath);
+    const stat = fs.lstatSync(fullPath);
+
+    if (stat.isDirectory()) {
+      const subResults = getEditorPngMap(fullPath, basePath);
+      results = { ...results, ...subResults };
+    } else if (stat.isFile() && file === 'editor.png') {
+      const folderPath = path.dirname(relativePath);
+      results[relativePath.replace(/\\/g, '/')] = folderPath.replace(/\\/g, '/');
+    }
+  });
+
+  return results;
+}

@@ -3,10 +3,15 @@
 import { toggleBackToZoneEditor } from './utils/sceneEditorToggles.js';
 import { LightSource } from './sceneObjects/lightSource.js';
 import { createLightSourcePopup } from './popups/lightSourceEditor.js';
+import { chooseNPC, updateSceneBoxNPC } from './utils/npcSelector.js';
+import { NPC } from './sceneObjects/NpcObject.js';
+
+let selectedNPCPath = null;
+
 
 export class SceneEditor {
   constructor(zoneData) {
-    this.zoneData = zoneData;
+    this.zoneData = zoneData; // The same as the 'zone' object in the main editor
     this.sceneId = null;
     this.editorDiv = document.getElementById('editor-container');
     this.sceneEditorDiv = document.createElement('div');
@@ -16,20 +21,27 @@ export class SceneEditor {
     this.zoomControls = document.getElementById('zoom-controls');
     this.isLightSourceMode = false; // Track whether light source mode is active
     this.isDeleteMode = false; // Track whether delete mode is active
+    this.isNPCMode = false; // Track whether NPC mode is active
+    this.selectedNPCPath = null; // Store the selected NPC path
 
     this.toggleBackToZoneEditor = toggleBackToZoneEditor.bind(this);
+    this.handleSceneClick = this.handleSceneClick.bind(this); // Ensure handleSceneClick is properly bound
   }
 
   setActiveMode(mode) {
     // Deactivate all modes
     this.isLightSourceMode = false;
     this.isDeleteMode = false;
+    this.isNPCMode = false;
+    this.selectedNPCPath = null;
 
     // Reset all mode buttons' styles
     const lightButton = document.getElementById('light-source-button');
     const deleteButton = document.getElementById('trash-button');
+    const npcButton = document.getElementById('npc-button');
     if (lightButton) lightButton.style.backgroundColor = '#007bff';
     if (deleteButton) deleteButton.style.backgroundColor = '#007bff';
+    if (npcButton) npcButton.style.backgroundColor = '#007bff';
 
     // Activate the selected mode and update button style
     switch (mode) {
@@ -40,6 +52,10 @@ export class SceneEditor {
       case 'delete':
         this.isDeleteMode = true;
         if (deleteButton) deleteButton.style.backgroundColor = '#ff0';
+        break;
+      case 'npc':
+        this.isNPCMode = true;
+        if (npcButton) npcButton.style.backgroundColor = '#ff0';
         break;
       default:
         break;
@@ -52,6 +68,10 @@ export class SceneEditor {
 
   toggleDeleteMode() {
     this.setActiveMode(this.isDeleteMode ? null : 'delete');
+  }
+
+  toggleNPCMode() {
+    this.setActiveMode(this.isNPCMode ? null : 'npc');
   }
 
   renderScene(sceneData) {
@@ -116,6 +136,31 @@ export class SceneEditor {
         sceneRenderContainer.appendChild(lightbulb);
       });
     }
+
+    // Render NPCs
+    if (sceneData.npcs) {
+      sceneData.npcs.forEach((npc, index) => {
+        const npcImage = document.createElement('img');
+        npcImage.src = npc.path;
+        npcImage.style.position = 'absolute';
+        npcImage.style.left = `${npc.x - 85}px`; // Center horizontally
+        npcImage.style.top = `${npc.y - 85}px`; // Center vertically
+        npcImage.style.width = '170px';
+        npcImage.style.height = '170px';
+        npcImage.style.cursor = 'pointer';
+
+        npcImage.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent triggering other click events
+            if (this.isDeleteMode) {
+              this.deleteNPC(index);
+            } else {
+              this.openLightSourceEditor(index);
+            }
+          });
+
+        sceneRenderContainer.appendChild(npcImage);
+      });
+    }
   }
 
   openLightSourceEditor(index) {
@@ -128,11 +173,17 @@ export class SceneEditor {
   }
 
   handleSceneClick(event) {
+    const rect = event.currentTarget.getBoundingClientRect();
+    const x = Math.min(Math.max(0, event.clientX - rect.left), 1000);
+    const y = Math.min(Math.max(0, event.clientY - rect.top), 562);
+    console.log('isNPCMode:', this.isNPCMode, 'selectedNPCPath:', this.selectedNPCPath);
     if (this.isLightSourceMode) {
-      const rect = event.currentTarget.getBoundingClientRect();
-      const x = Math.min(Math.max(0, event.clientX - rect.left), 1000);
-      const y = Math.min(Math.max(0, event.clientY - rect.top), 562);
       this.addLightSource(x, y);
+    } else if (this.isNPCMode && selectedNPCPath) {
+      this.addNPCToScene(x, y, selectedNPCPath);
+      this.selectedNPCPath = null; // Reset selected NPC path
+      this.isNPCMode = false; // Exit NPC mode
+      this.setActiveMode(null); // Reset mode buttons
     }
   }
 
@@ -157,14 +208,41 @@ export class SceneEditor {
     this.renderScene(sceneData);
   }
 
+  addNPCToScene(x, y, npcPath) {
+    const newNPC = new NPC(x, y, npcPath);
+
+    // Ensure the scene has an npcs array
+    const sceneData = this.zoneData.scenes[this.sceneId];
+    if (!sceneData.npcs) {
+      sceneData.npcs = [];
+    }
+    sceneData.npcs.push(newNPC);
+
+    // Re-render the scene to include the new NPC
+    this.renderScene(sceneData);
+  }
+
   deleteLightSource(index) {
     const sceneData = this.zoneData.scenes[this.sceneId];
     sceneData.lightSources.splice(index, 1);
     this.renderScene(sceneData);
   }
 
+  deleteNPC(index) {
+    const sceneData = this.zoneData.scenes[this.sceneId];
+    sceneData.npcs.splice(index, 1);
+    this.renderScene(sceneData);
+  }  
+
   addNPC() {
-    console.log('Add NPC functionality here.');
+    console.log('logging value of this outside of chooseNPC ', this);
+    const self = this; // Capture the correct context
+    chooseNPC(this.sceneId, (npcPath) => {
+      console.log('logging value of this inside chooseNPC: ', this);
+      selectedNPCPath = npcPath;
+      self.toggleNPCMode();
+      console.log('Selected NPC:', npcPath);
+    }, this.zoneData, this.editorDiv);
   }
 
   addEntrance() {
