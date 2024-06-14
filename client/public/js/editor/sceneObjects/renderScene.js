@@ -1,22 +1,28 @@
 // ./sceneObjects/renderScene.js
 
-export function renderScene(sceneData, openLightSourceEditor) {
+export function renderScene(sceneData) {
     const sceneRenderContainer = document.getElementById('scene-render-container');
     sceneRenderContainer.innerHTML = ''; // Clear previous content
   
     if (sceneData.background) {
-      const img = document.createElement('img');
-      img.src = sceneData.background;
-      img.style.position = 'absolute';
-      img.style.width = '1000px';
-      img.style.height = '562px';
-      img.style.objectFit = 'cover'; // Maintain aspect ratio
-      sceneRenderContainer.appendChild(img);
+        const img = document.createElement('img');
+        img.src = sceneData.background;
+        img.style.position = 'absolute';
+        img.style.width = '1000px';
+        img.style.height = '562px';
+        img.style.objectFit = 'cover'; // Maintain aspect ratio
+    
+        // Add event listener to prevent default behavior on left click and drag
+        img.addEventListener('mousedown', (event) => {
+            event.preventDefault();
+        });
+    
+        sceneRenderContainer.appendChild(img);
     } else {
-      sceneRenderContainer.style.backgroundColor = '#007bff';
-      sceneRenderContainer.style.width = '1000px';
-      sceneRenderContainer.style.height = '562px';
-    }
+        sceneRenderContainer.style.backgroundColor = '#007bff';
+        sceneRenderContainer.style.width = '1000px';
+        sceneRenderContainer.style.height = '562px';
+    }    
   
     // Render light sources
     if (sceneData.lightSources) {
@@ -27,8 +33,8 @@ export function renderScene(sceneData, openLightSourceEditor) {
         lightCircle.style.left = `${lightSource.x}px`;
         lightCircle.style.top = `${lightSource.y}px`;
         lightCircle.style.transform = 'translate(-50%, -50%)'; // Center the circle
-        lightCircle.style.width = `${lightSource.maxRadius * 2}px`;
-        lightCircle.style.height = `${lightSource.maxRadius * 2}px`;
+        lightCircle.style.width = `${lightSource.radius * 2}px`;
+        lightCircle.style.height = `${lightSource.radius * 2}px`;
         lightCircle.style.borderRadius = '50%'; // Make it a circle
         lightCircle.style.backgroundColor = lightSource.color;
         lightCircle.style.opacity = '0.3'; // Make it semi-transparent
@@ -47,7 +53,7 @@ export function renderScene(sceneData, openLightSourceEditor) {
   
         lightbulb.addEventListener('click', (event) => {
           event.stopPropagation(); // Prevent triggering other click events
-          openLightSourceEditor(index);
+          this.openLightSourceEditor(index);
         });
         sceneRenderContainer.appendChild(lightbulb);
       });

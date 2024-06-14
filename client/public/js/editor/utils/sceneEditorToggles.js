@@ -1,7 +1,5 @@
 // utils/sceneEditorToggles.js
 
-import { renderScene } from '../sceneObjects/renderScene.js';
-
 export function toggleSceneEditor(sceneId, zoneData) {
     this.zoneData = zoneData;
     this.sceneId = sceneId;
@@ -43,59 +41,85 @@ export function toggleSceneEditor(sceneId, zoneData) {
       justifyContent: 'center',
     };
   
+    // Define divider style
+    const dividerStyle = {
+        width: '1px',
+        height: '100%',
+        backgroundColor: 'gray',
+        margin: '0 10px'
+    };
+    
+    // Function to create buttons with tooltips
+    function createButton(id, text, tooltip, eventListener) {
+        const button = document.createElement('button');
+        button.id = id;
+        button.textContent = text;
+        Object.assign(button.style, buttonStyle);
+        button.title = tooltip;
+        button.addEventListener('click', eventListener);
+        return button;
+    }
+
     // Create back button
-    const backButton = document.createElement('button');
-    backButton.id = 'back-to-zone-editor-button';
-    backButton.textContent = 'Back';
-    Object.assign(backButton.style, buttonStyle);
-    backButton.addEventListener('click', () => {
-      this.toggleBackToZoneEditor();
+    const backButton = createButton('back-to-zone-editor-button', 'Back', 'Back to Zone Editor', () => {
+        this.toggleBackToZoneEditor();
     });
     sceneTools.appendChild(backButton);
 
+    // Add a vertical divider here
+    const divider1 = document.createElement('div');
+    Object.assign(divider1.style, dividerStyle);
+    sceneTools.appendChild(divider1);
+
     // Create cursor button to deselect modes
-    const cursorButton = document.createElement('button');
-    cursorButton.id = 'cursor-button';
-    cursorButton.textContent = '☝️';
-    Object.assign(cursorButton.style, buttonStyle);
-    cursorButton.addEventListener('click', () => {
-      this.deselectModes();
+    const cursorButton = createButton('cursor-button', '☝️', 'Selection Tool', () => {
+        this.deselectModes();
     });
     sceneTools.appendChild(cursorButton);
 
+    // Create a trashcan button to delete selected objects
+    const trashButton = createButton('trash-button', '🗑️', 'Delete Mode', () => {
+        this.toggleDeleteMode(trashButton);
+    });
+    sceneTools.appendChild(trashButton);
+
+    // Add a vertical divider here
+    const divider2 = document.createElement('div');
+    Object.assign(divider2.style, dividerStyle);
+    sceneTools.appendChild(divider2);
+
     // Create light source button
-    const lightButton = document.createElement('button');
-    lightButton.id = 'light-source-button';
-    lightButton.textContent = '💡';
-    Object.assign(lightButton.style, buttonStyle);
-    lightButton.addEventListener('click', () => {
-      this.toggleLightSourceMode(lightButton);
+    const lightButton = createButton('light-source-button', '💡', 'Add Light Source', () => {
+        this.toggleLightSourceMode(lightButton);
     });
     sceneTools.appendChild(lightButton);
-  
+
     // Create NPC button
-    const npcButton = document.createElement('button');
-    npcButton.id = 'npc-button';
-    npcButton.textContent = '👤';
-    Object.assign(npcButton.style, buttonStyle);
-    npcButton.addEventListener('click', () => {
-      this.addNPC();
+    const npcButton = createButton('npc-button', '👤', 'Add NPC', () => {
+        this.addNPC();
     });
     sceneTools.appendChild(npcButton);
-  
+
     // Create entrance button
-    const entranceButton = document.createElement('button');
-    entranceButton.id = 'entrance-button';
-    entranceButton.textContent = '🚪';
-    Object.assign(entranceButton.style, buttonStyle);
-    entranceButton.addEventListener('click', () => {
-      this.addEntrance();
+    const entranceButton = createButton('entrance-button', '🚪', 'Add Clickable Transition', () => {
+        this.addEntrance();
     });
     sceneTools.appendChild(entranceButton);
-  
+
+    // Add a vertical divider here
+    const divider3 = document.createElement('div');
+    Object.assign(divider3.style, dividerStyle);
+    sceneTools.appendChild(divider3);
+
+    // Create encounter button
+    const encounterButton = createButton('encounter-button', '👹', 'Edit Encounters', () => {
+        this.showEncounterEditor();
+    });
+    sceneTools.appendChild(encounterButton);
+
     // Append scene tools to the scene editor container
     this.sceneEditorDiv.appendChild(sceneTools);
-  
+
     // Create scene render container
     const sceneRenderContainer = document.createElement('div');
     sceneRenderContainer.id = 'scene-render-container';
@@ -115,7 +139,7 @@ export function toggleSceneEditor(sceneId, zoneData) {
     this.sceneEditorDiv.appendChild(coordinateDisplay);
   
     // Render the scene
-    renderScene(sceneData, this.openLightSourceEditor.bind(this));
+    this.renderScene(sceneData);
   
     // Add event listener to the scene render container
     sceneRenderContainer.addEventListener('click', (event) => {
