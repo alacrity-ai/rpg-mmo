@@ -14,7 +14,7 @@ export default defineConfig({
   },
   server: {
     open: '/editor.html',
-    port: 8001,
+    port: 8002, // Different port for Vite development server
     host: '0.0.0.0'
   }
 });

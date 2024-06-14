@@ -7,12 +7,14 @@
     "start": "vite",
     "build": "vite build",
     "localtest": "vite build && vite",
-    "editor": "vite --config vite.config.editor.js"
+    "editor": "concurrently \"node editor_server.js\" \"vite --config vite.config.editor.js\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "concurrently": "^8.2.2",
+    "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
     "http-server": "^14.1.1",

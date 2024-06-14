@@ -6,11 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const newZoneButton = document.getElementById('new-zone-btn');
   const loadZoneButton = document.getElementById('load-zone-btn');
-  const saveZoneButton = document.createElement('button');
-
-  saveZoneButton.id = 'save-zone-btn';
-  saveZoneButton.textContent = 'Save Zone';
-  document.getElementById('toolbar').appendChild(saveZoneButton);
+  const saveZoneButton = document.getElementById('save-zone-btn');
 
   newZoneButton.addEventListener('click', () => {
     zoneEditor.initializeNewZone();

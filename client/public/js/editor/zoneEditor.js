@@ -1,4 +1,9 @@
-import { renderSceneTools } from './sceneTools.js';
+import { renderSceneTools, hideSceneTools  } from './sceneTools.js';
+import { chooseBackground, updateSceneBoxBackground } from './utils/backgroundSelector.js';
+import { SceneEditor } from './sceneEditor.js';
+import { toggleSceneEditor } from './utils/sceneEditorToggles.js';
+const EDITOR_SERVER_URL = import.meta.env.VITE_EDITOR_SERVER_URL;
+
 export class ZoneEditor {
     constructor(editorDiv) {
       this.editorDiv = editorDiv;
@@ -10,14 +15,18 @@ export class ZoneEditor {
       this.offsetX = 1000; // Offset for the initial X position
       this.offsetY = 1000; // Offset for the initial Y position
       this.zoomLevel = 1; // Initial zoom level
-  
+
+      // Initialize the SceneEditor with the zone data
+      this.sceneEditor = new SceneEditor(this.zone, null);
+      this.toggleSceneEditor = toggleSceneEditor.bind(this.sceneEditor);
+
       // Bind zoom controls
       document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
       document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
       document.getElementById('zoom-reset').addEventListener('click', () => this.zoomReset());
 
     }
-    
+
     zoomReset() {
         this.zoomLevel = 1; // Reset zoom level to initial value
         this.applyZoom();
@@ -61,55 +70,58 @@ export class ZoneEditor {
       }
       
 
-  initializeNewZone() {
-    // Create a popup for selecting the zone type
-    const popup = document.createElement('div');
-    popup.id = 'zone-type-popup';
-    popup.style.position = 'fixed';
-    popup.style.top = '50%';
-    popup.style.left = '50%';
-    popup.style.transform = 'translate(-50%, -50%)';
-    popup.style.padding = '20px';
-    popup.style.backgroundColor = '#fff';
-    popup.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
-    popup.style.zIndex = '1000'; // Ensure the popup is on top
-    
-    const title = document.createElement('h3');
-    title.textContent = 'Select Zone Type';
-    popup.appendChild(title);
-  
-    const select = document.createElement('select');
-    select.style.width = '100%';
-    select.style.margin = '10px 0';
-  
-    const zoneTypes = [
-      'elderswood', 'tilfordcrossroad', 'abandonedfields', 'tilaraswood', 'meninswamp', 
-      'menincrossing', 'dreadwoodoutskirts', 'threerivers', 'stormreachpass', 'harborroad', 
-      'stormreachapproach', 'huntinggrounds', 'thetraderoad'
-    ];
-  
-    zoneTypes.forEach(zoneType => {
-      const option = document.createElement('option');
-      option.value = zoneType;
-      option.textContent = zoneType;
-      select.appendChild(option);
-    });
-  
-    popup.appendChild(select);
-  
-    const confirmButton = document.createElement('button');
-    confirmButton.textContent = 'Select';
-    confirmButton.style.display = 'block';
-    confirmButton.style.margin = '10px auto';
-    confirmButton.addEventListener('click', () => {
-      this.zoneType = select.value;
-      document.body.removeChild(popup);
-      this.initializeZone();
-    });
-    popup.appendChild(confirmButton);
-  
-    document.body.appendChild(popup);
-  }
+    initializeNewZone() {
+        // Create a popup for selecting the zone type
+        const popup = document.createElement('div');
+        popup.id = 'zone-type-popup';
+        popup.style.position = 'fixed';
+        popup.style.top = '50%';
+        popup.style.left = '50%';
+        popup.style.transform = 'translate(-50%, -50%)';
+        popup.style.padding = '20px';
+        popup.style.backgroundColor = '#fff';
+        popup.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.1)';
+        popup.style.zIndex = '1000'; // Ensure the popup is on top
+
+        const title = document.createElement('h3');
+        title.textContent = 'Select Zone Type';
+        popup.appendChild(title);
+
+        const select = document.createElement('select');
+        select.style.width = '100%';
+        select.style.margin = '10px 0';
+        popup.appendChild(select);
+
+        const confirmButton = document.createElement('button');
+        confirmButton.textContent = 'Select';
+        confirmButton.style.display = 'block';
+        confirmButton.style.margin = '10px auto';
+        confirmButton.addEventListener('click', () => {
+            this.zoneType = select.value;
+            document.body.removeChild(popup);
+            this.initializeZone();
+        });
+        popup.appendChild(confirmButton);
+
+        document.body.appendChild(popup);
+
+        // Fetch the zone types from the server
+        console.log(`${EDITOR_SERVER_URL}/api/zone-types`)
+        fetch(`${EDITOR_SERVER_URL}/api/zone-types`)
+            .then(response => response.json())
+            .then(zoneTypes => {
+            zoneTypes.forEach(zoneType => {
+                const option = document.createElement('option');
+                option.value = zoneType;
+                option.textContent = zoneType;
+                select.appendChild(option);
+            });
+            })
+            .catch(error => {
+            console.error('Error fetching zone types:', error);
+            });
+    }
+
 
   initializeZone() {
     this.zone = {
@@ -253,7 +265,7 @@ export class ZoneEditor {
     const sceneBox = document.createElement('div');
     sceneBox.className = 'scene-box';
     sceneBox.dataset.id = sceneId;
-    this.updateSceneBoxBackground(sceneBox, sceneData.background);
+    updateSceneBoxBackground(sceneBox, sceneData.background);
     sceneBox.textContent = sceneData.name;
     this.contentDiv.appendChild(sceneBox);
 
@@ -276,7 +288,7 @@ export class ZoneEditor {
       // Toggle connection buttons around the box for connections
       this.toggleConnectionButtons(sceneBox, sceneId);
       // Render scene tools
-      renderSceneTools(sceneId, this.deleteScene.bind(this), this.editScene, this.chooseBackground.bind(this));
+      renderSceneTools(sceneId, this.deleteScene.bind(this), this.editScene.bind(this), this.chooseBackground.bind(this));
     });
 
     // Display connection buttons for existing connections
@@ -396,7 +408,7 @@ export class ZoneEditor {
     const newSceneBox = document.createElement('div');
     newSceneBox.className = 'scene-box';
     newSceneBox.dataset.id = newSceneId;
-    this.updateSceneBoxBackground(newSceneBox, this.zone.scenes[newSceneId].background);
+    updateSceneBoxBackground(newSceneBox, this.zone.scenes[newSceneId].background);
     newSceneBox.textContent = this.zone.scenes[newSceneId].name;
     this.contentDiv.appendChild(newSceneBox);
 
@@ -407,7 +419,7 @@ export class ZoneEditor {
     newSceneBox.addEventListener('click', () => {
       this.hideAllConnectionButtons();
       this.toggleConnectionButtons(newSceneBox, newSceneId);
-      renderSceneTools(newSceneId, this.deleteScene.bind(this), this.editScene, this.chooseBackground.bind(this));
+      renderSceneTools(newSceneId, this.deleteScene.bind(this), this.editScene.bind(this), this.chooseBackground.bind(this));
     });
   }
 
@@ -454,43 +466,12 @@ export class ZoneEditor {
   }
 
   editScene(sceneId) {
-    console.log(`Editing scene ${sceneId}`);
+    hideSceneTools();
+    this.toggleSceneEditor(sceneId, this.zone);
   }
 
   chooseBackground(sceneId) {
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
-    fileInput.accept = 'image/png';
-  
-    fileInput.onchange = (event) => {
-      const file = event.target.files[0];
-      if (file) {
-        const relativePath = `assets/images/zone/area/normal/${this.zoneType}/${file.name}`;
-  
-        // Log the full relative file path
-        console.log(`Full relative file path: ${relativePath}`);
-        
-        // Update the background in the JSON object
-        this.zone.scenes[sceneId].background = relativePath;
-        const sceneBox = document.querySelector(`.scene-box[data-id='${sceneId}']`);
-        this.updateSceneBoxBackground(sceneBox, relativePath);
-      }
-    };
-  
-    fileInput.click();
-  }
-
-  updateSceneBoxBackground(sceneBox, background) {
-    if (background) {
-      sceneBox.style.backgroundImage = `url(${background})`;
-      sceneBox.style.backgroundSize = 'cover';
-      sceneBox.style.backgroundPosition = 'center';
-      sceneBox.textContent = '';
-    } else {
-      sceneBox.style.backgroundImage = '';
-      sceneBox.style.backgroundColor = '#007bff';
-      sceneBox.textContent = 'Scene';
-    }
+    chooseBackground(sceneId, this.zoneType, updateSceneBoxBackground, this.zone, this.contentDiv);
   }
 
   getNewCoords(x, y, direction) {
