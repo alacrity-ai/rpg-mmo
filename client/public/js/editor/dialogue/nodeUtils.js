@@ -1,4 +1,4 @@
-import { ChoiceNode } from './choiceNode.js';
+import { createDialogueTextEditorPopup } from '../popups/dialogueTextEditor.js';
 
 export function connectionAllowed(selectedNode, NodeClass) {
     if (!selectedNode) return false;
@@ -61,17 +61,29 @@ export function addNodeButtons(node, nodeElement, dialogueEditorDiv) {
     pencilButton.className = 'node-button pencil-button';
     pencilButton.textContent = '✏️';
     pencilButton.style.left = `${nodeElement.offsetLeft + nodeElement.offsetWidth - 5}px`;
-    pencilButton.style.top = `${nodeElement.offsetTop - 10}px`;
+    pencilButton.style.top = `${nodeElement.offsetTop + 30}px`;
 
     pencilButton.addEventListener('click', (event) => {
         event.stopPropagation();
+        const dialogueEditor = document.getElementById('dialogue-editor-container').dialogueEditorInstance;
+        if (dialogueEditor) {
+            if (node.type === 'text') {
+                dialogueEditor.createTextEditorPopup(node);
+            } else if (node.type === 'choice') {
+                dialogueEditor.createChoiceEditorPopup(node);
+            } else if (node.type === 'action') {
+                dialogueEditor.createActionEditorPopup(node);
+            } else if (node.type === 'condition') {
+                dialogueEditor.createConditionEditorPopup(node);
+            }
+        }
     });
 
     const trashButton = document.createElement('button');
     trashButton.className = 'node-button trash-button';
     trashButton.textContent = '🗑️';
     trashButton.style.left = `${nodeElement.offsetLeft + nodeElement.offsetWidth + 20}px`;
-    trashButton.style.top = `${nodeElement.offsetTop - 10}px`;
+    trashButton.style.top = `${nodeElement.offsetTop + 30}px`;
 
     trashButton.addEventListener('click', (event) => {
         event.stopPropagation();
@@ -149,3 +161,11 @@ export function collectNodesToDelete(nodeId, nodes) {
 
     return nodesToDelete;
 }
+
+export const nodeTypeToEmoji = {
+    start: '🚀', // Start node
+    text: '💬', // Text node
+    choice: '🔀', // Choice node
+    condition: '❓', // Condition node
+    action: '⚡', // Action node
+};

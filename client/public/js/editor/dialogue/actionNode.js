@@ -4,6 +4,6 @@ export class ActionNode extends Node {
     constructor(uniqueId, gridX, gridY, parentId = null) {
         super(uniqueId, gridX, gridY, parentId);
         this.type = 'action';
-        this.actions = [];
+        this.actions = []; // Array to hold multiple actions
     }
 }

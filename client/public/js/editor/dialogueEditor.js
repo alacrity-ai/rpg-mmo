@@ -1,19 +1,17 @@
+// dialogueEditor.js
+
 import { createDialogueEditorToolbar, updateDialogueEditorToolbar } from './utils/dialogueEditorToolbar.js';
-import { connectionAllowed, addNodeButtons, removeNodeButtons, generateUniqueId, collectNodesToDelete, isGridOccupied, isPotentialLowerCollision, isPotentialUpperCollision, shiftColumnsRight } from './dialogue/nodeUtils.js';
+import { nodeTypeToEmoji, connectionAllowed, addNodeButtons, removeNodeButtons, generateUniqueId, collectNodesToDelete, isGridOccupied, isPotentialLowerCollision, isPotentialUpperCollision, shiftColumnsRight } from './dialogue/nodeUtils.js';
+import { createDialogueTextEditorPopup } from './popups/dialogueTextEditor.js';
+import { createDialogueChoiceEditorPopup } from './popups/dialogueChoiceEditor.js';
+import { createDialogueActionEditorPopup } from './popups/dialogueActionEditor.js';
+import { createDialogueConditionEditorPopup } from './popups/dialogueConditionEditor.js';
 import { TextNode } from './dialogue/textNode.js';
 import { ChoiceNode } from './dialogue/choiceNode.js';
 import { ConditionNode } from './dialogue/conditionNode.js';
 import { ActionNode } from './dialogue/actionNode.js';
 import { StartNode } from './dialogue/startNode.js';
 import { drawLine } from './utils/drawLine.js';
-
-const nodeTypeToEmoji = {
-    start: '🚀', // Start node
-    text: '💬', // Text node
-    choice: '🔀', // Choice node
-    condition: '❓', // Condition node
-    action: '⚡', // Action node
-};
 
 export class DialogueEditor {
     constructor(zoneEditor, childXSpacing = 50, childYSpacing = 50) {
@@ -41,6 +39,11 @@ export class DialogueEditor {
 
         // Add the start node
         this.addStartNode();
+
+        // Create the hover popup element
+        this.hoverPopup = document.createElement('div');
+        this.hoverPopup.className = 'node-hover-popup';
+        document.body.appendChild(this.hoverPopup);
     }
 
     show(sceneId, zoneData) {
@@ -77,13 +80,11 @@ export class DialogueEditor {
         newChildGridX = gridX + siblingCount;
 
         // Pre-emptively check for potential grid collision from below
-        // If the grid is occupied or there is a potential collision, shift all other columns to the right
         if (isGridOccupied(newChildGridX, gridY, this.nodes) || isPotentialLowerCollision(newChildGridX, gridY, siblingCount, this.nodes, this.selectedNode)) {
             shiftColumnsRight(newChildGridX, this.nodes);
         }
 
         // Pre-emptively check for potential grid collision from above
-        // If grid collision, then determine the farthest right column and set the gridX of the child to that column + 1
         if (isPotentialUpperCollision(newChildGridX, gridY, this.nodes, this.selectedNode)) {
             newChildGridX = Math.max(...this.nodes.map(node => node.gridX)) + 1;
         }
@@ -113,8 +114,16 @@ export class DialogueEditor {
             this.selectNode(node, nodeElement);
         });
 
+        nodeElement.addEventListener('mouseenter', () => {
+            this.showHoverPopup(node, nodeElement);
+        });
+
+        nodeElement.addEventListener('mouseleave', () => {
+            this.hideHoverPopup();
+        });
+
         this.dialogueEditorDiv.querySelector('.content').appendChild(nodeElement);
-        
+
         // Get this node's parent by node.parentId
         const parent = this.nodes.find(n => n.uniqueId === node.parentId);
         // Draw a line to the parent node
@@ -126,10 +135,10 @@ export class DialogueEditor {
     renderTree() {
         // Clear existing nodes
         this.dialogueEditorDiv.querySelector('.content').innerHTML = '';
-    
+
         // Render all nodes based on updated positions
         this.nodes.forEach(node => this.renderNode(node));
-    
+
         // Reselect the selected node
         if (this.selectedNode) {
             // Get the selectedNode element by matching the uniqueId
@@ -138,22 +147,22 @@ export class DialogueEditor {
                 const nodePosition = element.style.left === `${this.selectedNode.x}px` && element.style.top === `${this.selectedNode.y}px`;
                 return nodeType && nodePosition;
             });
-    
+
             this.selectNode(this.selectedNode, selectedNodeElement);
         }
-    }    
+    }
 
     selectNode(node, nodeElement) {
         if (this.selectedNodeElement) {
             this.selectedNodeElement.classList.remove('selected');
             removeNodeButtons(this.dialogueEditorDiv);
         }
-    
+
         this.selectedNode = node;
         this.selectedNodeElement = nodeElement;
         this.selectedNodeElement.classList.add('selected');
         updateDialogueEditorToolbar(node);
-    
+
         if (this.selectedNode.type != 'start') {
             addNodeButtons(node, nodeElement, this.dialogueEditorDiv);
         }
@@ -162,29 +171,116 @@ export class DialogueEditor {
 
     deleteNode() {
         if (!this.selectedNode || this.selectedNode.type === 'start') return; // Do not delete if no node is selected or if it's the start node
-    
+
         const nodeIdToDelete = this.selectedNode.uniqueId;
-    
+
         // Find the parent node
         const parentNode = this.nodes.find(node => node.children.some(child => child.uniqueId === nodeIdToDelete));
-    
+
         // If a parent node is found, remove the child from its children and childIds arrays
         if (parentNode) {
             parentNode.children = parentNode.children.filter(child => child.uniqueId !== nodeIdToDelete);
             parentNode.childIds = parentNode.childIds.filter(childId => childId !== nodeIdToDelete);
         }
-    
+
         // Collect all nodes to delete
         const nodesToDelete = collectNodesToDelete(nodeIdToDelete);
-    
+
         // Remove nodes from this.nodes
         this.nodes = this.nodes.filter(node => !nodesToDelete.includes(node.uniqueId));
-    
+
         // Clear selection
         this.selectedNode = null;
         this.selectedNodeElement = null;
-    
+
         // Re-render the tree
         this.renderTree();
+    }
+
+    createTextEditorPopup(node) {
+        createDialogueTextEditorPopup(
+            node, // Pass the node to the popup function
+            (content) => {
+                node.content = content;
+                console.log('Updated node content:', node.content);
+                this.renderTree(); // Re-render to update node display if necessary
+            },
+            () => {
+                console.log('Text editor popup canceled');
+            }
+        );
+    }
+
+    createChoiceEditorPopup(node) {
+        createDialogueChoiceEditorPopup(
+            node, // Pass the node to the popup function
+            (choice) => {
+                node.choice = choice;
+                console.log('Updated node choice:', node.choice);
+                this.renderTree(); // Re-render to update node display if necessary
+            },
+            () => {
+                console.log('Choice editor popup canceled');
+            }
+        );
+    }
+
+    createActionEditorPopup(node) {
+        createDialogueActionEditorPopup(
+            node, // Pass the node to the popup function
+            (actions) => {
+                node.actions = actions;
+                console.log('Updated node actions:', node.actions);
+                this.renderTree(); // Re-render to update node display if necessary
+            },
+            () => {
+                console.log('Action editor popup canceled');
+            }
+        );
+    }
+
+    createConditionEditorPopup(node) {
+        createDialogueConditionEditorPopup(
+            node, // Pass the node to the popup function
+            (conditions) => {
+                node.conditions = conditions;
+                console.log('Updated node conditions:', node.conditions);
+                this.renderTree(); // Re-render to update node display if necessary
+            },
+            () => {
+                console.log('Condition editor popup canceled');
+            }
+        );
+    }
+
+    showHoverPopup(node, nodeElement) {
+        let content = '';
+
+        switch (node.type) {
+            case 'text':
+                content = node.content || 'No content';
+                break;
+            case 'choice':
+                content = node.choice || 'No choice';
+                break;
+            case 'action':
+                content = node.actions.map(action => `${Object.keys(action)[0]}: ${Object.values(action)[0]}`).join('\n') || 'No actions';
+                break;
+            case 'condition':
+                content = node.conditions.map(condition => `${Object.keys(condition)[0]}: ${Object.values(condition)[0]}`).join('\n') || 'No conditions';
+                break;
+            default:
+                content = 'Starting node';
+                break;
+        }
+
+        this.hoverPopup.textContent = content;
+        this.hoverPopup.style.display = 'block';
+        this.hoverPopup.style.left = `${nodeElement.offsetLeft + nodeElement.offsetWidth + 200}px`;
+        this.hoverPopup.style.top = `${nodeElement.offsetTop}px`;
+    }
+
+    hideHoverPopup() {
+        this.hoverPopup.style.display = 'none';
     }
 }
