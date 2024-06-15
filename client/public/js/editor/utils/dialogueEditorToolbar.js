@@ -106,6 +106,8 @@ export function updateDialogueEditorToolbar(selectedNode) {
 
     if (selectedNodeType === 'choicenode' && selectedNode.children.length > 0) {
         allowedNodeTypes = [];
+    } else if (selectedNodeType === 'startnode' && selectedNode.children.length > 0) {
+        allowedNodeTypes = [];
     } else if (selectedNodeType === 'textnode') {
         const hasNonChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() !== 'choicenode');
         const hasChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() === 'choicenode');

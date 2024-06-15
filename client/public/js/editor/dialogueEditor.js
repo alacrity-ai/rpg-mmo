@@ -1,5 +1,5 @@
 import { createDialogueEditorToolbar, updateDialogueEditorToolbar } from './utils/dialogueEditorToolbar.js';
-import { connectionAllowed, addNodeButtons, removeNodeButtons, generateUniqueId } from './dialogue/nodeUtils.js';
+import { connectionAllowed, addNodeButtons, removeNodeButtons, generateUniqueId, collectNodesToDelete, isGridOccupied, isPotentialLowerCollision, isPotentialUpperCollision, shiftColumnsRight } from './dialogue/nodeUtils.js';
 import { TextNode } from './dialogue/textNode.js';
 import { ChoiceNode } from './dialogue/choiceNode.js';
 import { ConditionNode } from './dialogue/conditionNode.js';
@@ -21,6 +21,7 @@ export class DialogueEditor {
         this.zoneData = null;
         this.sceneId = null;
         this.dialogueEditorDiv = document.getElementById('dialogue-editor-container'); // Reference existing div
+        this.dialogueEditorDiv.dialogueEditorInstance = this;
         this.mainToolbar = document.getElementById('toolbar');
         this.nodes = [];
         this.selectedNode = null;
@@ -68,47 +69,29 @@ export class DialogueEditor {
         if (!this.selectedNode) return;
         if (!connectionAllowed(this.selectedNode, NodeClass)) return;
 
+        let newChildGridX = 0;
+
         const gridX = this.selectedNode.gridX;
         const gridY = this.selectedNode.gridY + 1;
         const siblingCount = this.selectedNode.children.length;
-        const newChildGridX = gridX + siblingCount;
+        newChildGridX = gridX + siblingCount;
 
-        // Pre-emptively check for potential grid collision
-        if (this.isGridOccupied(newChildGridX, gridY) || this.isPotentialCollision(newChildGridX, gridY, siblingCount)) {
-            this.shiftColumnsRight(newChildGridX);
+        // Pre-emptively check for potential grid collision from below
+        // If the grid is occupied or there is a potential collision, shift all other columns to the right
+        if (isGridOccupied(newChildGridX, gridY, this.nodes) || isPotentialLowerCollision(newChildGridX, gridY, siblingCount, this.nodes, this.selectedNode)) {
+            shiftColumnsRight(newChildGridX, this.nodes);
         }
 
-        const newChild = new NodeClass(this.generateUniqueId(), newChildGridX, gridY, this.selectedNode.uniqueId);
+        // Pre-emptively check for potential grid collision from above
+        // If grid collision, then determine the farthest right column and set the gridX of the child to that column + 1
+        if (isPotentialUpperCollision(newChildGridX, gridY, this.nodes, this.selectedNode)) {
+            newChildGridX = Math.max(...this.nodes.map(node => node.gridX)) + 1;
+        }
+
+        const newChild = new NodeClass(generateUniqueId(), newChildGridX, gridY, this.selectedNode.uniqueId);
         this.selectedNode.addChild(newChild);
         this.nodes.push(newChild);
         this.renderTree(); // Re-render the entire tree after updating positions
-    }
-
-    isGridOccupied(gridX, gridY) {
-        // Check if any node occupies the given gridX and gridY
-        return this.nodes.some(node => node.gridX === gridX && node.gridY === gridY);
-    }
-
-    isPotentialCollision(gridX, gridY, siblingCount) {
-        if (siblingCount === 0) return false;
-    
-        const maxGridY = Math.max(...this.nodes.map(node => node.gridY)) + 2;
-    
-        for (let y = 1; y <= maxGridY - gridY; y++) {
-            if (this.nodes.some(node => node.gridX === gridX && (node.gridY + y) === gridY && node.parentId !== this.selectedNode.uniqueId)) {
-                return true;
-            }
-        }
-        return false;
-    }    
-
-    shiftColumnsRight(startGridX) {
-        // Shift all nodes in the given column and to the right of it by one unit on the X-axis
-        this.nodes.forEach(node => {
-            if (node.gridX >= startGridX) {
-                node.gridX += 1;
-            }
-        });
     }
 
     renderNode(node) {
@@ -174,5 +157,34 @@ export class DialogueEditor {
         if (this.selectedNode.type != 'start') {
             addNodeButtons(node, nodeElement, this.dialogueEditorDiv);
         }
+        console.log('Selected node children:', JSON.stringify(this.selectedNode))
+    }
+
+    deleteNode() {
+        if (!this.selectedNode || this.selectedNode.type === 'start') return; // Do not delete if no node is selected or if it's the start node
+    
+        const nodeIdToDelete = this.selectedNode.uniqueId;
+    
+        // Find the parent node
+        const parentNode = this.nodes.find(node => node.children.some(child => child.uniqueId === nodeIdToDelete));
+    
+        // If a parent node is found, remove the child from its children and childIds arrays
+        if (parentNode) {
+            parentNode.children = parentNode.children.filter(child => child.uniqueId !== nodeIdToDelete);
+            parentNode.childIds = parentNode.childIds.filter(childId => childId !== nodeIdToDelete);
+        }
+    
+        // Collect all nodes to delete
+        const nodesToDelete = collectNodesToDelete(nodeIdToDelete);
+    
+        // Remove nodes from this.nodes
+        this.nodes = this.nodes.filter(node => !nodesToDelete.includes(node.uniqueId));
+    
+        // Clear selection
+        this.selectedNode = null;
+        this.selectedNodeElement = null;
+    
+        // Re-render the tree
+        this.renderTree();
     }
 }

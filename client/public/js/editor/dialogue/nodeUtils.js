@@ -8,6 +8,9 @@ export function connectionAllowed(selectedNode, NodeClass) {
     // If choice node already has a child, disallow adding another child
     if (selectedNodeType === 'choicenode' && selectedNode.children.length > 0) return false;
 
+    // If the start node already has a child, disallow adding another child
+    if (selectedNodeType === 'startnode' && selectedNode.children.length > 0) return false;
+
     // A text node can either have one child of any node type, or multiple children choice nodes
     if (selectedNodeType === 'textnode') {
         const newNodeType = NodeClass.name.toLowerCase();
@@ -72,8 +75,77 @@ export function addNodeButtons(node, nodeElement, dialogueEditorDiv) {
 
     trashButton.addEventListener('click', (event) => {
         event.stopPropagation();
+        try {
+            const dialogueEditor = document.getElementById('dialogue-editor-container').dialogueEditorInstance;
+            if (dialogueEditor) {
+                dialogueEditor.selectNode(node, nodeElement);
+                dialogueEditor.deleteNode();
+            } else {
+                console.error('dialogueEditorInstance is not defined');
+            }
+        } catch (error) {
+            console.error('Error deleting node:', error);
+        }
     });
 
     dialogueEditorDiv.querySelector('.content').appendChild(pencilButton);
     dialogueEditorDiv.querySelector('.content').appendChild(trashButton);
+}
+
+
+export function isGridOccupied(gridX, gridY, nodes) {
+    // Check if any node occupies the given gridX and gridY
+    return nodes.some(node => node.gridX === gridX && node.gridY === gridY);
+}
+
+export function isPotentialLowerCollision(gridX, gridY, siblingCount, nodes, selectedNode) {
+    if (siblingCount === 0) return false;
+
+    const maxGridY = Math.max(...nodes.map(node => node.gridY)) + 2;
+
+    for (let y = 1; y <= maxGridY; y++) {
+        if (nodes.some(node => node.gridX === gridX && (node.gridY + y) === gridY && node.parentId !== selectedNode.uniqueId)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export function isPotentialUpperCollision(gridX, gridY, nodes, selectedNode) {
+    const maxGridY = Math.max(...nodes.map(node => node.gridY)) + 2;
+
+    for (let y = maxGridY; y >= 0; y--) {
+        if (nodes.some(node => node.gridX === gridX && (node.gridY - y) === gridY && node.parentId !== selectedNode.uniqueId)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+export function shiftColumnsRight(startGridX, nodes) {
+    // Shift all nodes in the given column and to the right of it by one unit on the X-axis
+    nodes.forEach(node => {
+        if (node.gridX >= startGridX) {
+            node.gridX += 1;
+        }
+    });
+}
+
+export function collectNodesToDelete(nodeId, nodes) {
+    const nodesToDelete = [];
+    const queue = [nodeId];
+
+    while (queue.length > 0) {
+        const currentId = queue.shift();
+        nodesToDelete.push(currentId);
+        
+        // Find all children of the current node
+        nodes.forEach(node => {
+            if (node.parentId === currentId) {
+                queue.push(node.uniqueId);
+            }
+        });
+    }
+
+    return nodesToDelete;
 }
