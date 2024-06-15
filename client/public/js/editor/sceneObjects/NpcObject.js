@@ -6,6 +6,7 @@ export class NPC {
       this.scale = scale;
       this.flipped = flipped;
       this.dialogue = null;
+      this.dialogueFilename = null;
     }
   }
   

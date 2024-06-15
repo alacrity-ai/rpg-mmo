@@ -406,12 +406,10 @@ body {
     background-color: #004085;
 }
 
-/* styles.css */
-
 /* General styles for the hover popup */
 .node-hover-popup {
   position: absolute;
-  background-color: #fff;
+  background-color: #fff; /* Default background color */
   border: 1px solid #ccc;
   padding: 10px;
   z-index: 1001;
@@ -420,4 +418,5 @@ body {
   pointer-events: none; /* Prevents the popup from interfering with mouse events */
   white-space: pre-wrap; /* Allows the content to wrap properly */
   display: none;
+  color: #fff; /* Text color for better contrast */
 }

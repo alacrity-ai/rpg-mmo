@@ -33,7 +33,9 @@ export class DialogueEditor {
             () => this.createChildNode(TextNode),
             () => this.createChildNode(ChoiceNode),
             () => this.createChildNode(ActionNode),
-            () => this.createChildNode(ConditionNode)
+            () => this.createChildNode(ConditionNode),
+            () => this.saveDialogue(), // Add save button to the toolbar
+            (event) => this.handleFileLoad(event) // Add load button to the toolbar
         );
         this.toolbarContainer.appendChild(toolbar);
 
@@ -184,7 +186,7 @@ export class DialogueEditor {
         }
 
         // Collect all nodes to delete
-        const nodesToDelete = collectNodesToDelete(nodeIdToDelete);
+        const nodesToDelete = collectNodesToDelete(nodeIdToDelete, this.nodes);
 
         // Remove nodes from this.nodes
         this.nodes = this.nodes.filter(node => !nodesToDelete.includes(node.uniqueId));
@@ -255,32 +257,95 @@ export class DialogueEditor {
 
     showHoverPopup(node, nodeElement) {
         let content = '';
-
+    
         switch (node.type) {
             case 'text':
                 content = node.content || 'No content';
+                this.hoverPopup.style.backgroundColor = '#007bff'; // Blue
                 break;
             case 'choice':
                 content = node.choice || 'No choice';
+                this.hoverPopup.style.backgroundColor = '#28a745'; // Green
                 break;
             case 'action':
                 content = node.actions.map(action => `${Object.keys(action)[0]}: ${Object.values(action)[0]}`).join('\n') || 'No actions';
+                this.hoverPopup.style.backgroundColor = '#6f42c1'; // Purple
                 break;
             case 'condition':
                 content = node.conditions.map(condition => `${Object.keys(condition)[0]}: ${Object.values(condition)[0]}`).join('\n') || 'No conditions';
+                this.hoverPopup.style.backgroundColor = '#fd7e14'; // Orange
                 break;
             default:
-                content = 'Starting node';
+                content = 'Starting Node';
+                this.hoverPopup.style.backgroundColor = '#000000'; // Black
                 break;
         }
-
+    
         this.hoverPopup.textContent = content;
         this.hoverPopup.style.display = 'block';
-        this.hoverPopup.style.left = `${nodeElement.offsetLeft + nodeElement.offsetWidth + 200}px`;
+        this.hoverPopup.style.left = `${nodeElement.offsetLeft + nodeElement.offsetWidth}px`;
         this.hoverPopup.style.top = `${nodeElement.offsetTop}px`;
     }
-
+    
     hideHoverPopup() {
         this.hoverPopup.style.display = 'none';
+    }
+    
+
+    saveDialogue() {
+        const dialogueData = this.nodes.map(node => node.toJSON());
+        const blob = new Blob([JSON.stringify(dialogueData, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'dialogue.json';
+        a.click();
+
+        URL.revokeObjectURL(url); // Clean up the URL object
+    }
+
+    handleFileLoad(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const jsonData = JSON.parse(e.target.result);
+            this.loadDialogue(jsonData);
+        };
+        reader.readAsText(file);
+    }
+
+    loadDialogue(jsonData) {
+        this.nodes = jsonData.map(json => {
+            switch (json.type) {
+                case 'start':
+                    return StartNode.fromJSON(json);
+                case 'text':
+                    return TextNode.fromJSON(json);
+                case 'choice':
+                    return ChoiceNode.fromJSON(json);
+                case 'action':
+                    return ActionNode.fromJSON(json);
+                case 'condition':
+                    return ConditionNode.fromJSON(json);
+                default:
+                    throw new Error(`Unknown node type: ${json.type}`);
+            }
+        });
+
+        // Re-establish parent-child relationships
+        this.nodes.forEach(node => {
+            node.childIds.forEach(childId => {
+                const childNode = this.nodes.find(n => n.uniqueId === childId);
+                if (childNode) {
+                    node.addChild(childNode);
+                }
+            });
+        });
+
+        // Render the entire tree
+        this.renderTree();
     }
 }

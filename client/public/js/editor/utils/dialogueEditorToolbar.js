@@ -80,11 +80,20 @@ export function createDialogueEditorToolbar(backToSceneEditorCallback, createTex
     dialogueTools.appendChild(saveButton);
 
     // Create load button
-    const loadButton = createButton('load-button', 'Load', 'Load a conversation tree', '#17a2b8', loadCallback);
+    const loadButton = createButton('load-button', 'Load', 'Load a conversation tree', '#17a2b8', () => fileInput.click());
     dialogueTools.appendChild(loadButton);
+
+    // Create hidden file input for loading JSON
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = 'application/json';
+    fileInput.style.display = 'none';
+    fileInput.addEventListener('change', loadCallback);
+    dialogueTools.appendChild(fileInput);
 
     return dialogueTools;
 }
+
 
 export function updateDialogueEditorToolbar(selectedNode) {
     // Get the dialogue tools container
