@@ -321,10 +321,10 @@ export class SceneEditor {
   addLightSource(x, y) {
     const color = '#ffff00'; // Default color (yellow)
     const radius = 50; // Default min radius
-    const intensity = 25; // Default max radius
+    const intensity = 0.5; // Default max radius
     const pulsate = false; // Default pulse speed
-    const minIntensity = 0.2; // Default min intensity
-    const maxIntensity = 0.5; // Default max intensity
+    const minIntensity = 0.3; // Default min intensity
+    const maxIntensity = 0.7; // Default max intensity
 
     const newLightSource = new LightSource(x, y, color, radius, intensity, pulsate, minIntensity, maxIntensity);
 

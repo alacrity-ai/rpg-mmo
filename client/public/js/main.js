@@ -10,6 +10,9 @@ import LoginScene from './scenes/LoginScene.js';
 import PreloaderScene from './scenes/PreloaderScene.js';
 import MenuTestScene from './scenes/dev_scenes/MenuTestScene.js';
 
+// Test scenes
+import AreaSceneTest from './scenes/AreaSceneTest.js'
+
 // Handles loading all other scenes dynamically
 import { loadScenes } from './scenes/utils/LoadScenes.js';
 
@@ -27,7 +30,8 @@ const config = {
         PreloaderScene,
         MenuTestScene,
         WorldmapScene,
-        LoginScene
+        LoginScene,
+        AreaSceneTest
     ],
     plugins: {
         global: [{

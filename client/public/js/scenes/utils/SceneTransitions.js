@@ -17,12 +17,15 @@ export function fadeTransition(currentScene, newSceneKey, fromBattle = false, sp
             currentScene.cleanup();
 
             // Emit a global event to notify scene change including the new scene key
+            console.log('Emiting changeScene event')
             currentScene.game.events.emit('changeScene', newSceneKey);
 
             // When the fade out is complete, start the new scene
+            console.log('Starting new scene')
             currentScene.scene.start(newSceneKey);
             // Add the fade-in effect to the new scene
             currentScene.scene.get(newSceneKey).events.once('create', (newScene) => {
+                console.log('Running create event')
                 // Create a fade-in rectangle in the new scene with the same color
                 let fadeRectNewScene = newScene.add.rectangle(width / 2, height / 2, width, height, color).setAlpha(1);
                 
