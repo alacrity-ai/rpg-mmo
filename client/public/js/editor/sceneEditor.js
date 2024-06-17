@@ -10,6 +10,7 @@ import { DialogueEditor } from './dialogueEditor.js';
 import { createEncounterPopup } from './popups/encounterEditor.js';
 import { drawBox } from './utils/drawBox.js';
 import { createAudioPopup } from './popups/audioEditor.js';
+import { createWeatherPopup } from './popups/weatherEditor.js';
 
 
 // let selectedNPCPath = null;
@@ -428,25 +429,32 @@ export class SceneEditor {
     });
   }  
 
-  // Add the method in the SceneEditor class
   showAudioEditor() {
     const sceneData = this.zoneData.scenes[this.sceneId];
     if (!sceneData.audio) {
       sceneData.audio = new Audio();
     }
-    createAudioPopup(sceneData.audio, (updatedAudioData) => {
+    createAudioPopup(sceneData.audio, this.zoneData.scenes, (updatedAudioData) => {
       sceneData.audio = updatedAudioData;
       this.renderScene(sceneData);
     });
+  }  
+
+  showWeatherEditor() {
+    const sceneData = this.zoneData.scenes[this.sceneId];
+    createWeatherPopup(sceneData, this.zoneData.scenes, (updatedSceneData) => {
+      this.zoneData.scenes[this.sceneId] = updatedSceneData;
+      this.renderScene(updatedSceneData);
+    });
+  }  
+
+  showDialogueEditor() {
+    this.sceneEditorDiv.style.display = 'none';
+    this.dialogueEditor.show(this.sceneId, this.zoneData);
   }
 
   deselectModes() {
     this.setActiveMode(null);
     console.log('Deselected all modes.');
-  }
-
-  showDialogueEditor() {
-    this.sceneEditorDiv.style.display = 'none';
-    this.dialogueEditor.show(this.sceneId, this.zoneData);
   }
 }

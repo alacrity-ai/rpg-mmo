@@ -128,11 +128,17 @@ export function toggleSceneEditor(sceneId, zoneData) {
     Object.assign(divider4.style, dividerStyle);
     sceneTools.appendChild(divider4);
 
-   // Create audio button
+    // Create audio button
     const audioButton = createButton('audio-button', '🎵', 'Audio Editor', () => {
         this.showAudioEditor();
     });
     sceneTools.appendChild(audioButton);
+
+    // Create weather button
+    const weatherButton = createButton('weather-button', '🌫️', 'Weather Editor', () => {
+      this.showWeatherEditor();
+    });
+    sceneTools.appendChild(weatherButton);
 
     // Append scene tools to the scene editor container
     this.sceneEditorDiv.appendChild(sceneTools);

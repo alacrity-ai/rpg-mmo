@@ -529,18 +529,25 @@ export class ZoneEditor {
   updateZoneSummary(sceneId) {
     if (!sceneId) return;
     const sceneData = this.zone.scenes[sceneId];
-    console.log(sceneData)
     const encounters = sceneData.encounters || [];
     const encounterText = encounters.map(e => `${e.name} (${Math.round(e.probability * 100)}%)`).join(', ') || '<None>';
     const npcs = sceneData.npcs || [];
     const entrances = sceneData.entrances || [];
+    const music = sceneData.audio ? sceneData.audio.music : null;
+    const ambientSound = sceneData.audio ? sceneData.audio.ambientSound : null;
+    const weather = sceneData.weather && sceneData.weather.fog ? 'Fog' : 'None';
+    
     const summaryDiv = document.getElementById('zone-summary');
-
+  
     summaryDiv.innerHTML = `
-        <p><strong>Scene Key:</strong> ${sceneId}</p>
-        <p><strong>Encounters:</strong> ${encounterText}</p>
-        <p><strong>Number of NPCs:</strong> ${npcs.length}</p>
-        <p><strong>Entrances:</strong> ${entrances.length}</p>
+      <p><strong>Scene Key:</strong> ${sceneId}</p>
+      <p><strong>Encounters:</strong> ${encounterText}</p>
+      <p><strong>Number of NPCs:</strong> ${npcs.length}</p>
+      <p><strong>Entrances:</strong> ${entrances.length}</p>
+      <p><strong>Music:</strong> ${music ? music.split('/').pop() : 'None'}</p>
+      <p><strong>Ambient Sound:</strong> ${ambientSound ? ambientSound.split('/').pop() : 'None'}</p>
+      <p><strong>Weather:</strong> ${weather}</p>
     `;
   }
+  
 }

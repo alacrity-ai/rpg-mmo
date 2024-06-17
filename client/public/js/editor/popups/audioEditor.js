@@ -1,5 +1,5 @@
 // popups/audioEditor.js
-export function createAudioPopup(audioData, applyCallback) {
+export function createAudioPopup(audioData, allScenes, applyCallback) {
     // Array to keep track of all playing audio elements
     const playingAudios = [];
   
@@ -148,6 +148,24 @@ export function createAudioPopup(audioData, applyCallback) {
       document.body.removeChild(popup);
     });
     buttonContainer.appendChild(applyButton);
+  
+    // Create Apply to All button
+    const applyToAllButton = document.createElement('button');
+    applyToAllButton.textContent = 'Apply to All Scenes';
+    applyToAllButton.className = 'editor-popup-button';
+    applyToAllButton.addEventListener('click', () => {
+      stopAllPlayingSounds(); // Stop all sounds when applying
+      const newAudioSettings = {
+        music: musicDropdown.value || null,
+        ambientSound: ambientDropdown.value || null,
+      };
+      for (const sceneKey in allScenes) {
+        allScenes[sceneKey].audio = { ...newAudioSettings };
+      }
+      applyCallback(newAudioSettings);
+      document.body.removeChild(popup);
+    });
+    buttonContainer.appendChild(applyToAllButton);
   
     // Create Cancel button
     const cancelButton = document.createElement('button');
