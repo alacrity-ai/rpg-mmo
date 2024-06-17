@@ -4,8 +4,6 @@ import { SceneEditor } from './sceneEditor.js';
 import { toggleSceneEditor } from './utils/sceneEditorToggles.js';
 const EDITOR_SERVER_URL = import.meta.env.VITE_EDITOR_SERVER_URL;
 
-let selectedSceneId = null;
-
 export class ZoneEditor {
     constructor(editorDiv) {
       this.editorDiv = editorDiv;
@@ -17,7 +15,7 @@ export class ZoneEditor {
       this.offsetX = 4000; // Offset for the initial X position
       this.offsetY = 4000; // Offset for the initial Y position
       this.zoomLevel = 1; // Initial zoom level
-      this.selectedSceneId = null;
+
       // Initialize the SceneEditor with the zone data
       this.sceneEditor = new SceneEditor(this.zone, this);
       this.toggleSceneEditor = toggleSceneEditor.bind(this.sceneEditor);
@@ -299,7 +297,6 @@ export class ZoneEditor {
       this.toggleConnectionButtons(sceneBox, sceneId);
       // Update summary
       this.updateZoneSummary(sceneId);
-      selectedSceneId = sceneId;
       // Render scene tools
       renderSceneTools(sceneId, this.deleteScene.bind(this), this.editScene.bind(this), this.chooseBackground.bind(this));
     });
@@ -438,7 +435,6 @@ export class ZoneEditor {
       this.toggleConnectionButtons(newSceneBox, newSceneId);
       // Update summary
       this.updateZoneSummary(newSceneId);
-      selectedSceneId = newSceneId;
       renderSceneTools(newSceneId, this.deleteScene.bind(this), this.editScene.bind(this), this.chooseBackground.bind(this));
     });
   }

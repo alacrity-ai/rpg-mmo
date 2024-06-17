@@ -117,11 +117,22 @@ export function toggleSceneEditor(sceneId, zoneData) {
     });
     sceneTools.appendChild(encounterButton);
 
-    // Create encounter button
+    // Create dialogue button
     const dialogueButton = createButton('dialogue-button', '💬', 'Dialogue Editor', () => {
         this.showDialogueEditor();
     });
     sceneTools.appendChild(dialogueButton);
+
+    // Add a vertical divider here
+    const divider4 = document.createElement('div');
+    Object.assign(divider4.style, dividerStyle);
+    sceneTools.appendChild(divider4);
+
+   // Create audio button
+    const audioButton = createButton('audio-button', '🎵', 'Audio Editor', () => {
+        this.showAudioEditor();
+    });
+    sceneTools.appendChild(audioButton);
 
     // Append scene tools to the scene editor container
     this.sceneEditorDiv.appendChild(sceneTools);
@@ -171,8 +182,5 @@ export function toggleSceneEditor(sceneId, zoneData) {
     // Show the main editor container and zoom controls
     this.editorDiv.style.display = 'block';
     this.zoomControls.style.display = 'flex';
-    if (selectedSceneId) {
-      this.updateZoneSummary(selectedSceneId);
-    }
   }
   

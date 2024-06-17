@@ -9,7 +9,18 @@
           "west": null
         },
         "background": "assets/images/zone/area/normal/elderswood/entrance.png",
-        "lightSources": [],
+        "lightSources": [
+          {
+            "x": 535.4666595458984,
+            "y": 77.99999618530273,
+            "color": "#95f2f3",
+            "radius": 103.14,
+            "intensity": 0.72,
+            "pulsate": true,
+            "minIntensity": 0.44,
+            "maxIntensity": 0.68
+          }
+        ],
         "npcs": []
       },
       "scene2": {
@@ -21,7 +32,18 @@
           "west": null
         },
         "background": "assets/images/zone/area/normal/elderswood/area_11.png",
-        "lightSources": [],
+        "lightSources": [
+          {
+            "x": 541.4666595458984,
+            "y": 49.999996185302734,
+            "color": "#baf5fd",
+            "radius": 76.2,
+            "intensity": 0.6,
+            "pulsate": true,
+            "minIntensity": 0.2,
+            "maxIntensity": 0.7
+          }
+        ],
         "npcs": [
           {
             "x": 401.2666664123535,

@@ -9,6 +9,8 @@ import { EntranceObject } from './sceneObjects/entranceObject.js';
 import { DialogueEditor } from './dialogueEditor.js';
 import { createEncounterPopup } from './popups/encounterEditor.js';
 import { drawBox } from './utils/drawBox.js';
+import { createAudioPopup } from './popups/audioEditor.js';
+
 
 // let selectedNPCPath = null;
 
@@ -425,6 +427,18 @@ export class SceneEditor {
       this.renderScene(updatedSceneData);
     });
   }  
+
+  // Add the method in the SceneEditor class
+  showAudioEditor() {
+    const sceneData = this.zoneData.scenes[this.sceneId];
+    if (!sceneData.audio) {
+      sceneData.audio = new Audio();
+    }
+    createAudioPopup(sceneData.audio, (updatedAudioData) => {
+      sceneData.audio = updatedAudioData;
+      this.renderScene(sceneData);
+    });
+  }
 
   deselectModes() {
     this.setActiveMode(null);
