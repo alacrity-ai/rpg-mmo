@@ -35,12 +35,36 @@ body {
     border-radius: 5px;
     background-color: #fff;
     color: #007bff;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, transform 0.3s; /* Added transform for hover effect */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   
   #toolbar button:hover, #scene-tools button:hover {
     background-color: #e0e0e0;
+    transform: scale(1.1); /* Slightly increase size on hover */
   }
+  
+  #toolbar button:active, #scene-tools button:active {
+    background-color: #d0d0d0;
+    transform: scale(1.05); /* Slightly decrease size on click */
+  }
+  
+  #toolbar button {
+    font-size: 20px; /* Increase font size */
+    padding: 15px 20px; /* Increase padding */
+    border-radius: 12px; /* Rounded corners */
+  }
+  
+  #toolbar button:hover {
+    background-color: #e0e0e0;
+  }
+  
+  #toolbar button:active {
+    background-color: #d0d0d0;
+  }
+  
   
   #editor-container, #dialogue-editor-container {
     width: 80%;
