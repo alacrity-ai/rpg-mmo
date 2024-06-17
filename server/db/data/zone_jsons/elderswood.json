@@ -1,0 +1,240 @@
+{
+    "scenes": {
+      "scene1": {
+        "name": "Scene 1",
+        "connections": {
+          "north": "scene2",
+          "south": null,
+          "east": null,
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/entrance.png",
+        "lightSources": [],
+        "npcs": []
+      },
+      "scene2": {
+        "name": "Scene 2",
+        "connections": {
+          "north": "scene3",
+          "south": "scene1",
+          "east": null,
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_11.png",
+        "lightSources": [],
+        "npcs": [
+          {
+            "x": 401.2666664123535,
+            "y": 452,
+            "path": "http://localhost:8002/assets/images/npcs/forest_hunter_female_old/editor.png",
+            "scale": 1.22,
+            "flipped": false,
+            "dialogue": null,
+            "dialogueFilename": null,
+            "atlasPath": "assets/images/npcs/forest_hunter_female_old"
+          },
+          {
+            "x": 612.2666664123535,
+            "y": 374,
+            "path": "http://localhost:8002/assets/images/npcs/forest_hunter_male_old/editor.png",
+            "scale": 0.71,
+            "flipped": true,
+            "dialogue": null,
+            "dialogueFilename": null,
+            "atlasPath": "assets/images/npcs/forest_hunter_male_old"
+          }
+        ]
+      },
+      "scene3": {
+        "name": "Scene 3",
+        "connections": {
+          "north": null,
+          "south": "scene2",
+          "east": "scene4",
+          "west": "scene7"
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_13.png"
+      },
+      "scene4": {
+        "name": "Scene 4",
+        "connections": {
+          "north": null,
+          "south": null,
+          "east": "scene5",
+          "west": "scene3"
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_12.png"
+      },
+      "scene5": {
+        "name": "Scene 5",
+        "connections": {
+          "north": "scene6",
+          "south": null,
+          "east": null,
+          "west": "scene4"
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_6.png"
+      },
+      "scene6": {
+        "name": "Scene 6",
+        "connections": {
+          "north": null,
+          "south": "scene5",
+          "east": null,
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_14.png"
+      },
+      "scene7": {
+        "name": "Scene 7",
+        "connections": {
+          "north": "scene8",
+          "south": null,
+          "east": "scene3",
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_15.png",
+        "lightSources": []
+      },
+      "scene8": {
+        "name": "Scene 8",
+        "connections": {
+          "north": "scene10",
+          "south": "scene7",
+          "east": "scene9",
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_20.png"
+      },
+      "scene9": {
+        "name": "Scene 9",
+        "connections": {
+          "north": null,
+          "south": null,
+          "east": null,
+          "west": "scene8"
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_1.png"
+      },
+      "scene10": {
+        "name": "Scene 10",
+        "connections": {
+          "north": null,
+          "south": "scene8",
+          "east": null,
+          "west": "scene11"
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_3.png"
+      },
+      "scene11": {
+        "name": "Scene 11",
+        "connections": {
+          "north": null,
+          "south": null,
+          "east": "scene10",
+          "west": "scene12"
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_10.png"
+      },
+      "scene12": {
+        "name": "Scene 12",
+        "connections": {
+          "north": "scene13",
+          "south": "scene20",
+          "east": "scene11",
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_0.png"
+      },
+      "scene13": {
+        "name": "Scene 13",
+        "connections": {
+          "north": "scene14",
+          "south": "scene12",
+          "east": null,
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_2.png"
+      },
+      "scene14": {
+        "name": "Scene 14",
+        "connections": {
+          "north": "scene15",
+          "south": "scene13",
+          "east": null,
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_16.png"
+      },
+      "scene15": {
+        "name": "Scene 15",
+        "connections": {
+          "north": "scene17",
+          "south": "scene14",
+          "east": "scene16",
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_5.png"
+      },
+      "scene16": {
+        "name": "Scene 16",
+        "connections": {
+          "north": "scene18",
+          "south": null,
+          "east": null,
+          "west": "scene15"
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_8.png"
+      },
+      "scene17": {
+        "name": "Scene 17",
+        "connections": {
+          "north": "scene19",
+          "south": "scene15",
+          "east": null,
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_18.png"
+      },
+      "scene18": {
+        "name": "Scene 18",
+        "connections": {
+          "north": null,
+          "south": "scene16",
+          "east": null,
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_17.png"
+      },
+      "scene19": {
+        "name": "Scene 19",
+        "connections": {
+          "north": null,
+          "south": "scene17",
+          "east": null,
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_7.png"
+      },
+      "scene20": {
+        "name": "Scene 20",
+        "connections": {
+          "north": "scene12",
+          "south": null,
+          "east": null,
+          "west": "scene21"
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_4.png"
+      },
+      "scene21": {
+        "name": "Scene 21",
+        "connections": {
+          "north": null,
+          "south": null,
+          "east": "scene20",
+          "west": null
+        },
+        "background": "assets/images/zone/area/normal/elderswood/area_9.png"
+      }
+    }
+  }

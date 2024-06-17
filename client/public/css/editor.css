@@ -420,3 +420,63 @@ body {
   display: none;
   color: #fff; /* Text color for better contrast */
 }
+
+/* Styles for the editor help button */
+.editor-popup-help-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: none;
+  background-color: #007bff;
+  color: #fff;
+  font-size: 16px;
+  line-height: 24px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Styles for the editor help popup */
+.editor-help-popup {
+  position: absolute;
+  background-color: #333; /* Dark background for contrast */
+  border: 1px solid #ccc;
+  padding: 10px;
+  z-index: 1001;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 4px;
+  pointer-events: none; /* Prevents the popup from interfering with mouse events */
+  white-space: pre-wrap; /* Allows the content to wrap properly */
+  display: none;
+  color: #fff; /* Text color for better contrast */
+}
+
+/* Style for the <kw> tag */
+kw {
+  font-weight: bold;
+  color: #ff0;
+}
+
+#zone-summary {
+  position: absolute;
+  bottom: 10px;  /* Changed from top to bottom */
+  left: 10px;
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 4px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  max-width: 300px;
+}
+
+#zone-summary h3 {
+  margin-top: 0;
+  margin-bottom: 10px;
+}
+
+#zone-summary p {
+  margin: 5px 0;
+}

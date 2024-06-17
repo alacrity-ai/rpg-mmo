@@ -35,7 +35,8 @@ export class DialogueEditor {
             () => this.createChildNode(ActionNode),
             () => this.createChildNode(ConditionNode),
             () => this.saveDialogue(), // Add save button to the toolbar
-            (event) => this.handleFileLoad(event) // Add load button to the toolbar
+            (event) => this.handleFileLoad(event), // Add load button to the toolbar
+            () => this.reset() // Add reset button to the toolbar
         );
         this.toolbarContainer.appendChild(toolbar);
 
@@ -199,12 +200,23 @@ export class DialogueEditor {
         this.renderTree();
     }
 
+    reset() {
+        const confirmed = confirm('Are you sure you want to reset the dialogue tree? This action cannot be undone.');
+        if (!confirmed) return;
+        
+        this.nodes = [];
+        this.addStartNode(); // Re-add the start node
+        this.renderTree();
+    }    
+
     createTextEditorPopup(node) {
         createDialogueTextEditorPopup(
             node, // Pass the node to the popup function
-            (content) => {
+            ({ content, wavPath }) => { // Destructure to get content and wavPath
                 node.content = content;
+                node.wavPath = wavPath; // Save the wavPath
                 console.log('Updated node content:', node.content);
+                console.log('Updated node wavPath:', node.wavPath);
                 this.renderTree(); // Re-render to update node display if necessary
             },
             () => {
@@ -261,8 +273,11 @@ export class DialogueEditor {
         switch (node.type) {
             case 'text':
                 content = node.content || 'No content';
+                if (node.wavPath) {
+                    content += `\nWAV: ${node.wavPath}`;
+                }
                 this.hoverPopup.style.backgroundColor = '#007bff'; // Blue
-                break;
+                break;            
             case 'choice':
                 content = node.choice || 'No choice';
                 this.hoverPopup.style.backgroundColor = '#28a745'; // Green

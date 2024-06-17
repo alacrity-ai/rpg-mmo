@@ -1,0 +1,18 @@
+{
+    "name": "Orcish Mystic",
+    "sprite_key": "orcish_mystic_sprite",
+    "description": "An orc shaman who wields dark magic.",
+    "script_path": "testScript.js",
+    "script_speed": 2000,
+    "base_stats": {
+      "health": 18,
+      "mana": 10,
+      "strength": 3,
+      "stamina": 4,
+      "intelligence": 5
+    },
+    "loot_table": [],
+    "npc_dialogue_template_id": null,
+    "battler_sprite_path": "assets/images/battle/battlers/sprite_16"
+  }
+  

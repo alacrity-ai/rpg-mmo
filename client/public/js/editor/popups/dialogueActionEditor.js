@@ -8,8 +8,19 @@ export function createDialogueActionEditorPopup(node, onApply, onCancel) {
     actionsContainer.className = 'editor-popup-actions-container';
     popup.appendChild(actionsContainer);
 
-    // Define the types of actions available
-    const actionTypes = ['setFlag', 'giveGold', 'takeGold', 'giveItem', 'takeItem', 'giveExp'];
+    // Define the types of actions available with their placeholders
+    const actionTypes = [
+        { type: 'setFlag', placeholder: 'flagName' },
+        { type: 'giveGold', placeholder: 'amount' },
+        { type: 'takeGold', placeholder: 'amount' },
+        { type: 'giveItem', placeholder: 'itemName' },
+        { type: 'takeItem', placeholder: 'itemName' },
+        { type: 'giveExp', placeholder: 'amount' },
+        { type: 'changeZone', placeholder: 'zoneKey' },
+        { type: 'changeScene', placeholder: 'sceneKey' },
+        { type: 'playSound', placeholder: 'folder/sound.wav' },
+        { type: 'runScript', placeholder: 'scriptName.js' }
+    ];
 
     // Function to create a new row for an action
     const createActionRow = (action = {}) => {
@@ -19,25 +30,27 @@ export function createDialogueActionEditorPopup(node, onApply, onCancel) {
         // Create a dropdown for selecting action type
         const dropdown = document.createElement('select');
         dropdown.className = 'editor-popup-dropdown';
-        actionTypes.forEach(type => {
+        actionTypes.forEach(({ type }) => {
             const option = document.createElement('option');
             option.value = type;
             option.textContent = type;
             dropdown.appendChild(option);
         });
-        dropdown.value = Object.keys(action)[0] || actionTypes[0];
+        dropdown.value = Object.keys(action)[0] || actionTypes[0].type;
         actionWrapper.appendChild(dropdown);
 
         // Create an input field for the action value
         const input = document.createElement('input');
         input.className = 'editor-popup-input';
         input.value = Object.values(action)[0] || '';
-        input.type = ['setFlag', 'giveItem', 'takeItem'].includes(dropdown.value) ? 'text' : 'number';
+        input.placeholder = actionTypes.find(({ type }) => type === dropdown.value).placeholder;
+        input.type = ['setFlag', 'giveItem', 'takeItem', 'changeZone', 'changeScene', 'playSound', 'runScript'].includes(dropdown.value) ? 'text' : 'number';
         actionWrapper.appendChild(input);
 
-        // Change input type based on the selected action
+        // Change input type and placeholder based on the selected action
         dropdown.addEventListener('change', () => {
-            input.type = ['setFlag', 'giveItem', 'takeItem'].includes(dropdown.value) ? 'text' : 'number';
+            input.type = ['setFlag', 'giveItem', 'takeItem', 'changeZone', 'changeScene', 'playSound', 'runScript'].includes(dropdown.value) ? 'text' : 'number';
+            input.placeholder = actionTypes.find(({ type }) => type === dropdown.value).placeholder;
         });
 
         // Add button to add a new action row

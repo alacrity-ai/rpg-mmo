@@ -1,7 +1,7 @@
 const { createZoneInstance } = require('../../db/queries/zoneInstancesQueries');
 const { createAreaInstance, updateAreaInstancesWithZoneInstanceData } = require('../../db/queries/areaInstancesQueries');
 const { createAreaEventInstance } = require('../../db/queries/areaEventInstancesQueries');
-const { getEncounterTemplateById } = require('../../db/queries/encounterTemplatesQueries');
+const { getEncounterTemplateByName } = require('../../db/queries/encounterTemplatesQueries');
 const { getRandomInt, getRandomFloat } = require('../../utilities/helpers');
 const { generateGrid, mapCoordinatesToAreas } = require('./areas/mapFunctions');
 const logger = require('../../utilities/logger');
@@ -40,13 +40,15 @@ async function createZoneInstanceFromTemplate(zoneTemplate) {
       };
       
       if (i !== 0) {
-        const encounterId = await generateEncounter(zoneTemplate.encounters, bossEncounterUsed);
-        const encounterTemplate = encounterId ? await getEncounterTemplateById(encounterId) : null;
+        console.log('Creating area instance:', i);
+        const encounterName = await generateEncounter(zoneTemplate.encounters, bossEncounterUsed);
+        const encounterTemplate = encounterName ? await getEncounterTemplateByName(encounterName) : null;
+        console.log('Got encounter_template:', encounterTemplate);
         if (encounterTemplate && encounterTemplate.isBoss) {
           bossEncounterUsed = true;
         }
         const eventInstanceId = await maybeCreateAreaEventInstance(zoneTemplate.areaEvents, usedAreaEvents);
-        areaInstanceData.encounter = encounterId;
+        areaInstanceData.encounter = encounterName;
         areaInstanceData.event_instance_id = eventInstanceId;
         areaInstanceData.friendly_npcs = generateNpcs(zoneTemplate.friendlyNpcs);
       }
@@ -98,7 +100,13 @@ async function generateEncounter(encounters, bossEncounterUsed) {
 
   const filteredEncounters = [];
   for (const encounter of encounters) {
-    const encounterTemplate = await getEncounterTemplateById(encounter.encounter_id);
+    console.log('Encounter in zoneTemplate: ', encounter);
+    console.log('Calling getEncounterTemplateByName with: ', encounter.encounter_name);
+    const encounterTemplate = await getEncounterTemplateByName(encounter.encounter_name);
+    console.log('Got encounter_template: ', encounterTemplate);
+    if (!encounterTemplate) {
+      throw new Error(`Encounter template with name ${encounter.encounter_name} not found.`);
+    }
     if (!encounterTemplate.isBoss || !bossEncounterUsed) {
       filteredEncounters.push(encounter);
     }
@@ -115,7 +123,7 @@ async function generateEncounter(encounters, bossEncounterUsed) {
   for (const encounter of filteredEncounters) {
     accumulatedProbability += encounter.probability;
     if (random <= accumulatedProbability) {
-      return encounter.encounter_id;
+      return encounter.encounter_name;
     }
   }
 

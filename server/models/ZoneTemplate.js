@@ -65,8 +65,8 @@ module.exports = ZoneTemplate;
  *   description: 'A mystical forest filled with magical creatures and hidden secrets.',
  *   type: 'normal',
  *   encounters: [
- *     { encounter_id: 1, probability: 0.5 },
- *     { encounter_id: 2, probability: 0.1 }
+ *     { encounter_name: "Forest Ambush", probability: 0.5 },
+ *     { encounter_name: "Dragon's Lair", probability: 0.1 }
  *   ],
  *   friendly_npcs: [
  *     { npc_id: 2, chance_to_spawn: 0.5, max_instances: 1 }

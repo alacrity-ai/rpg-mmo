@@ -1,52 +1,22 @@
-// db/data/encounterTemplates.js
+const fs = require('fs');
+const path = require('path');
 
-const encounterTemplates = [
-    {
-      name: 'Bear Attack',
-      enemies: JSON.stringify([
-        { npc_template_id: 1, position: [3, 0] },
-        { npc_template_id: 1, position: [3, 2] },
-        { npc_template_id: 2, position: [4, 1] }
-      ]),
-      is_boss: false
-    },
-    {
-      name: "Dragon's Lair",
-      enemies: JSON.stringify([
-        { npc_template_id: 3, position: [4, 1] }
-      ]),
-      is_boss: true
+const encounterTemplates = [];
+const encounterJsonsPath = path.join(__dirname, 'encounter_jsons');
+
+// Read all JSON files in the encounter_jsons folder
+fs.readdirSync(encounterJsonsPath).forEach(file => {
+  if (path.extname(file) === '.json') {
+    const filePath = path.join(encounterJsonsPath, file);
+    const encounterData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+
+    // Convert enemies to strings
+    if (encounterData.enemies && typeof encounterData.enemies !== 'string') {
+      encounterData.enemies = JSON.stringify(encounterData.enemies);
     }
-    // 1 Orcish Warrior, 2 Orcish Grunts
-    // 1 Orcish Warrior, 1 Orcish Hunter, 1 Orcish Mystic
-    // 1 Orcish Mage, 2 Orcish Warriors
-    // 1 Orcish Mystic, 1 Bugbear
-    // 1 Ogre Mystic, 1 Orcish Warrior
-    // 2 Dire Wolves
-    // 1 Dire Wolf, 2 Orcish Warriors
-    // 2 Bugbears
-    // 2 Werebears
-    // 3 Sneering Imps
-    // 1 Owlbear Horror (is_boss)
-    // 2 Dire Porcupines
-    // 1 Giant Beetle, 1 Giant Wasp
-    // 2 Giant Wasps
-    // 2 Winged Garrotters
-    // 1 Giant Beetle, 1 Giant Wasp, 1 Winged Garrotter
-    // 1 Giant Spider, 1 Giant Wasp
-    // 2 Giant Spiders
-    // 1 Orcish Mage, 2 Giant Spiders
-    // 1 Lumbering Centipede, 1 Giant Spider
-    // 1 Lumbering Centipede, 1 Giant Spider, 1 Giant Wasp
-    // 2 Flying Millipedes
-    // 1 Demonic Howler (is_boss)
-    // 1 Demonic Serpent (is_boss)
-    // 1 Infested Treant (is_boss)
-    // 3 Treant Youth
-    // 2 Treant Youth, 1 Fiendish Shrub
-    // 3 Fiendish Shrubs
-    // 2 Forest Wights
-  ];
-  
+
+    encounterTemplates.push(encounterData);
+  }
+});
+
 module.exports = encounterTemplates;
-  

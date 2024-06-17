@@ -4,6 +4,8 @@ import { SceneEditor } from './sceneEditor.js';
 import { toggleSceneEditor } from './utils/sceneEditorToggles.js';
 const EDITOR_SERVER_URL = import.meta.env.VITE_EDITOR_SERVER_URL;
 
+let selectedSceneId = null;
+
 export class ZoneEditor {
     constructor(editorDiv) {
       this.editorDiv = editorDiv;
@@ -12,10 +14,10 @@ export class ZoneEditor {
       this.scenePositions = {}; // Keep track of scene positions on the grid
       this.availableSceneIds = []; // Keep track of available scene IDs
       this.zoneType = ''; // Store the selected zone type
-      this.offsetX = 1000; // Offset for the initial X position
-      this.offsetY = 1000; // Offset for the initial Y position
+      this.offsetX = 4000; // Offset for the initial X position
+      this.offsetY = 4000; // Offset for the initial Y position
       this.zoomLevel = 1; // Initial zoom level
-
+      this.selectedSceneId = null;
       // Initialize the SceneEditor with the zone data
       this.sceneEditor = new SceneEditor(this.zone, this);
       this.toggleSceneEditor = toggleSceneEditor.bind(this.sceneEditor);
@@ -24,7 +26,15 @@ export class ZoneEditor {
       document.getElementById('zoom-in').addEventListener('click', () => this.zoomIn());
       document.getElementById('zoom-out').addEventListener('click', () => this.zoomOut());
       document.getElementById('zoom-reset').addEventListener('click', () => this.zoomReset());
+      document.getElementById('show-connections').addEventListener('click', () => this.showAllConnections());
 
+    }
+
+    showAllConnections() {
+      for (const sceneId in this.zone.scenes) {
+        const sceneBox = this.contentDiv.querySelector(`.scene-box[data-id='${sceneId}']`);
+        this.displayExistingConnections(sceneBox, sceneId);
+      }
     }
 
     zoomReset() {
@@ -153,8 +163,8 @@ export class ZoneEditor {
     // Add a dummy element far to the south and right for scrolling buffer
     const dummyElement = document.createElement('div');
     dummyElement.style.position = 'absolute';
-    dummyElement.style.top = `calc(50% + ${this.offsetY + 2000}px)`; // Buffer to the south
-    dummyElement.style.left = `calc(50% + ${this.offsetX + 2000}px)`; // Buffer to the right
+    dummyElement.style.top = `calc(50% + ${this.offsetY + 4000}px)`; // Buffer to the south
+    dummyElement.style.left = `calc(50% + ${this.offsetX + 4000}px)`; // Buffer to the right
     dummyElement.style.width = '10px';
     dummyElement.style.height = '10px';
     dummyElement.style.backgroundColor = 'transparent'; // Invisible dummy element
@@ -287,6 +297,9 @@ export class ZoneEditor {
       this.hideAllConnectionButtons();
       // Toggle connection buttons around the box for connections
       this.toggleConnectionButtons(sceneBox, sceneId);
+      // Update summary
+      this.updateZoneSummary(sceneId);
+      selectedSceneId = sceneId;
       // Render scene tools
       renderSceneTools(sceneId, this.deleteScene.bind(this), this.editScene.bind(this), this.chooseBackground.bind(this));
     });
@@ -339,8 +352,9 @@ export class ZoneEditor {
         const button = document.createElement('div');
         button.className = `connection-button connection-button-${dir} existing-connection`;
         button.textContent = 'O';
+        button.style.backgroundColor = 'purple'; // Set the background color to purple
         sceneBox.appendChild(button);
-
+  
         button.addEventListener('click', (e) => {
           e.stopPropagation(); // Prevent the scene box click event
           // Handle removing the connection
@@ -349,11 +363,12 @@ export class ZoneEditor {
       }
     });
   }
+  
 
   addScene(fromSceneId, direction, button) {
     const { x, y } = this.scenePositions[fromSceneId];
     const newCoords = this.getNewCoords(x, y, direction);
-
+  
     // Check if a scene already exists at the new coordinates
     const existingSceneId = this.getSceneAtCoords(newCoords.x, newCoords.y);
     if (existingSceneId) {
@@ -362,6 +377,7 @@ export class ZoneEditor {
       this.zone.scenes[existingSceneId].connections[this.getOppositeDirection(direction)] = fromSceneId;
       // Replace the button with a connection button
       button.textContent = 'O';
+      button.style.backgroundColor = 'purple'; // Set the background color to purple
       button.removeEventListener('click', this.addScene);
       button.addEventListener('click', (e) => {
         e.stopPropagation();
@@ -369,7 +385,7 @@ export class ZoneEditor {
       });
       return;
     }
-
+  
     // Determine new scene ID
     let newSceneId;
     if (this.availableSceneIds.length > 0) {
@@ -377,7 +393,7 @@ export class ZoneEditor {
     } else {
       newSceneId = `scene${Object.keys(this.zone.scenes).length + 1}`;
     }
-
+  
     this.zone.scenes[newSceneId] = {
       name: `Scene ${newSceneId.replace('scene', '')}`,
       connections: {
@@ -388,22 +404,23 @@ export class ZoneEditor {
       },
       background: null
     };
-
+  
     // Update connections in the JSON object
     this.zone.scenes[fromSceneId].connections[direction] = newSceneId;
     this.zone.scenes[newSceneId].connections[this.getOppositeDirection(direction)] = fromSceneId;
-
+  
     // Replace the button with a connection button
     button.textContent = 'O';
+    button.style.backgroundColor = 'purple'; // Set the background color to purple
     button.removeEventListener('click', this.addScene);
     button.addEventListener('click', (e) => {
       e.stopPropagation();
       this.removeConnection(fromSceneId, newSceneId, direction);
     });
-
+  
     // Update scene positions
     this.scenePositions[newSceneId] = newCoords;
-
+  
     // Display the new scene box
     const newSceneBox = document.createElement('div');
     newSceneBox.className = 'scene-box';
@@ -411,17 +428,21 @@ export class ZoneEditor {
     updateSceneBoxBackground(newSceneBox, this.zone.scenes[newSceneId].background);
     newSceneBox.textContent = this.zone.scenes[newSceneId].name;
     this.contentDiv.appendChild(newSceneBox);
-
+  
     // Position the new scene box based on the direction
     this.positionSceneBox(newSceneBox, newCoords.x, newCoords.y);
-
+  
     // Add click event to new scene box
     newSceneBox.addEventListener('click', () => {
       this.hideAllConnectionButtons();
       this.toggleConnectionButtons(newSceneBox, newSceneId);
+      // Update summary
+      this.updateZoneSummary(newSceneId);
+      selectedSceneId = newSceneId;
       renderSceneTools(newSceneId, this.deleteScene.bind(this), this.editScene.bind(this), this.chooseBackground.bind(this));
     });
   }
+  
 
   removeConnection(sceneId1, sceneId2, direction) {
     // Update connections in the JSON object
@@ -507,5 +528,23 @@ export class ZoneEditor {
     sceneBox.style.top = `calc(50% + ${y * 150}px + ${this.offsetY}px)`;
     sceneBox.style.left = `calc(50% + ${x * 150}px + ${this.offsetX}px)`;
     sceneBox.style.transform = 'translate(-50%, -50%)';
+  }
+
+  updateZoneSummary(sceneId) {
+    if (!sceneId) return;
+    const sceneData = this.zone.scenes[sceneId];
+    console.log(sceneData)
+    const encounters = sceneData.encounters || [];
+    const encounterText = encounters.map(e => `${e.name} (${Math.round(e.probability * 100)}%)`).join(', ') || '<None>';
+    const npcs = sceneData.npcs || [];
+    const entrances = sceneData.entrances || [];
+    const summaryDiv = document.getElementById('zone-summary');
+
+    summaryDiv.innerHTML = `
+        <p><strong>Scene Key:</strong> ${sceneId}</p>
+        <p><strong>Encounters:</strong> ${encounterText}</p>
+        <p><strong>Number of NPCs:</strong> ${npcs.length}</p>
+        <p><strong>Entrances:</strong> ${entrances.length}</p>
+    `;
   }
 }

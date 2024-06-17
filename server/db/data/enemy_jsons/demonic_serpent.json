@@ -1,0 +1,18 @@
+{
+    "name": "Demonic Serpent",
+    "sprite_key": "demonic_serpent_sprite",
+    "description": "A snake infused with demonic energy, highly dangerous.",
+    "script_path": "testScript.js",
+    "script_speed": 2000,
+    "base_stats": {
+      "health": 20,
+      "mana": 8,
+      "strength": 6,
+      "stamina": 5,
+      "intelligence": 4
+    },
+    "loot_table": [],
+    "npc_dialogue_template_id": null,
+    "battler_sprite_path": "assets/images/battle/battlers/sprite_25"
+  }
+  

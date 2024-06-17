@@ -1,0 +1,18 @@
+{
+    "name": "Lumbering Centipede",
+    "sprite_key": "lumbering_centipede_sprite",
+    "description": "A giant centipede with a poisonous bite.",
+    "script_path": "testScript.js",
+    "script_speed": 2000,
+    "base_stats": {
+      "health": 24,
+      "mana": 0,
+      "strength": 4,
+      "stamina": 6,
+      "intelligence": 2
+    },
+    "loot_table": [],
+    "npc_dialogue_template_id": null,
+    "battler_sprite_path": "assets/images/battle/battlers/sprite_10"
+  }
+  

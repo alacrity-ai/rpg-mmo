@@ -1,41 +1,32 @@
-import { createDialogueTextEditorPopup } from '../popups/dialogueTextEditor.js';
-
 export function connectionAllowed(selectedNode, NodeClass) {
     if (!selectedNode) return false;
 
     const selectedNodeType = selectedNode.constructor.name.toLowerCase();
-
-    // If choice node already has a child, disallow adding another child
-    if (selectedNodeType === 'choicenode' && selectedNode.children.length > 0) return false;
-
-    // If the start node already has a child, disallow adding another child
-    if (selectedNodeType === 'startnode' && selectedNode.children.length > 0) return false;
-
-    // A text node can either have one child of any node type, or multiple children choice nodes
-    if (selectedNodeType === 'textnode') {
-        const newNodeType = NodeClass.name.toLowerCase();
-        const hasNonChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() !== 'choicenode');
-        const hasChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() === 'choicenode');
-
-        // If adding a choice node, allow it only if there are no non-choice children
-        if (newNodeType === 'choicenode') {
-            return !hasNonChoiceChild;
-        }
-
-        // If adding a non-choice node, disallow if there are any children
-        if (hasChoiceChild || hasNonChoiceChild) {
-            return false;
-        }
-
-        // If adding a non-choice node and no children exist yet, allow it
-        return true;
-    }
-
-    // An action node can only have one child
-    if (selectedNodeType === 'actionnode' && selectedNode.children.length > 0) return false;
-
     const newNodeType = NodeClass.name.toLowerCase();
-    return connectionRules[selectedNodeType].includes(newNodeType);
+
+    const hasConditionChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() === 'conditionnode');
+    const hasNonConditionChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() !== 'conditionnode');
+    const hasChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() === 'choicenode');
+    const hasNonChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() !== 'choicenode');
+    const hasTextOrActionChild = selectedNode.children.some(child => ['textnode', 'actionnode'].includes(child.constructor.name.toLowerCase()));
+
+    switch (selectedNodeType) {
+        case 'startnode':
+            return selectedNode.children.length === 0 && connectionRules.startnode.includes(newNodeType);
+        case 'choicenode':
+            return (!hasNonConditionChild && (hasConditionChild ? newNodeType === 'conditionnode' : connectionRules.choicenode.includes(newNodeType)));
+        case 'textnode':
+            if (hasChoiceChild) return newNodeType === 'choicenode';
+            if (hasConditionChild) return newNodeType === 'conditionnode';
+            if (selectedNode.children.length === 0) return connectionRules.textnode.includes(newNodeType);
+            return false;
+        case 'actionnode':
+            return (!hasNonConditionChild && (hasConditionChild ? newNodeType === 'conditionnode' : connectionRules.actionnode.includes(newNodeType)));
+        case 'conditionnode':
+            return !hasTextOrActionChild && ['textnode', 'actionnode'].includes(newNodeType);
+        default:
+            return false;
+    }
 }
 
 export function generateUniqueId() {
@@ -43,12 +34,12 @@ export function generateUniqueId() {
 }
 
 export const connectionRules = {
-    start: ['textnode', 'choicenode', 'actionnode', 'conditionnode'],
-    startnode: ['textnode', 'choicenode', 'actionnode', 'conditionnode'],
+    start: ['textnode', 'actionnode', 'conditionnode'],
+    startnode: ['textnode', 'actionnode', 'conditionnode'],
     textnode: ['textnode', 'choicenode', 'actionnode', 'conditionnode'],
     choicenode: ['actionnode', 'conditionnode', 'textnode'],
     actionnode: ['actionnode', 'conditionnode', 'textnode'],
-    conditionnode: ['actionnode', 'conditionnode', 'textnode']
+    conditionnode: ['actionnode', 'textnode']
 };
 
 export function removeNodeButtons(dialogueEditorDiv) {

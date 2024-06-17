@@ -77,14 +77,13 @@ async function initTables() {
       ambient_sound_path VARCHAR(255),
       background_image VARCHAR(255),
       area_connections JSON,
-      encounter INT DEFAULT NULL,
+      encounter VARCHAR(255) DEFAULT NULL,
       encounter_cleared BOOLEAN DEFAULT 0,
       friendly_npcs JSON,
       explored BOOLEAN DEFAULT FALSE,
       event_instance_id INT DEFAULT NULL,
       environment_effects JSON,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (encounter) REFERENCES encounter_templates(id),
       FOREIGN KEY (event_instance_id) REFERENCES area_event_instances(id)
     )`,
     `CREATE TABLE IF NOT EXISTS item_templates (

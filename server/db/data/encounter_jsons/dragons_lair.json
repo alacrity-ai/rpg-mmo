@@ -1,0 +1,8 @@
+{
+    "name": "Dragon's Lair",
+    "enemies": [
+      { "npc_template_name": "Werebear", "position": [4, 1] }
+    ],
+    "is_boss": true
+  }
+  

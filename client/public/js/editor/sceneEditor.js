@@ -1,15 +1,16 @@
-// sceneEditor.js
-
 import { toggleBackToZoneEditor } from './utils/sceneEditorToggles.js';
 import { LightSource } from './sceneObjects/lightSource.js';
 import { createLightSourcePopup } from './popups/lightSourceEditor.js';
 import { chooseNPC, updateSceneBoxNPC } from './utils/npcSelector.js';
 import { createNPCPopup } from './popups/npcEditor.js';
+import { createEntrancePopup } from './popups/entranceEditor.js';
 import { NPC } from './sceneObjects/NpcObject.js';
+import { EntranceObject } from './sceneObjects/entranceObject.js';
 import { DialogueEditor } from './dialogueEditor.js';
+import { createEncounterPopup } from './popups/encounterEditor.js';
+import { drawBox } from './utils/drawBox.js';
 
-let selectedNPCPath = null;
-
+// let selectedNPCPath = null;
 
 export class SceneEditor {
   constructor(zoneData, zoneEditor) {
@@ -27,11 +28,17 @@ export class SceneEditor {
     this.isLightSourceMode = false; // Track whether light source mode is active
     this.isDeleteMode = false; // Track whether delete mode is active
     this.isNPCMode = false; // Track whether NPC mode is active
+    this.isEntranceMode = false; // Track whether entrance mode is active
+    this.isSelectMode = false; // Track whether select mode is active
+    this.entranceStartPoint = null; // Track entrance start point
     this.selectedNPCPath = null; // Store the selected NPC path
 
     this.dialogueEditor = new DialogueEditor(this.zoneEditor);
     this.toggleBackToZoneEditor = toggleBackToZoneEditor.bind(this);
     this.handleSceneClick = this.handleSceneClick.bind(this); // Ensure handleSceneClick is properly bound
+    this.updateCursorStyle = this.updateCursorStyle.bind(this);
+    this.showInstruction = this.showInstruction.bind(this);
+    this.hideInstruction = this.hideInstruction.bind(this); // Ensure hideInstruction is properly bound
   }
 
   setActiveMode(mode) {
@@ -39,33 +46,55 @@ export class SceneEditor {
     this.isLightSourceMode = false;
     this.isDeleteMode = false;
     this.isNPCMode = false;
+    this.isEntranceMode = false;
+    this.isSelectMode = false;
     this.selectedNPCPath = null;
 
     // Reset all mode buttons' styles
     const lightButton = document.getElementById('light-source-button');
     const deleteButton = document.getElementById('trash-button');
     const npcButton = document.getElementById('npc-button');
+    const entranceButton = document.getElementById('entrance-button');
+    const selectButton = document.getElementById('select-button');
     if (lightButton) lightButton.style.backgroundColor = '#007bff';
     if (deleteButton) deleteButton.style.backgroundColor = '#007bff';
     if (npcButton) npcButton.style.backgroundColor = '#007bff';
+    if (entranceButton) entranceButton.style.backgroundColor = '#007bff';
+    if (selectButton) selectButton.style.backgroundColor = '#007bff';
 
     // Activate the selected mode and update button style
     switch (mode) {
       case 'lightSource':
         this.isLightSourceMode = true;
         if (lightButton) lightButton.style.backgroundColor = '#ff0';
+        this.showInstruction('Click to place a light source.');
         break;
       case 'delete':
         this.isDeleteMode = true;
         if (deleteButton) deleteButton.style.backgroundColor = '#ff0';
+        this.showInstruction('Click to delete an object.');
         break;
       case 'npc':
         this.isNPCMode = true;
         if (npcButton) npcButton.style.backgroundColor = '#ff0';
+        this.showInstruction('Click to place an NPC.');
+        break;
+      case 'entrance':
+        this.isEntranceMode = true;
+        if (entranceButton) entranceButton.style.backgroundColor = '#ff0';
+        this.showInstruction('Click to set the first point of the entrance.');
+        break;
+      case 'select':
+        this.isSelectMode = true;
+        if (selectButton) selectButton.style.backgroundColor = '#ff0';
+        this.showInstruction('Click to edit an object.');
         break;
       default:
+        this.hideInstruction();
         break;
     }
+
+    this.updateCursorStyle();
   }
 
   toggleLightSourceMode() {
@@ -78,6 +107,59 @@ export class SceneEditor {
 
   toggleNPCMode() {
     this.setActiveMode(this.isNPCMode ? null : 'npc');
+  }
+
+  toggleEntranceMode() {
+    this.setActiveMode(this.isEntranceMode ? null : 'entrance');
+    this.entranceStartPoint = null; // Reset entrance start point
+  }
+
+  toggleSelectMode() {
+    this.setActiveMode(this.isSelectMode ? null : 'select');
+  }
+
+  updateCursorStyle() {
+    const sceneRenderContainer = document.getElementById('scene-render-container');
+    if (this.isEntranceMode) {
+      sceneRenderContainer.style.cursor = this.entranceStartPoint ? 'cell' : 'crosshair';
+    } else if (this.isLightSourceMode) {
+      sceneRenderContainer.style.cursor = 'crosshair';
+    } else if (this.isNPCMode) {
+      sceneRenderContainer.style.cursor = 'crosshair';
+    } else if (this.isDeleteMode) {
+      sceneRenderContainer.style.cursor = 'not-allowed';
+    } else if (this.isSelectMode) {
+      sceneRenderContainer.style.cursor = 'pointer';
+    } else {
+      sceneRenderContainer.style.cursor = 'default';
+    }
+  }
+
+  showInstruction(message) {
+    let instructionDiv = document.getElementById('instruction-div');
+    if (!instructionDiv) {
+      instructionDiv = document.createElement('div');
+      instructionDiv.id = 'instruction-div';
+      instructionDiv.style.position = 'absolute';
+      instructionDiv.style.top = '10px';
+      instructionDiv.style.left = '50%';
+      instructionDiv.style.transform = 'translateX(-50%)';
+      instructionDiv.style.padding = '10px 20px';
+      instructionDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+      instructionDiv.style.color = '#fff';
+      instructionDiv.style.borderRadius = '5px';
+      instructionDiv.style.zIndex = '1000';
+      document.body.appendChild(instructionDiv);
+    }
+    instructionDiv.textContent = message;
+    instructionDiv.style.display = 'block';
+  }
+
+  hideInstruction() {
+    const instructionDiv = document.getElementById('instruction-div');
+    if (instructionDiv) {
+      instructionDiv.style.display = 'none';
+    }
   }
 
   renderScene(sceneData) {
@@ -130,12 +212,13 @@ export class SceneEditor {
         lightbulb.style.cursor = 'pointer';
         lightbulb.style.color = 'transparent'; // Make the lightbulb emoji itself invisible
         lightbulb.style.textShadow = `${lightSource.color} 0 0 100px`; // Apply colored shadow with maxRadius
+        lightbulb.style.zIndex = '10';
 
         lightbulb.addEventListener('click', (event) => {
           event.stopPropagation(); // Prevent triggering other click events
           if (this.isDeleteMode) {
             this.deleteLightSource(index);
-          } else {
+          } else if (this.isLightSourceMode || this.isSelectMode) {
             this.openLightSourceEditor(index);
           }
         });
@@ -154,21 +237,37 @@ export class SceneEditor {
         npcImage.style.width = `${170 * npc.scale}px`;
         npcImage.style.height = `${170 * npc.scale}px`;
         npcImage.style.cursor = 'pointer';
+        npcImage.style.zIndex = '5';
 
         if (npc.flipped) {
-            npcImage.style.transform = 'scaleX(-1)';
+          npcImage.style.transform = 'scaleX(-1)';
         }
 
         npcImage.addEventListener('click', (event) => {
-            event.stopPropagation(); // Prevent triggering other click events
-            if (this.isDeleteMode) {
-              this.deleteNPC(index);
-            } else {
-              this.openNpcEditor(index);
-            }
-          });
+          event.stopPropagation(); // Prevent triggering other click events
+          if (this.isDeleteMode) {
+            this.deleteNPC(index);
+          } else if (this.isNPCMode || this.isSelectMode) {
+            this.openNpcEditor(index);
+          }
+        });
 
         sceneRenderContainer.appendChild(npcImage);
+      });
+    }
+
+    // Render entrances
+    if (sceneData.entrances) {
+      sceneData.entrances.forEach((entrance, index) => { // Add index here
+        const box = drawBox(entrance.x1, entrance.y1, entrance.x2, entrance.y2, sceneRenderContainer);
+        box.addEventListener('click', (event) => {
+          event.stopPropagation(); // Prevent triggering other click events
+          if (this.isDeleteMode) {
+            this.deleteEntrance(index);
+          } else if (this.isEntranceMode || this.isSelectMode) {
+            this.openEntranceEditor(index);
+          }
+        });
       });
     }
   }
@@ -186,10 +285,19 @@ export class SceneEditor {
     const sceneData = this.zoneData.scenes[this.sceneId];
     const npc = sceneData.npcs[index];
     createNPCPopup(npc, (updatedNPC) => {
-        sceneData.npcs[index] = updatedNPC;
-        this.renderScene(sceneData); // Use this.renderScene to ensure context
+      sceneData.npcs[index] = updatedNPC;
+      this.renderScene(sceneData); // Use this.renderScene to ensure context
     });
- }
+  }
+
+  openEntranceEditor(index) {
+    const sceneData = this.zoneData.scenes[this.sceneId];
+    const entrance = sceneData.entrances[index];
+    createEntrancePopup(entrance, (updatedEntrance) => {
+      sceneData.entrances[index] = updatedEntrance;
+      this.renderScene(sceneData); // Use this.renderScene to ensure context
+    }, this.zoneData); // Pass zoneData to the popup
+  }
 
   handleSceneClick(event) {
     const rect = event.currentTarget.getBoundingClientRect();
@@ -198,11 +306,12 @@ export class SceneEditor {
     console.log('isNPCMode:', this.isNPCMode, 'selectedNPCPath:', this.selectedNPCPath);
     if (this.isLightSourceMode) {
       this.addLightSource(x, y);
-    } else if (this.isNPCMode && selectedNPCPath) {
-      this.addNPCToScene(x, y, selectedNPCPath);
-      this.selectedNPCPath = null; // Reset selected NPC path
-      this.isNPCMode = false; // Exit NPC mode
-      this.setActiveMode(null); // Reset mode buttons
+      this.hideInstruction(); // Hide instruction after placing the light source
+    } else if (this.isNPCMode) {
+      this.addNPCToScene(x, y);
+      this.hideInstruction(); // Hide instruction after placing the NPC
+    } else if (this.isEntranceMode) {
+      this.addEntrancePoint(x, y);
     }
   }
 
@@ -227,18 +336,59 @@ export class SceneEditor {
     this.renderScene(sceneData);
   }
 
-  addNPCToScene(x, y, npcPath) {
-    const newNPC = new NPC(x, y, npcPath);
-
-    // Ensure the scene has an npcs array
-    const sceneData = this.zoneData.scenes[this.sceneId];
-    if (!sceneData.npcs) {
-      sceneData.npcs = [];
+  addNPCToScene(x, y) {
+    chooseNPC(this.sceneId, (npcPath) => {
+      const atlasPath = this.extractAtlasPath(npcPath);
+      const newNPC = new NPC(x, y, npcPath, 1, false, '', atlasPath);
+      const sceneData = this.zoneData.scenes[this.sceneId];
+      if (!sceneData.npcs) {
+        sceneData.npcs = [];
+      }
+      sceneData.npcs.push(newNPC);
+      this.renderScene(sceneData);
+    }, this.zoneData, this.editorDiv);
+  }
+  
+  extractAtlasPath(npcPath) {
+    const url = new URL(npcPath);
+    const parts = url.pathname.split('/');
+    parts.pop(); // Remove the last part ('editor.png')
+    // Remove leading slash if it exists
+    if (parts[0] === '') {
+      parts.shift();
     }
-    sceneData.npcs.push(newNPC);
+    return parts.join('/');
+  }   
 
-    // Re-render the scene to include the new NPC
-    this.renderScene(sceneData);
+  addEntrancePoint(x, y) {
+    if (!this.entranceStartPoint) {
+      this.entranceStartPoint = { x, y };
+      this.showInstruction('Click to set the second point of the entrance.');
+      this.updateCursorStyle();
+    } else {
+      const x1 = this.entranceStartPoint.x;
+      const y1 = this.entranceStartPoint.y;
+      const x2 = x;
+      const y2 = y;
+
+      const newEntrance = new EntranceObject(x1, y1, x2, y2, 'defaultSceneKey', false);
+
+      // Ensure the scene has an entrances array
+      const sceneData = this.zoneData.scenes[this.sceneId];
+      if (!sceneData.entrances) {
+        sceneData.entrances = [];
+      }
+      sceneData.entrances.push(newEntrance);
+
+      // Re-render the scene to include the new entrance
+      this.renderScene(sceneData);
+
+      // Reset entrance start point and disable entrance mode
+      this.entranceStartPoint = null;
+      this.hideInstruction();
+      this.setActiveMode(null); // Disable entrance mode
+      this.updateCursorStyle();
+    }
   }
 
   deleteLightSource(index) {
@@ -251,26 +401,30 @@ export class SceneEditor {
     const sceneData = this.zoneData.scenes[this.sceneId];
     sceneData.npcs.splice(index, 1);
     this.renderScene(sceneData);
-  }  
+  }
+
+  deleteEntrance(index) { // Add this function
+    const sceneData = this.zoneData.scenes[this.sceneId];
+    sceneData.entrances.splice(index, 1);
+    this.renderScene(sceneData);
+  }
 
   addNPC() {
-    console.log('logging value of this outside of chooseNPC ', this);
-    const self = this; // Capture the correct context
-    chooseNPC(this.sceneId, (npcPath) => {
-      console.log('logging value of this inside chooseNPC: ', this);
-      selectedNPCPath = npcPath;
-      self.toggleNPCMode();
-      console.log('Selected NPC:', npcPath);
-    }, this.zoneData, this.editorDiv);
+    this.toggleNPCMode();
   }
 
   addEntrance() {
-    console.log('Add entrance functionality here.');
+    this.toggleEntranceMode();
+    console.log('Entrance mode activated.');
   }
 
   showEncounterEditor() {
-    console.log('Show encounter editor functionality here.');
-  }
+    const sceneData = this.zoneData.scenes[this.sceneId];
+    createEncounterPopup(sceneData, (updatedSceneData) => {
+      this.zoneData.scenes[this.sceneId] = updatedSceneData;
+      this.renderScene(updatedSceneData);
+    });
+  }  
 
   deselectModes() {
     this.setActiveMode(null);

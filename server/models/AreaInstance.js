@@ -13,7 +13,7 @@ class AreaInstance {
    * @param {string} params.ambient_sound_path - The path to the ambient sound file.
    * @param {string} params.background_image - The background image for the area instance.
    * @param {Object} params.area_connections - A map of area connections.
-   * @param {number} [params.encounter] - The ID of the encounter associated with the area.
+   * @param {string} [params.encounter] - The name of the encounter associated with the area.
    * @param {boolean} [params.encounter_cleared] - Whether the encounter has been cleared.
    * @param {Object} params.friendly_npcs - A map of friendly NPC template IDs to their quantities.
    * @param {boolean} [params.explored] - Whether the area has been explored.
@@ -75,7 +75,7 @@ module.exports = AreaInstance;
  *     3: { north: 4, south: null, east: null, west: 1, type: 'area' },
  *     4: { north: null, south: 3, east: null, west: 2, type: 'exit' }
  *   },
- *   encounter: 1,
+ *   encounter: "Goblin Ambush",
  *   encounter_cleared: false,
  *   friendlyNpcs: { 201: 1 },
  *   explored: false,

@@ -72,14 +72,14 @@ export function toggleSceneEditor(sceneId, zoneData) {
     sceneTools.appendChild(divider1);
 
     // Create cursor button to deselect modes
-    const cursorButton = createButton('cursor-button', '☝️', 'Selection Tool', () => {
-        this.deselectModes();
+    const cursorButton = createButton('select-button', '☝️', 'Selection Tool', () => {
+        this.toggleSelectMode();
     });
     sceneTools.appendChild(cursorButton);
 
     // Create a trashcan button to delete selected objects
     const trashButton = createButton('trash-button', '🗑️', 'Delete Mode', () => {
-        this.toggleDeleteMode(trashButton);
+        this.toggleDeleteMode();
     });
     sceneTools.appendChild(trashButton);
 
@@ -90,13 +90,13 @@ export function toggleSceneEditor(sceneId, zoneData) {
 
     // Create light source button
     const lightButton = createButton('light-source-button', '💡', 'Add Light Source', () => {
-        this.toggleLightSourceMode(lightButton);
+        this.toggleLightSourceMode();
     });
     sceneTools.appendChild(lightButton);
 
     // Create NPC button
     const npcButton = createButton('npc-button', '👤', 'Add NPC', () => {
-        this.addNPC();
+        this.toggleNPCMode();
     });
     sceneTools.appendChild(npcButton);
 
@@ -165,8 +165,14 @@ export function toggleSceneEditor(sceneId, zoneData) {
     // Hide the scene editor container
     this.sceneEditorDiv.style.display = 'none';
   
+    // Reset mode selection
+    this.deselectModes();
+
     // Show the main editor container and zoom controls
     this.editorDiv.style.display = 'block';
     this.zoomControls.style.display = 'flex';
+    if (selectedSceneId) {
+      this.updateZoneSummary(selectedSceneId);
+    }
   }
   

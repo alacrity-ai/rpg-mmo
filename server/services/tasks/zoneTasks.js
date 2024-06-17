@@ -113,6 +113,7 @@ async function processRequestZoneTask(task, redisClient) {
     }
 
     // Create the expedition zone
+    console.log('Got zoneTemplate: ', zoneTemplate)
     const zoneInstance = await createExpeditionZone(zoneTemplate);
 
     if (!zoneInstance || !zoneInstance.areas || !Object.keys(zoneInstance.areas).length) {

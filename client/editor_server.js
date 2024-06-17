@@ -1,18 +1,20 @@
 const express = require('express');
-const fs = require('fs');
 const path = require('path');
-const cors = require('cors'); // Import cors
+const cors = require('cors');
+const axios = require('axios');
+const fs = require('fs');
 
 const app = express();
 const PORT = 8001;
 
 // Enable CORS for all routes
 app.use(cors());
+app.use(express.json()); // For parsing application/json
 
 // Serve static files from the public directory
 app.use(express.static(path.join(__dirname, 'public')));
 
-// API endpoint to get zone types
+// Ensure API routes are defined before the catch-all route
 app.get('/api/zone-types', (req, res) => {
   const directoryPath = path.join(__dirname, 'public/assets/images/zone/area/normal');
 
@@ -26,7 +28,6 @@ app.get('/api/zone-types', (req, res) => {
   });
 });
 
-// API endpoint to get PNG files in a specific zone type directory
 app.get('/api/zone-images/:zoneType', (req, res) => {
   const zoneType = req.params.zoneType;
   const directoryPath = path.join(__dirname, `public/assets/images/zone/area/normal/${zoneType}`);
@@ -41,7 +42,6 @@ app.get('/api/zone-images/:zoneType', (req, res) => {
   });
 });
 
-// New API endpoint to get a map of editor.png files and their folder paths
 app.get('/api/npc-images', (req, res) => {
   const directoryPath = path.join(__dirname, 'public/assets/images/npcs');
   const results = getEditorPngMap(directoryPath, directoryPath);
@@ -49,12 +49,9 @@ app.get('/api/npc-images', (req, res) => {
   res.json(results);
 });
 
+// Catch-all route for serving the main HTML file
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'public/editor.html'));
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
 
 // Utility function to get the map of editor.png files and their folder paths
@@ -77,3 +74,7 @@ function getEditorPngMap(directory, basePath) {
 
   return results;
 }
+
+app.listen(PORT, () => {
+  console.log(`Client server is running on port ${PORT}`);
+});

@@ -1,16 +1,16 @@
 // services/expeditions/battleHelpers.js
 
-const { getEncounterTemplateById } = require('../../db/queries/encounterTemplatesQueries');
-const { getNPCTemplateById } = require('../../db/queries/npcTemplatesQueries');
+const { getEncounterTemplateByName } = require('../../db/queries/encounterTemplatesQueries');
+const { getNPCTemplateByName } = require('../../db/queries/npcTemplatesQueries');
 const { createBattlerInstancesFromCharacterIds, createBattlerInstancesFromNPCTemplateIds, updateBattlerPositions } = require('../../db/queries/battlerInstancesQueries');
 const { createBattleInstance, getBattlerInstancesInBattle } = require('../../db/queries/battleInstancesQueries');
 const { getBattleInstanceByAreaInstanceId } = require('../../db/queries/battleInstancesQueries');
 const BattleManager = require('./battleManager');
 
 class BattleCreator {
-    constructor(characterId, encounterTemplateId, areaInstanceId) {
+    constructor(characterId, encounterTemplateName, areaInstanceId) {
         this.characterId = characterId;
-        this.encounterTemplateId = encounterTemplateId;
+        this.encounterTemplateName = encounterTemplateName;
         this.areaInstanceId = areaInstanceId;
         this.battleInstance = null;
         this.battlerInstances = [];
@@ -22,18 +22,18 @@ class BattleCreator {
     }
 
     async loadEncounterTemplate() {
-        this.encounterTemplate = await getEncounterTemplateById(this.encounterTemplateId);
+        this.encounterTemplate = await getEncounterTemplateByName(this.encounterTemplateName);
         if (!this.encounterTemplate) {
-            throw new Error(`Encounter template with ID ${this.encounterTemplateId} not found.`);
+            throw new Error(`Encounter template with name ${this.encounterTemplateName} not found.`);
         }
     }
 
     async loadNpcTemplates() {
         this.npcTemplates = [];
         for (const enemy of this.encounterTemplate.enemies) {
-            const npcTemplate = await getNPCTemplateById(enemy.npc_template_id);
+            const npcTemplate = await getNPCTemplateByName(enemy.npc_template_name);
             if (!npcTemplate) {
-                throw new Error(`NPC template with ID ${enemy.npc_template_id} not found.`);
+                throw new Error(`NPC template with ID ${enemy.npc_template_name} not found.`);
             }
             this.npcTemplates.push(npcTemplate);
         }

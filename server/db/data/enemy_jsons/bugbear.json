@@ -1,0 +1,18 @@
+{
+    "name": "Bugbear",
+    "sprite_key": "bugbear_sprite",
+    "description": "Lumbering and brutish beast.",
+    "script_path": "testScript.js",
+    "script_speed": 2000,
+    "base_stats": {
+      "health": 20,
+      "mana": 0,
+      "strength": 3,
+      "stamina": 5,
+      "intelligence": 1
+    },
+    "loot_table": [],
+    "npc_dialogue_template_id": null,
+    "battler_sprite_path": "assets/images/battle/battlers/sprite_1"
+  }
+  

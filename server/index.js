@@ -28,12 +28,20 @@ const io = socketIo(server, {
   }
 });
 
+// Middlewares
 app.use(cors({
   origin: '*',
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
   credentials: true
 }));
+app.use(express.json());
+
+// Conditionally add /editor/api routes
+if (process.env.NODE_ENV === 'development') {
+  const apiRouter = require('./editor/api');
+  app.use('/editor/api', apiRouter);
+}
 
 app.get('/', (req, res) => {
   res.send('Server is running');

@@ -11,7 +11,7 @@ class EncounterTemplate {
    * @param {string} params.name - The name of the encounter.
    * @param {Array<Object>} params.enemies - The enemies in the encounter.
    * @param {boolean} params.is_boss - Whether the encounter is a boss fight.
-   * @param {number} params.enemies[].npc_template_id - The ID of the NPC template.
+   * @param {number} params.enemies[].npc_template_name - The ID of the NPC template.
    * @param {Array<number>} params.enemies[].position - The position of the NPC in the battle arena [X, Y].
    */
   constructor({ id, name, enemies, is_boss }) {
@@ -31,9 +31,9 @@ module.exports = EncounterTemplate;
 *   id: 1,
 *   name: 'Goblin Ambush',
 *   enemies: [
-*     { npc_template_id: 1, position: [3, 0] },
-*     { npc_template_id: 1, position: [3, 1] },
-*     { npc_template_id: 2, position: [4, 2] }
+*     { npc_template_name: "Goblin", position: [3, 0] },
+*     { npc_template_name: "Goblin", position: [3, 1] },
+*     { npc_template_name: "Goblin", position: [4, 2] }
 *   ],
 *   isBoss: false
 * });
@@ -43,9 +43,9 @@ module.exports = EncounterTemplate;
 * //   id: 1,
 * //   name: 'Goblin Ambush',
 * //   enemies: [
-* //     { npc_template_id: 1, position: [3, 0] },
-* //     { npc_template_id: 1, position: [3, 1] },
-* //     { npc_template_id: 2, position: [4, 2] }
+* //     { npc_template_name: "Goblin", position: [3, 0] },
+* //     { npc_template_name: "Goblin", position: [3, 1] },
+* //     { npc_template_name: "Goblin", position: [4, 2] }
 * //   ],
 * //   isBoss: false
 * // }

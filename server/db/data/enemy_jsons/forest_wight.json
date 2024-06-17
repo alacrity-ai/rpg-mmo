@@ -1,0 +1,18 @@
+{
+    "name": "Forest Wight",
+    "sprite_key": "forest_wight_sprite",
+    "description": "An undead creature that haunts the woods.",
+    "script_path": "testScript.js",
+    "script_speed": 2000,
+    "base_stats": {
+      "health": 18,
+      "mana": 8,
+      "strength": 3,
+      "stamina": 4,
+      "intelligence": 3
+    },
+    "loot_table": [],
+    "npc_dialogue_template_id": null,
+    "battler_sprite_path": "assets/images/battle/battlers/sprite_5"
+  }
+  

@@ -1,0 +1,18 @@
+{
+    "name": "Ogre Mystic",
+    "sprite_key": "ogre_mystic_sprite",
+    "description": "A hulking ogre with surprising magical abilities.",
+    "script_path": "testScript.js",
+    "script_speed": 2000,
+    "base_stats": {
+      "health": 40,
+      "mana": 15,
+      "strength": 8,
+      "stamina": 7,
+      "intelligence": 4
+    },
+    "loot_table": [],
+    "npc_dialogue_template_id": null,
+    "battler_sprite_path": "assets/images/battle/battlers/sprite_20"
+  }
+  

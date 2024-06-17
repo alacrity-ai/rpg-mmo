@@ -1,0 +1,18 @@
+{
+    "name": "Giant Wasp",
+    "sprite_key": "giant_wasp_sprite",
+    "description": "A giant wasp with a venomous sting, swift and dangerous.",
+    "script_path": "testScript.js",
+    "script_speed": 2000,
+    "base_stats": {
+      "health": 20,
+      "mana": 0,
+      "strength": 5,
+      "stamina": 4,
+      "intelligence": 2
+    },
+    "loot_table": [],
+    "npc_dialogue_template_id": null,
+    "battler_sprite_path": "assets/images/battle/battlers/sprite_28"
+  }
+  

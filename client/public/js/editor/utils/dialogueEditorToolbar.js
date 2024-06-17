@@ -1,6 +1,6 @@
 import { connectionRules } from "../dialogue/nodeUtils";
 
-export function createDialogueEditorToolbar(backToSceneEditorCallback, createTextNodeCallback, createChoiceNodeCallback, createActionNodeCallback, createConditionNodeCallback, saveCallback, loadCallback) {
+export function createDialogueEditorToolbar(backToSceneEditorCallback, createTextNodeCallback, createChoiceNodeCallback, createActionNodeCallback, createConditionNodeCallback, saveCallback, loadCallback, resetCallback) {
     // Create the dialogue tools container
     const dialogueTools = document.createElement('div');
     dialogueTools.id = 'dialogue-tools';
@@ -91,6 +91,15 @@ export function createDialogueEditorToolbar(backToSceneEditorCallback, createTex
     fileInput.addEventListener('change', loadCallback);
     dialogueTools.appendChild(fileInput);
 
+    // Add a vertical divider here
+    const divider3 = document.createElement('div');
+    Object.assign(divider3.style, dividerStyle);
+    dialogueTools.appendChild(divider3);
+
+    // Create reset button
+    const resetButton = createButton('reset-button', 'Reset', 'Reset the conversation tree', '#dc3545', resetCallback);
+    dialogueTools.appendChild(resetButton);
+
     return dialogueTools;
 }
 
@@ -112,26 +121,50 @@ export function updateDialogueEditorToolbar(selectedNode) {
     let allowedNodeTypes = [];
 
     const selectedNodeType = selectedNode.constructor.name.toLowerCase();
+    const hasConditionChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() === 'conditionnode');
+    const hasNonConditionChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() !== 'conditionnode');
+    const hasChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() === 'choicenode');
+    const hasNonChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() !== 'choicenode');
+    const hasTextOrActionChild = selectedNode.children.some(child => ['textnode', 'actionnode'].includes(child.constructor.name.toLowerCase()));
 
-    if (selectedNodeType === 'choicenode' && selectedNode.children.length > 0) {
-        allowedNodeTypes = [];
-    } else if (selectedNodeType === 'startnode' && selectedNode.children.length > 0) {
-        allowedNodeTypes = [];
-    } else if (selectedNodeType === 'textnode') {
-        const hasNonChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() !== 'choicenode');
-        const hasChoiceChild = selectedNode.children.some(child => child.constructor.name.toLowerCase() === 'choicenode');
-
-        if (hasNonChoiceChild) {
-            allowedNodeTypes = []; // Disallow adding any nodes
-        } else if (hasChoiceChild) {
-            allowedNodeTypes = ['choicenode']; // Continue to allow adding choice nodes
-        } else {
-            allowedNodeTypes = ['textnode', 'choicenode', 'actionnode', 'conditionnode']; // Allow any type
-        }
-    } else if (selectedNodeType === 'actionnode' && selectedNode.children.length > 0) {
-        allowedNodeTypes = [];
-    } else {
-        allowedNodeTypes = connectionRules[selectedNodeType] || [];
+    switch (selectedNodeType) {
+        case 'startnode':
+            allowedNodeTypes = selectedNode.children.length === 0 ? connectionRules.startnode : [];
+            break;
+        case 'choicenode':
+            if (hasNonConditionChild) {
+                allowedNodeTypes = [];
+            } else if (hasConditionChild) {
+                allowedNodeTypes = ['conditionnode'];
+            } else {
+                allowedNodeTypes = connectionRules.choicenode;
+            }
+            break;
+        case 'textnode':
+            if (hasChoiceChild) {
+                allowedNodeTypes = ['choicenode'];
+            } else if (hasConditionChild) {
+                allowedNodeTypes = ['conditionnode'];
+            } else if (selectedNode.children.length === 0) {
+                allowedNodeTypes = connectionRules.textnode;
+            } else {
+                allowedNodeTypes = [];
+            }
+            break;
+        case 'actionnode':
+            if (hasNonConditionChild) {
+                allowedNodeTypes = [];
+            } else if (hasConditionChild) {
+                allowedNodeTypes = ['conditionnode'];
+            } else {
+                allowedNodeTypes = connectionRules.actionnode;
+            }
+            break;
+        case 'conditionnode':
+            allowedNodeTypes = hasTextOrActionChild ? [] : ['textnode', 'actionnode'];
+            break;
+        default:
+            allowedNodeTypes = [];
     }
 
     // Iterate through each button and enable/disable based on the allowed node types
@@ -150,6 +183,8 @@ export function updateDialogueEditorToolbar(selectedNode) {
         }
     }
 }
+
+
 
 
 

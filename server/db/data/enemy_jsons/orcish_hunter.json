@@ -1,0 +1,18 @@
+{
+    "name": "Orcish Hunter",
+    "sprite_key": "orcish_hunter_sprite",
+    "description": "An orc skilled in tracking and hunting prey.",
+    "script_path": "testScript.js",
+    "script_speed": 2000,
+    "base_stats": {
+      "health": 22,
+      "mana": 2,
+      "strength": 4,
+      "stamina": 5,
+      "intelligence": 2
+    },
+    "loot_table": [],
+    "npc_dialogue_template_id": null,
+    "battler_sprite_path": "assets/images/battle/battlers/sprite_15"
+  }
+  

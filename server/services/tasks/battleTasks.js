@@ -46,14 +46,17 @@ async function processGetBattleInstanceTask(task, redisClient) {
     if (!areaInstance) {
       throw new Error(`Area instance with ID ${areaId} not found.`);
     }
-    const encounterTemplateId = areaInstance.encounter;
+    console.log('Got area instance: ', areaInstance)
+    const encounterTemplateName = areaInstance.encounter;
     // If no encounter is set, throw an error
-    if (!encounterTemplateId) {
-      throw new Error(`No encounter set for area instance with ID ${areaId}.`);
+    if (!encounterTemplateName) {
+      throw new Error(`No encounter set for area instance with name ${areaId}.`);
     }
 
+    console.log('Getting encounter template by name: ', encounterTemplateName)
+
     // Initialize the BattleCreator with the given parameters
-    const battleCreator = new BattleCreator(characterId, encounterTemplateId, areaId);
+    const battleCreator = new BattleCreator(characterId, encounterTemplateName, areaId);
     const response = await battleCreator.execute();
 
     // Cache the new battle instance and battler instances

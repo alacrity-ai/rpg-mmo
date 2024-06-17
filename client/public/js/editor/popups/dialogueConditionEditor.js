@@ -1,5 +1,3 @@
-// ./popups/dialogueConditionEditor.js
-
 export function createDialogueConditionEditorPopup(node, onApply, onCancel) {
     // Create the main popup container
     const popup = document.createElement('div');
@@ -11,7 +9,7 @@ export function createDialogueConditionEditorPopup(node, onApply, onCancel) {
     popup.appendChild(conditionsContainer);
 
     // Define the types of conditions available
-    const conditionTypes = ['Has Flag', 'Level atleast', 'Gold atleast', 'Has Item', 'Random Chance'];
+    const conditionTypes = ['Has Flag', 'Level atleast', 'Gold atleast', 'Has Item', 'Random Chance', 'Always'];
 
     // Function to create a new row for a condition
     const createConditionRow = (condition = {}) => {
@@ -35,11 +33,31 @@ export function createDialogueConditionEditorPopup(node, onApply, onCancel) {
         input.className = 'editor-popup-input';
         input.value = Object.values(condition)[0] || '';
         input.type = ['Has Flag', 'Has Item'].includes(dropdown.value) ? 'text' : 'number';
+        input.disabled = dropdown.value === 'Always';
+        if (dropdown.value === 'Always') {
+            input.value = '1';
+            input.style.backgroundColor = 'lightgray';
+        }
         conditionWrapper.appendChild(input);
 
         // Change input type based on the selected condition
         dropdown.addEventListener('change', () => {
             input.type = ['Has Flag', 'Has Item'].includes(dropdown.value) ? 'text' : 'number';
+            if (dropdown.value === 'Always') {
+                input.value = '1';
+                input.disabled = true;
+                input.style.backgroundColor = 'lightgray';
+                // Remove other condition rows
+                Array.from(conditionsContainer.children).forEach(child => {
+                    if (child !== conditionWrapper) conditionsContainer.removeChild(child);
+                });
+            } else {
+                input.disabled = false;
+                input.style.backgroundColor = '';
+                if (input.value === 'true') input.value = '';
+            }
+            updatePlusButtonVisibility();
+            updateMinusButtonVisibility();
         });
 
         // Add button to add a new condition row
@@ -50,14 +68,9 @@ export function createDialogueConditionEditorPopup(node, onApply, onCancel) {
 
         addButton.addEventListener('click', (event) => {
             event.stopPropagation();
-            const maxConditions = node.children.length;
-            if (conditionsContainer.children.length >= maxConditions) { // Adjusting for the initial row allowed at 0 children
-                alert('Create another child element to add another condition');
-            } else {
-                createConditionRow();
-                updatePlusButtonVisibility();
-                updateMinusButtonVisibility();
-            }
+            createConditionRow();
+            updatePlusButtonVisibility();
+            updateMinusButtonVisibility();
         });
 
         // Add remove button for the current condition row if there's more than one row
@@ -85,8 +98,7 @@ export function createDialogueConditionEditorPopup(node, onApply, onCancel) {
         wrappers.forEach((wrapper, index) => {
             const addButton = wrapper.querySelector('.add-action-button');
             if (addButton) {
-                const maxConditions = node.children.length;
-                addButton.style.display = (index === wrappers.length - 1 && wrappers.length <= maxConditions) ? 'inline-block' : 'none';
+                addButton.style.display = index === wrappers.length - 1 ? 'inline-block' : 'none';
             }
         });
     };
