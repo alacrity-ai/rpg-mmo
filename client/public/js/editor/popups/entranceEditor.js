@@ -90,6 +90,40 @@ export function createEntrancePopup(entrance, applyCallback, zoneData) {
       }
     });
   
+    // Add checkbox and input for flagLock
+    const flagLockContainer = document.createElement('div');
+    flagLockContainer.style.display = 'flex';
+    flagLockContainer.style.justifyContent = 'space-between';
+    flagLockContainer.style.alignItems = 'center';
+    flagLockContainer.style.width = '100%';
+  
+    const flagLockLabel = document.createElement('label');
+    flagLockLabel.textContent = 'Flag Lock: ';
+    flagLockContainer.appendChild(flagLockLabel);
+  
+    const flagLockCheckbox = document.createElement('input');
+    flagLockCheckbox.type = 'checkbox';
+    flagLockCheckbox.checked = entrance.flagLock !== null;
+    flagLockCheckbox.id = 'entrance-flagLock';
+    flagLockCheckbox.style.flexGrow = '0';
+    flagLockContainer.appendChild(flagLockCheckbox);
+  
+    const flagLockInput = document.createElement('input');
+    flagLockInput.type = 'text';
+    flagLockInput.value = entrance.flagLock || '';
+    flagLockInput.disabled = !flagLockCheckbox.checked;
+    flagLockInput.id = 'entrance-flagLock-input';
+    flagLockInput.style.flexGrow = '1'; // Grow input to take remaining space
+    flagLockContainer.appendChild(flagLockInput);
+  
+    flagLockCheckbox.addEventListener('change', () => {
+      flagLockInput.disabled = !flagLockCheckbox.checked;
+    });
+  
+    inputs['flagLock'] = flagLockInput;
+    inputs['flagLockCheckbox'] = flagLockCheckbox;
+    popup.appendChild(flagLockContainer);
+  
     // Create buttons container
     const buttonsContainer = document.createElement('div');
     buttonsContainer.style.display = 'flex';
@@ -107,6 +141,10 @@ export function createEntrancePopup(entrance, applyCallback, zoneData) {
         const value = inputs[attr].type === 'checkbox' ? inputs[attr].checked : inputs[attr].value;
         updatedEntrance[attr] = attr === 'sceneKey' ? value : (attr === 'oneWay' ? value : parseFloat(value));
       });
+  
+      // Add flagLock value
+      updatedEntrance.flagLock = inputs['flagLockCheckbox'].checked ? inputs['flagLock'].value : null;
+  
       applyCallback(updatedEntrance);
       document.body.removeChild(popup);
     });
